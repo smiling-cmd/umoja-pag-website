@@ -1,0 +1,35 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1A4B9C" />
+      <stop offset="100%" stop-color="#2558B8" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F5C400" />
+      <stop offset="100%" stop-color="#D4A017" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" rx="48" fill="url(#bg)" />
+  <g opacity="0.18">
+    <circle cx="300" cy="260" r="220" fill="#FFFFFF" />
+    <circle cx="900" cy="520" r="180" fill="#FFFFFF" />
+  </g>
+  <g transform="translate(180 180)">
+    <rect x="0" y="0" width="90" height="420" rx="45" fill="#F5F5F5" />
+    <circle cx="45" cy="-30" r="60" fill="#F5F5F5" />
+    <path d="M60 180c0 44-36 80-80 80s-80-36-80-80V80c0-44 36-80 80-80s80 36 80 80v100z" fill="url(#accent)" opacity="0.95" />
+    <path d="M120 458c0 18-14 32-32 32H12c-18 0-32-14-32-32V98c0-18 14-32 32-32h76c18 0 32 14 32 32v360z" fill="#FFFFFF" />
+    <rect x="38" y="118" width="44" height="320" rx="22" fill="url(#accent)" />
+  </g>
+  <g transform="translate(500 250)">
+    <path d="M44 0C20 0 0 20 0 44v144c0 24 20 44 44 44h152c24 0 44-20 44-44V44c0-24-20-44-44-44H44z" fill="#FFFFFF" opacity="0.18" />
+    <path d="M52 20h136c12 0 22 10 22 22v116c0 12-10 22-22 22H52c-12 0-22-10-22-22V42c0-12 10-22 22-22z" fill="#FFFFFF" />
+    <path d="M76 86h92v18H76zM76 126h92v18H76z" fill="#1A4B9C" opacity="0.9" />
+    <circle cx="110" cy="50" r="22" fill="url(#accent)" />
+  </g>
+  <path d="M380 120c0-18 14-32 32-32h68c18 0 32 14 32 32v80c0 18-14 32-32 32h-68c-18 0-32-14-32-32v-80z" fill="#F5F5F5" />
+  <path d="M380 200h132v220H380z" fill="url(#accent)" opacity="0.85" />
+  <path d="M760 170c-20 0-38 12-47 30l-130 242c-11 20-2 44 18 55s44 2 55-18l130-242c11-20 2-44-18-55-8-4-17-6-25-6z" fill="#FFFFFF" opacity="0.85" />
+  <circle cx="860" cy="560" r="34" fill="#FFFFFF" opacity="0.7" />
+  <circle cx="820" cy="530" r="26" fill="url(#accent)" />
+</svg>
