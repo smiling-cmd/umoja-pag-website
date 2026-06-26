@@ -2660,7 +2660,8 @@ footer::before {
     letter-spacing: 1px;
   }
   .hero {
-    min-height: 560px;
+    height: auto;
+    min-height: max(100vh, 560px);
   }
   .hero-content {
     padding: 96px 20px 56px;
