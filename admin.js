@@ -204,23 +204,36 @@ let token = localStorage.getItem('umoja_admin_token');
   }
 
   function exportCSV() {
-    window.location.href = `/api/admin/export?token=${token}`;
-    // Fallback: open in new tab with auth header isn't possible,
-    // so we'll append token as query param and handle it server-side
-    const a = document.createElement('a');
-    a.href = '/api/admin/export';
-    // We need to do a fetch and download
-    fetch('/api/admin/export', { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.blob())
-      .then(blob => {
-        const url  = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href  = url;
-        link.download = `umoja-registrations-${new Date().toISOString().split('T')[0]}.csv`;
-        link.click();
-        URL.revokeObjectURL(url);
-      })
-      .catch(() => alert('Export failed. Please try again.'));
+    if (!token) {
+      alert('Please sign in before exporting data.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/export', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        const payload = await res.json().catch(() => ({}));
+        throw new Error(payload.message || 'Export failed.');
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `umoja-registrations-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert(e.message || 'Export failed. Please try again.');
+    }
   }
 
   // ── Analytics ────────────────────────────────────────────
