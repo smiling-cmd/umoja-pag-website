@@ -1820,8 +1820,12 @@ nav.scrolled .nav-toggle.open span {
   grid-template-columns: 1fr 1fr;
   gap: 14px;
   margin-top: 28px;
+  align-items: stretch;
 }
 .g-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   padding: 24px;
   background: var(--surface-strong);
   border: 1px solid rgba(255, 255, 255, 0.06);

@@ -203,7 +203,7 @@ let token = localStorage.getItem('umoja_admin_token');
     } catch(e) { alert('Failed to delete: ' + e.message); }
   }
 
-  function exportCSV() {
+  async function exportCSV() {
     if (!token) {
       alert('Please sign in before exporting data.');
       return;
