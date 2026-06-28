@@ -22,8 +22,6 @@
   --text: #e5e7eb;
   --muted: #9ca3af;
   --border: rgba(149, 157, 175, 0.16);
-  --orange: #d4a017;
-  --orange-dark: #a97c0d;
 }
 html {
   scroll-behavior: smooth;
@@ -82,7 +80,7 @@ nav:not(.scrolled) .nav-logo-name {
   color: white;
 }
 .nav-logo-name span {
-  color: var(--orange);
+  color: var(--gold);
 }
 .nav-links {
   display: flex;
@@ -112,7 +110,7 @@ nav.scrolled .nav-links a {
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--orange);
+  background: var(--gold);
   transition: width 0.3s;
 }
 .nav-links a:hover::after,
@@ -121,7 +119,7 @@ nav.scrolled .nav-links a {
 }
 .nav-links a:hover,
 .nav-links a.active {
-  color: var(--orange);
+  color: var(--gold);
 }
 .nav-right {
   display: flex;
@@ -340,7 +338,7 @@ nav.scrolled .nav-toggle.open span {
   box-shadow: 0 8px 32px rgba(212, 160, 23, 0.35);
 }
 .btn-primary:hover {
-  background: var(--orange-dark);
+  background: var(--gold-dark);
   transform: translateY(-2px);
   box-shadow: 0 12px 40px rgba(212, 160, 23, 0.5);
 }
@@ -409,7 +407,7 @@ nav.scrolled .nav-toggle.open span {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--orange);
+  background: var(--gold);
   flex-shrink: 0;
   box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.25);
 }
@@ -2445,8 +2443,6 @@ footer::before {
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   margin-bottom: 12px;
   align-items: start;
-}
-.footer-grid {
   position: relative;
   z-index: 1;
 }
@@ -2548,7 +2544,7 @@ footer::before {
   }
   .hero-content {
     grid-template-columns: 1fr;
-    padding: 0 24px 100px;
+    padding: 100px 24px 100px;
     align-items: start;
   }
   .hero-right {
@@ -2570,7 +2566,9 @@ footer::before {
     grid-template-columns: 1fr;
   }
   .about-visual {
-    display: none;
+    max-height: 300px;
+    overflow: hidden;
+    border-radius: 16px;
   }
   .values-grid,
   .ministry-grid,
@@ -2642,6 +2640,16 @@ footer::before {
     align-items: flex-start;
   }
 }
+@media (max-width: 768px) {
+  .values-grid,
+  .ministry-grid,
+  .projects-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
 @media (max-width: 640px) {
   nav {
     height: 64px;
@@ -2658,22 +2666,21 @@ footer::before {
     font-size: 8px;
     letter-spacing: 1px;
   }
-  .hero {
-    height: auto;
-    min-height: max(100vh, 560px);
-  }
   .hero-content {
     padding: 96px 20px 56px;
     gap: 28px;
     align-items: start;
   }
   .hero {
+    height: auto;
     min-height: auto;
     align-items: flex-start;
   }
+  .hero-right {
+    flex-direction: column;
+  }
   .hero-eyebrow {
-    position: relative;
-    top: -24px;
+    margin-top: -24px;
     margin-bottom: 14px;
   }
   .hero-title {

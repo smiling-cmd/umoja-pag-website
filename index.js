@@ -325,7 +325,9 @@ function setSiteUrl() {
     if (val.trim())
       localStorage.setItem("umoja_site_base", val.trim().replace(/\/+$/, ""));
     else localStorage.removeItem("umoja_site_base");
-  } catch (e) {}
+  } catch (e) {
+    console.warn("Could not save site URL to localStorage:", e);
+  }
   renderQRCode();
 }
 
@@ -428,7 +430,7 @@ function copyLink() {
 }
 
 // ── REGISTRATION FORM ─────────────────────────────────────────
-const churchEmail = "smilesyvonne35@gmail.com";
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/xpqgrdvw";
 
 function getRegistrationPayload() {
   return {
@@ -461,22 +463,6 @@ function saveRegistrationDraft(payload) {
   } catch {
     // Some browsers block localStorage in private or file modes.
   }
-}
-
-function openRegistrationEmail(payload) {
-  const subject = `Umoja P.A.G Registration - ${payload.firstName} ${payload.lastName}`;
-  const body = [
-    "New registration details:",
-    "",
-    `Name: ${payload.firstName} ${payload.lastName}`,
-    `Phone: ${payload.phone}`,
-    `Email: ${payload.email || "Not provided"}`,
-    `Age Group: ${payload.ageGroup}`,
-    `Area / Estate: ${payload.area || "Not provided"}`,
-    `Registering For: ${payload.regFor}`,
-    `Notes: ${payload.notes || "None"}`,
-  ].join("\n");
-  window.location.href = `mailto:${churchEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 async function submitForm() {
@@ -516,25 +502,24 @@ async function submitForm() {
   btn.textContent = "Sending...";
   const payload = getRegistrationPayload();
   try {
-    const res = await fetch("/api/registrations", {
+    const res = await fetch(FORMSPREE_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    if (data.success) {
+    if (res.ok) {
       showRegistrationSuccess(
         "Thank you for registering. Our team will be in touch shortly. God bless you!",
       );
     } else {
-      throw new Error(data.message || "Registration failed.");
+      throw new Error((data.errors || []).map((e) => e.message).join(", ") || "Submission failed.");
     }
-  } catch {
+  } catch (e) {
     saveRegistrationDraft(payload);
-    openRegistrationEmail(payload);
-    showRegistrationSuccess(
-      "Your details were prepared in an email. Please send it to complete your registration.",
-    );
+    err.textContent = "Could not send your registration. Please try again or contact us directly.";
+    err.style.display = "block";
+    console.error("Formspree submission error:", e);
   } finally {
     btn.disabled = false;
     btn.textContent = "Submit Registration →";
