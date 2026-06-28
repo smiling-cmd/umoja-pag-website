@@ -4,16 +4,38 @@ window.addEventListener(
   "scroll",
   () => {
     navbar.classList.toggle("scrolled", window.scrollY > 60);
-    let current = "home";
-    document.querySelectorAll("section[id]").forEach((s) => {
-      if (window.scrollY >= s.offsetTop - 120) current = s.id;
-    });
-    document.querySelectorAll(".nav-links a").forEach((a) => {
-      a.classList.toggle("active", a.getAttribute("href") === "#" + current);
-    });
   },
   { passive: true },
 );
+
+// ── ACTIVE NAV LINK (IntersectionObserver — smooth & accurate) ──
+(function () {
+  const links = document.querySelectorAll(".nav-links a[href^='#']");
+  const sections = Array.from(document.querySelectorAll("section[id]"));
+  if (!sections.length || !links.length) return;
+
+  // rootMargin: push the top boundary down by navbar height so the
+  // section is only "active" once it clears the fixed navbar.
+  const navH = navbar ? navbar.offsetHeight : 80;
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        links.forEach((a) => {
+          a.classList.toggle(
+            "active",
+            a.getAttribute("href") === "#" + entry.target.id,
+          );
+        });
+      });
+    },
+    {
+      rootMargin: `-${navH + 4}px 0px -55% 0px`,
+      threshold: 0,
+    },
+  );
+  sections.forEach((s) => io.observe(s));
+})();
 
 // ── MOBILE NAV TOGGLE ────────────────────────────────────────
 const navToggle = document.getElementById("navToggle");

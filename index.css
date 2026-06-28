@@ -29,7 +29,7 @@ html {
   scroll-behavior: smooth;
 }
 section[id] {
-  scroll-margin-top: 96px;
+  scroll-margin-top: 84px;
 }
 body {
   font-family: "Plus Jakarta Sans", sans-serif;
@@ -243,9 +243,9 @@ nav.scrolled .nav-toggle.open span {
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(10, 20, 50, 0.1) 0%,
-    rgba(10, 20, 50, 0.35) 40%,
-    rgba(10, 20, 50, 0.88) 100%
+    rgba(5, 10, 30, 0.35) 0%,
+    rgba(5, 10, 30, 0.6) 40%,
+    rgba(5, 10, 30, 0.95) 100%
   );
 }
 .hero-overlay-2 {
@@ -253,7 +253,7 @@ nav.scrolled .nav-toggle.open span {
   inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(26, 75, 156, 0.5) 0%,
+    rgba(15, 47, 107, 0.68) 0%,
     transparent 65%
   );
 }
@@ -1800,7 +1800,7 @@ nav.scrolled .nav-toggle.open span {
 }
 .method-detail {
   font-size: 14px;
-  color: var(--muted);
+  color: #3a4155;
   line-height: 1.85;
 }
 .method-code {
@@ -1855,8 +1855,26 @@ nav.scrolled .nav-toggle.open span {
 }
 .g-card p {
   font-size: 12px;
-  color: var(--muted);
+  color: #3a4155;
   line-height: 1.75;
+}
+/* Giving section title + body contrast fix */
+.giving .section-title {
+  color: #0f1e3d;
+}
+.giving .section-title em {
+  color: var(--gold-dark);
+}
+.giving .section-body,
+.giving .section-eyebrow ~ p,
+.giving > .section > p {
+  color: #3a4155;
+}
+.giving .section-eyebrow {
+  color: var(--gold-dark);
+}
+.giving .section-eyebrow::before {
+  background: var(--gold-dark);
 }
 
 /* CONTACT */
@@ -1919,13 +1937,32 @@ nav.scrolled .nav-toggle.open span {
   font-weight: 800;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--muted);
+  color: #5a6070;
   margin-bottom: 4px;
 }
 .contact-item-value {
   font-size: 15px;
   font-weight: 600;
-  color: var(--text);
+  color: #1a2340;
+}
+.contact-item-value a {
+  color: var(--blue);
+  text-decoration: none;
+}
+.contact-item-value a:hover {
+  text-decoration: underline;
+}
+/* Contact section title + body text contrast fix */
+.contact .section-title {
+  color: #0f1e3d;
+}
+.contact .section-title em {
+  color: var(--gold-dark);
+}
+.contact .section-body,
+.contact .section-eyebrow + p,
+.contact p {
+  color: #3a4155;
 }
 .map-frame {
   border-radius: 4px;
@@ -2558,12 +2595,21 @@ footer::before {
   }
   .hero-content {
     grid-template-columns: 1fr;
-    padding: 0 24px 100px;
+    padding: 80px 24px 100px;
     align-items: start;
   }
   .hero-right {
     flex-direction: row;
     flex-wrap: wrap;
+    gap: 8px;
+  }
+  .hero-service-card {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 12px 14px;
+  }
+  .hero-service-time {
+    font-size: 17px;
   }
   .about-inner,
   .contact-inner,
@@ -2654,26 +2700,25 @@ footer::before {
 }
 @media (max-width: 640px) {
   nav {
-    height: 64px;
+    height: 60px;
     padding: 0 16px;
   }
   .nav-logo img {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
   }
   .nav-logo-name {
-    font-size: 14px;
+    font-size: 13px;
   }
   .nav-logo-sub {
-    font-size: 8px;
-    letter-spacing: 1px;
+    display: none;
   }
   .hero {
     height: auto;
     min-height: max(100vh, 560px);
   }
   .hero-content {
-    padding: 96px 20px 56px;
+    padding: 80px 20px 160px;
     gap: 28px;
     align-items: start;
   }
@@ -2683,7 +2728,7 @@ footer::before {
   }
   .hero-eyebrow {
     position: relative;
-    top: -24px;
+    top: 0;
     margin-bottom: 14px;
   }
   .hero-title {
