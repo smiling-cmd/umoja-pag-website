@@ -397,7 +397,7 @@ function downloadQR() {
   ctx.fillText("Scan to Register", 160, 252);
   ctx.fillStyle = "#6B7280";
   ctx.font = "11px sans-serif";
-  ctx.fillText("Umoja Innercore, Nairobi", 160, 272);
+  ctx.fillText("Umoja, Nairobi", 160, 272);
   const a = document.createElement("a");
   a.download = "umoja-pag-register-qr.png";
   a.href = out.toDataURL();
