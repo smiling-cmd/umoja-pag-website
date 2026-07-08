@@ -108,7 +108,7 @@ nav:not(.scrolled) .nav-logo-sub {
   letter-spacing: 0.5px;
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  transition: color 0.2s;
+  transition: color 260ms cubic-bezier(.2,.9,.2,1), transform 200ms ease;
   position: relative;
   padding-bottom: 4px;
 }
@@ -125,19 +125,20 @@ nav.scrolled .nav-links a {
   height: 3px;
   background: var(--orange);
   border-radius: 3px;
-  transition: width 0.28s ease, height 0.18s ease;
+  transition: width 320ms cubic-bezier(.2,.9,.2,1), height 200ms ease, background-color 180ms ease;
 }
 .nav-links a:hover::after {
-  width: 56%;
+  width: 40%;
 }
 .nav-links a.active::after {
-  width: 56%;
-  height: 4px;
+  width: 40%;
+  height: 3px;
   background: var(--gold);
 }
 .nav-links a:hover,
 .nav-links a.active {
   color: var(--orange);
+  transform: translateY(-0.6px);
 }
 .nav-right {
   display: flex;
@@ -899,129 +900,14 @@ nav.scrolled .nav-toggle.open span {
   position: relative;
   z-index: 1;
 }
-.ministry-catalogue {
-  --catalog-gap: 18px;
-  --catalog-columns: 3;
-  position: relative;
-  z-index: 1;
-  margin-bottom: 36px;
-  padding: 18px 24px 26px;
-  border-radius: 30px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.08),
-    rgba(255, 255, 255, 0.03)
-  );
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 24px 60px rgba(4, 9, 26, 0.18);
-}
-
-/* Arrow buttons */
-.catalogue-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.22);
-  background: rgba(15, 47, 107, 0.72);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  color: white;
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background 0.2s,
-    border-color 0.2s,
-    transform 0.2s,
-    opacity 0.2s;
-  box-shadow: 0 8px 28px rgba(4, 9, 26, 0.28);
-}
-.catalogue-btn:hover {
-  background: var(--gold);
-  border-color: var(--gold-light);
-  transform: translateY(-50%) scale(1.08);
-}
-.catalogue-btn:disabled {
-  opacity: 0.28;
-  pointer-events: none;
-}
-.catalogue-btn.prev {
-  left: 12px;
-}
-.catalogue-btn.next {
-  right: 12px;
-}
-
-/* Dot indicators */
-.catalogue-dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 18px;
-}
-.catalogue-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition:
-    background 0.25s,
-    transform 0.25s,
-    width 0.25s;
-}
-.catalogue-dot.active {
-  background: var(--gold-light);
-  width: 24px;
-  border-radius: 999px;
-  transform: none;
-}
-
-/* Viewport clips cards, track slides */
-.ministry-catalogue-window {
-  overflow: hidden;
-  position: relative;
-  border-radius: 24px;
-}
-.ministry-catalogue-window::before,
-.ministry-catalogue-window::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 72px;
-  z-index: 2;
-  pointer-events: none;
-}
-.ministry-catalogue-window::before {
-  left: 0;
-  background: linear-gradient(90deg, rgba(7, 24, 51, 0.72), rgba(7, 24, 51, 0));
-}
-.ministry-catalogue-window::after {
-  right: 0;
-  background: linear-gradient(
-    270deg,
-    rgba(7, 24, 51, 0.72),
-    rgba(7, 24, 51, 0)
-  );
-}
+.ministry-catalogue,
+.catalogue-btn,
+.catalogue-dots,
+.catalogue-dot,
+.ministry-catalogue-window,
 .ministry-catalogue-track {
-  display: flex;
-  gap: var(--catalog-gap);
-  padding: 4px 0 12px;
-  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
-  -webkit-user-select: none;
-  user-select: none;
+  /* Removed - carousel replaced by gallery; keep selectors inert in case needed later */
+  display: none !important;
 }
 .nav-social-link.youtube {
   background: #d4a017;
@@ -2659,10 +2545,7 @@ footer::before {
   .cloudwatch-stage {
     height: 164px;
   }
-  .ministry-catalogue {
-    --catalog-columns: 2;
-    padding: 16px 20px 22px;
-  }
+  /* ministry-catalogue responsive rules removed (carousel replaced by gallery) */
   .catalog-card.hero,
   .catalog-card {
     min-height: 320px;
@@ -2797,18 +2680,9 @@ footer::before {
     gap: 28px;
     text-align: left;
   }
-  .ministry-catalogue {
-    --catalog-columns: 1;
-    padding: 14px 14px 20px;
-  }
-  .catalogue-btn {
-    width: 42px;
-    height: 42px;
-  }
+  /* legacy carousel button sizing removed */
+  
   .catalogue-btn.prev {
-    left: 10px;
-  }
-  .catalogue-btn.next {
     right: 10px;
   }
   .catalog-card.hero,
@@ -2855,6 +2729,25 @@ footer::before {
 .gallery-grid img:hover {
   transform: scale(1.03);
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+
+/* Figure captions for gallery */
+.gallery-grid figure {
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.gallery-grid figcaption {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.55), rgba(0,0,0,0.2));
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  backdrop-filter: blur(6px);
 }
 
 /* LIGHTBOX */

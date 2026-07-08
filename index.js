@@ -19,19 +19,24 @@ window.addEventListener(
   const navH = navbar ? navbar.offsetHeight : 80;
   const io = new IntersectionObserver(
     (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        links.forEach((a) => {
-          a.classList.toggle(
-            "active",
-            a.getAttribute("href") === "#" + entry.target.id,
-          );
-        });
+      // pick the most visible intersecting section so only one nav link
+      // becomes active even when neighboring sections partially intersect.
+      const visible = entries.filter((e) => e.isIntersecting);
+      if (!visible.length) return;
+      visible.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      const primary = visible[0];
+      links.forEach((a) => {
+        a.classList.toggle(
+          "active",
+          a.getAttribute("href") === "#" + primary.target.id,
+        );
       });
     },
     {
-      rootMargin: `-${navH + 4}px 0px -55% 0px`,
-      threshold: 0,
+      // account for fixed navbar at top, and require a reasonable
+      // portion of the section to be visible before activation.
+      rootMargin: `-${navH + 4}px 0px -40% 0px`,
+      threshold: [0.25, 0.5, 0.75],
     },
   );
   sections.forEach((s) => io.observe(s));
@@ -98,121 +103,7 @@ if (heroDirectionsLink && directionsCard) {
   });
 }
 
-// ── MINISTRY CATALOGUE CAROUSEL ───────────────────────────────
-(function () {
-  const track = document.getElementById("catTrack");
-  const window_ = document.getElementById("catWindow");
-  const prevBtn = document.getElementById("catPrev");
-  const nextBtn = document.getElementById("catNext");
-  const dotsWrap = document.getElementById("catDots");
-  const catalogue = document.getElementById("ministryCatalogue");
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  if (!track || !window_ || !prevBtn || !nextBtn || !dotsWrap || !catalogue)
-    return;
-
-  const cards = Array.from(track.children);
-  const GAP = 18;
-  let currentPage = 0;
-  let dots = [];
-  let pageCount = 1;
-  let cardsPerView = 1;
-  let autoTimer = null;
-
-  function getCardsPerView() {
-    if (window.innerWidth <= 640) return 1;
-    if (window.innerWidth <= 900) return 2;
-    return 3;
-  }
-
-  function buildDots() {
-    dotsWrap.innerHTML = "";
-    dots = [];
-    pageCount = Math.max(1, Math.ceil(cards.length / cardsPerView));
-    for (let i = 0; i < pageCount; i += 1) {
-      const d = document.createElement("button");
-      d.className = "catalogue-dot" + (i === currentPage ? " active" : "");
-      d.setAttribute("aria-label", "Go to showcase page " + (i + 1));
-      d.addEventListener("click", () => {
-        goTo(i);
-        restartAuto();
-      });
-      dotsWrap.appendChild(d);
-      dots.push(d);
-    }
-  }
-
-  function maxOffset() {
-    return Math.max(0, track.scrollWidth - window_.clientWidth);
-  }
-
-  function pageOffset(page) {
-    const firstCard = cards[0];
-    if (!firstCard) return 0;
-    const step = firstCard.offsetWidth + GAP;
-    return Math.min(page * step * cardsPerView, maxOffset());
-  }
-
-  function goTo(page) {
-    currentPage = ((page % pageCount) + pageCount) % pageCount;
-    track.style.transform = `translateX(-${pageOffset(currentPage)}px)`;
-    dots.forEach((d, i) => d.classList.toggle("active", i === currentPage));
-  }
-
-  function stopAuto() {
-    if (autoTimer) {
-      clearInterval(autoTimer);
-      autoTimer = null;
-    }
-  }
-
-  function restartAuto() {
-    stopAuto();
-    if (reducedMotion.matches || pageCount <= 1) return;
-    autoTimer = window.setInterval(() => goTo(currentPage + 1), 4200);
-  }
-
-  function refreshCarousel() {
-    cardsPerView = getCardsPerView();
-    catalogue.style.setProperty("--catalog-columns", String(cardsPerView));
-    currentPage = Math.min(
-      currentPage,
-      Math.max(0, Math.ceil(cards.length / cardsPerView) - 1),
-    );
-    buildDots();
-    goTo(currentPage);
-    restartAuto();
-  }
-
-  prevBtn.addEventListener("click", () => {
-    goTo(currentPage - 1);
-    restartAuto();
-  });
-  nextBtn.addEventListener("click", () => {
-    goTo(currentPage + 1);
-    restartAuto();
-  });
-
-  window_.tabIndex = 0;
-  window_.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") {
-      goTo(currentPage - 1);
-      restartAuto();
-    }
-    if (e.key === "ArrowRight") {
-      goTo(currentPage + 1);
-      restartAuto();
-    }
-  });
-
-  catalogue.addEventListener("mouseenter", stopAuto);
-  catalogue.addEventListener("mouseleave", restartAuto);
-  catalogue.addEventListener("focusin", stopAuto);
-  catalogue.addEventListener("focusout", restartAuto);
-  reducedMotion.addEventListener("change", refreshCarousel);
-
-  refreshCarousel();
-  window.addEventListener("resize", refreshCarousel, { passive: true });
-})();
+// ministry carousel removed — gallery covers visual content
 
 // ── CLOUDWATCH (eye-follower) ─────────────────────────────────
 const cloudwatchAvatar = document.getElementById("cloudwatchAvatar");
@@ -648,4 +539,44 @@ function resetForm() {
     // small delay to allow other handlers to toggle `.active`
     setTimeout(syncAria, 40);
   });
+})();
+
+// Initial on-load active-link check: choose the section with the largest
+// visible area and mark the corresponding nav link as active. This helps
+// when the page is loaded with a hash or when IntersectionObserver hasn't
+// yet fired for the current position.
+(function () {
+  const links = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  if (!links.length || !sections.length) return;
+
+  function computeVisibleSize(rect) {
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const top = Math.max(0, rect.top);
+    const bottom = Math.min(vh, rect.bottom);
+    return Math.max(0, bottom - top) * rect.width;
+  }
+
+  function setActiveByVisibility() {
+    let best = null;
+    let bestScore = 0;
+    sections.forEach((s) => {
+      const r = s.getBoundingClientRect();
+      const score = computeVisibleSize(r);
+      if (score > bestScore) {
+        bestScore = score;
+        best = s;
+      }
+    });
+    if (best) {
+      links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + best.id));
+      // keep aria in sync
+      document.querySelectorAll('.nav-links a').forEach((a) => a.removeAttribute('aria-current'));
+      const active = document.querySelector('.nav-links a.active');
+      if (active) active.setAttribute('aria-current', 'page');
+    }
+  }
+
+  window.addEventListener('load', () => setTimeout(setActiveByVisibility, 80));
+  window.addEventListener('resize', () => setTimeout(setActiveByVisibility, 120));
 })();
