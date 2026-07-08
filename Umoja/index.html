@@ -24,15 +24,13 @@
         </div>
       </a>
       <ul class="nav-links" id="navLinks">
-        <li><a href="#home" class="active" aria-current="page">Home</a></li>
+        <li><a href="#home" class="active">Home</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#ministries">Ministries</a></li>
         <li><a href="#projects">Projects</a></li>
         <li><a href="#giving">Giving</a></li>
         <li><a href="#contact">Contact</a></li>
-        <li><a href="#updates">Updates</a></li>
         <li><a href="#register">Register</a></li>
-        <li><a href="#gallery">Gallery</a></li>
       </ul>
       <div class="nav-right">
         <a
@@ -276,7 +274,114 @@
           groups, there is room to grow and contribute.
         </p>
       </div>
-      <!-- ministry carousel removed — gallery used for photos instead -->
+      <div class="ministry-catalogue" id="ministryCatalogue">
+        <button class="catalogue-btn prev" id="catPrev" aria-label="Previous">
+          &#8592;
+        </button>
+        <button class="catalogue-btn next" id="catNext" aria-label="Next">
+          &#8594;
+        </button>
+        <div class="ministry-catalogue-window" id="catWindow">
+          <div class="ministry-catalogue-track" id="catTrack">
+            <article class="catalog-card hero lead-card reveal">
+              <img
+                class="img-cp-42"
+                src="images/worship team2.jpg"
+                alt="Worship team leading service at Umoja P.A.G Church"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="catalog-content">
+                <div class="catalog-kicker">Sunday Atmosphere</div>
+                <div class="catalog-title">
+                  Creative ministry that brings worship to life
+                </div>
+                <div class="catalog-copy">
+                  Worship, media, prayer, and teaching teams shape the Sunday
+                  experience together with excellence, warmth, and Spirit-led
+                  service.
+                </div>
+              </div>
+            </article>
+            <article class="catalog-card alt reveal d1">
+              <img
+                class="img-cp-46"
+                src="images/Church.jpg"
+                alt="Umoja P.A.G church building and ministry spaces"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="catalog-content">
+                <div class="catalog-kicker">Community Spaces</div>
+                <div class="catalog-title">
+                  Gather, learn, and grow together
+                </div>
+              </div>
+            </article>
+            <article class="catalog-card cool reveal d2">
+              <img
+                class="img-cp-18"
+                src="images/pastor.jpg"
+                alt="Pastoral leadership and mentorship at Umoja P.A.G Church"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="catalog-content">
+                <div class="catalog-kicker">Leadership & Care</div>
+                <div class="catalog-title">
+                  Guided by prayer, mentorship, and pastoral support
+                </div>
+              </div>
+            </article>
+            <article class="catalog-card alt reveal">
+              <img
+                class="img-cp-42"
+                src="images/choir.jpg"
+                alt="Choir ministering at Umoja P.A.G Church"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="catalog-content">
+                <div class="catalog-kicker">Worship Moments</div>
+                <div class="catalog-title">
+                  A catalogue of service, song, and fellowship
+                </div>
+              </div>
+            </article>
+            <article class="catalog-card cool reveal d1">
+              <img
+                class="img-cp-30"
+                src="images/women guild.jpg"
+                alt="Women's fellowship worshipping at Umoja P.A.G Church"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="catalog-content">
+                <div class="catalog-kicker">Church Family</div>
+                <div class="catalog-title">
+                  Spaces where ministries meet, teach, and pray
+                </div>
+              </div>
+            </article>
+            <article class="catalog-card reveal d2">
+              <img
+                class="img-cp-42"
+                src="images/media.jpeg"
+                alt="Media team serving behind the scenes at Umoja P.A.G Church"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="catalog-content">
+                <div class="catalog-kicker">Serving Together</div>
+                <div class="catalog-title">
+                  Teams moving in one direction with one purpose
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div class="catalogue-dots" id="catDots"></div>
+      </div>
       <div class="min-inner">
         <div class="ministry-grid">
           <article class="ministry-card reveal">
@@ -701,10 +806,6 @@
       </div>
     </section>
 
-    <!-- UPDATES moved further down to match nav order -->
-
-    <!-- GALLERY removed here and moved to page bottom so it's the final section -->
-
     <!-- GIVING -->
     <section class="section giving" id="giving">
       <div class="section-heading-row">
@@ -837,7 +938,7 @@
               style="border:0;"
               allowfullscreen
               loading="lazy"
-              
+              referrerpolicy="no-referrer-when-downgrade"
               title="Map to Umoja P.A.G Church"
             ></iframe>
           </div>
@@ -854,28 +955,6 @@
       </div>
     </section>
 
-    <!-- UPDATES -->
-    <section class="section updates" id="updates">
-      <div class="section-heading-row">
-        <div class="section-eyebrow reveal">News &amp; Announcements</div>
-        <h2 class="section-title reveal d1">Latest <em>Updates</em></h2>
-      </div>
-      <div class="updates-inner reveal d2">
-        <ul class="updates-list">
-          <li>
-            <h3>Sanctuary Improvement — Phase II</h3>
-            <p>Work continues on seating and lighting. Thank you for your support.</p>
-            <small>Posted: July 2026</small>
-          </li>
-          <li>
-            <h3>Volunteer Night</h3>
-            <p>Join us next Friday for a volunteer planning meeting at 6:00 PM.</p>
-            <small>Posted: June 2026</small>
-          </li>
-        </ul>
-      </div>
-    </section>
-
     <!-- REGISTRATION -->
     <section class="section registration" id="register">
       <div class="form-header-row">
@@ -884,15 +963,9 @@
           Register as a New Member<br />or for <em>Church Activities</em>
         </h2>
         <p class="section-body light reveal d2">
-          Fill in the form below to register.
+          Fill in the form below or scan the QR code. Share it with friends and
+          family!
         </p>
-        <button
-          type="button"
-          class="qr-toggle-btn reveal d2"
-          id="qrToggleBtn"
-        >
-          📱 Get QR Code to Print →
-        </button>
       </div>
       <div class="reg-inner">
         <div class="reg-form-wrap reveal">
@@ -1000,83 +1073,40 @@
             </button>
           </div>
         </div>
-      </div>
-
-      <div class="qr-modal-overlay" id="qrModalOverlay">
-        <div class="qr-card">
-          <button
-            type="button"
-            class="qr-modal-close"
-            id="qrModalClose"
-            aria-label="Close QR code"
-          >
-            ✕
-          </button>
-          <div class="qr-eyebrow">✦ Scan to Register</div>
-          <div class="qr-title">
-            Umoja P.A.G Church<br />Registration QR Code
-          </div>
-          <div class="qr-frame"><div class="qr-box" id="qrCanvas"></div></div>
-          <p class="qr-desc">
-            Scan with any smartphone camera to open this form. Print on
-            bulletins or display at the entrance.
-          </p>
-          <div id="qrHint">
-            <a
-              href="#"
-              onclick="
-                setSiteUrl();
-                return false;
-              "
-              >Set public URL for QR</a
-            >
-          </div>
-          <div class="qr-btns">
-            <button class="qr-btn qr-wa" onclick="shareWhatsApp()">
-              💬 Share on WhatsApp
-            </button>
-            <button class="qr-btn qr-dl" onclick="downloadQR()">
-              ⬇ Download QR Image
-            </button>
-            <button class="qr-btn qr-cp" onclick="copyLink()">
-              🔗 Copy Link
-            </button>
+        <div class="qr-panel reveal d2">
+          <div class="qr-card">
+            <div class="qr-eyebrow">✦ Scan to Register</div>
+            <div class="qr-title">
+              Umoja P.A.G Church<br />Registration QR Code
+            </div>
+            <div class="qr-frame"><div class="qr-box" id="qrCanvas"></div></div>
+            <p class="qr-desc">
+              Scan with any smartphone camera to open this form. Print on
+              bulletins or display at the entrance.
+            </p>
+            <div id="qrHint">
+              <a
+                href="#"
+                onclick="
+                  setSiteUrl();
+                  return false;
+                "
+                >Set public URL for QR</a
+              >
+            </div>
+            <div class="qr-btns">
+              <button class="qr-btn qr-wa" onclick="shareWhatsApp()">
+                💬 Share on WhatsApp
+              </button>
+              <button class="qr-btn qr-dl" onclick="downloadQR()">
+                ⬇ Download QR Image
+              </button>
+              <button class="qr-btn qr-cp" onclick="copyLink()">
+                🔗 Copy Link
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- GALLERY -->
-    <section class="section gallery" id="gallery">
-      <div class="section-heading-row">
-        <div class="section-eyebrow reveal">Moments</div>
-        <h2 class="section-title reveal d1">Photo <em>Gallery</em></h2>
-      </div>
-      <div class="gallery-grid reveal d2">
-        <figure>
-          <img src="images/worship team2.jpg" alt="Worship" loading="lazy" />
-          <figcaption>Worship Service</figcaption>
-        </figure>
-        <figure>
-          <img src="images/Church.jpg" alt="Church building" loading="lazy" />
-          <figcaption>Church Building</figcaption>
-        </figure>
-        <figure>
-          <img src="images/pastor.jpg" alt="Pastor" loading="lazy" />
-          <figcaption>Pastor</figcaption>
-        </figure>
-        <figure>
-          <img src="images/choir.jpg" alt="Choir" loading="lazy" />
-          <figcaption>Choir</figcaption>
-        </figure>
-        <figure>
-          <img src="images/women guild.jpg" alt="Women's Guild" loading="lazy" />
-          <figcaption>Women's Guild</figcaption>
-        </figure>
-        <figure>
-          <img src="images/media.jpeg" alt="Media team" loading="lazy" />
-          <figcaption>Media Team</figcaption>
-        </figure>
       </div>
     </section>
 
@@ -1091,15 +1121,14 @@
         </div>
         <div class="footer-col">
           <h4>Navigate</h4>
-          <a href="index.html">Home</a><a href="#about">About Us</a
+          <a href="#home">Home</a><a href="#about">About Us</a
           ><a href="#ministries">Ministries</a><a href="#projects">Projects</a
-          ><a href="#giving">Giving</a><a href="#contact">Contact</a
-          ><a href="#updates">Updates</a><a href="#register">Register</a><a href="#gallery">Gallery</a>
+          ><a href="#giving">Giving</a><a href="#contact">Contact</a>
         </div>
         <div class="footer-col">
           <h4>Services</h4>
           <a href="#home">Sunday 8:15 AM</a><a href="#home">Sunday 10:15 AM</a
-          ><a href="#home">Youth 12:30 PM</a><a href="#gallery">Gallery</a>
+          ><a href="#home">Youth 12:30 PM</a><a href="#register">Register</a>
         </div>
         <div class="footer-col">
           <h4>Connect</h4>

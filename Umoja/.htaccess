@@ -1,0 +1,10 @@
+DirectoryIndex index.html
+
+RewriteEngine On
+
+# Allow requests like /api/auth/login to automatically find login.php
+# without needing the .php extension in the URL. This matches what
+# admin.js expects (fetch('/api/auth/login') with no .php).
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [L]
