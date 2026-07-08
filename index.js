@@ -14,15 +14,9 @@ window.addEventListener(
   const sections = Array.from(document.querySelectorAll("section[id]"));
   if (!sections.length || !links.length) return;
 
-  // rootMargin: push the top boundary down by navbar height so the
-  // section is only "active" once it clears the fixed navbar.
   const navH = navbar ? navbar.offsetHeight : 80;
   const io = new IntersectionObserver(
     (entries) => {
-      // For robustness, compute visible size for ALL observed sections
-      // when any intersection event fires. This prevents cases where the
-      // callback receives only a subset of entries and picks the wrong
-      // section (e.g., Ministries remaining active while viewing Projects).
       function visibleHeight(el) {
         const r = el.getBoundingClientRect();
         const vh = window.innerHeight || document.documentElement.clientHeight;
@@ -46,14 +40,7 @@ window.addEventListener(
       });
     },
     {
-      // account for fixed navbar at top, and require a reasonable
-      // portion of the section to be visible before activation.
       rootMargin: `-${navH + 4}px 0px -40% 0px`,
-      // Fine-grained thresholds (every 5%) so the callback keeps firing
-      // while scrolling through tall sections (e.g. Ministries), instead
-      // of going silent once a section's own visible ratio settles below
-      // 0.25 and never crosses 0.5/0.75. Without this, whichever link was
-      // active before entering a tall section stays stuck as "active".
       threshold: Array.from({ length: 21 }, (_, i) => i / 20),
     },
   );
@@ -120,8 +107,6 @@ if (heroDirectionsLink && directionsCard) {
     directionsCard.open = true;
   });
 }
-
-// ministry carousel removed — gallery covers visual content
 
 // ── CLOUDWATCH (eye-follower) ─────────────────────────────────
 const cloudwatchAvatar = document.getElementById("cloudwatchAvatar");
@@ -231,8 +216,11 @@ if (cloudwatchAvatar) {
 }
 
 // ── QR CODE ───────────────────────────────────────────────────
-// Use a stored public base URL when available so the QR points to a
-// reachable HTTP(S) address instead of a local file:// URL.
+// Default public site URL. Used whenever no per-browser override has been
+// set via "Set public URL for QR" and we're not already being served from
+// a real http(s) origin. Update this if the production domain changes.
+const DEFAULT_SITE_BASE = "https://umojapagchurch.org";
+
 function getSiteBase() {
   try {
     const stored = localStorage.getItem("umoja_site_base");
@@ -242,7 +230,7 @@ function getSiteBase() {
     if (location.protocol && location.protocol.startsWith("http"))
       return location.origin + location.pathname;
   } catch (e) {}
-  return null;
+  return DEFAULT_SITE_BASE;
 }
 
 function setSiteUrl() {
@@ -475,7 +463,7 @@ async function submitForm() {
     }
   } catch (e) {
     saveRegistrationDraft(payload);
-    err.textContent = "Could not send your registration. Please try again or contact us directly.";
+    err.innerHTML = 'Could not send your registration online. Your details were saved on this device, but please also reach us directly so we don\'t miss you: <a href="tel:+254796752298" style="color:#fecaca;text-decoration:underline;">call 0796 752 298</a> or <a href="mailto:smilesyvonne35@gmail.com" style="color:#fecaca;text-decoration:underline;">email us</a>.';
     err.style.display = "block";
     console.error("Formspree submission error:", e);
   } finally {
@@ -484,7 +472,6 @@ async function submitForm() {
   }
 }
 
-// FIX: removed broken fragment line ['ageGroup','regFor'].forE
 function resetForm() {
   ["firstName", "lastName", "phone", "email", "area", "notes"].forEach((id) => {
     document.getElementById(id).value = "";
@@ -506,7 +493,6 @@ function resetForm() {
   const imgs = Array.from(document.querySelectorAll("#gallery img"));
   if (!imgs.length) return;
 
-  // create lightbox markup
   const lb = document.createElement("div");
   lb.className = "lightbox hidden";
   lb.innerHTML = `
@@ -568,7 +554,6 @@ function resetForm() {
     if (active) active.setAttribute("aria-current", "page");
   }
 
-  // light-weight throttle
   let t = 0;
   function throttledSync() {
     const now = Date.now();
@@ -581,15 +566,11 @@ function resetForm() {
   document.addEventListener("DOMContentLoaded", syncAria);
   window.addEventListener("scroll", throttledSync, { passive: true });
   document.getElementById("navLinks")?.addEventListener("click", () => {
-    // small delay to allow other handlers to toggle `.active`
     setTimeout(syncAria, 40);
   });
 })();
 
-// Initial on-load active-link check: choose the section with the largest
-// visible area and mark the corresponding nav link as active. This helps
-// when the page is loaded with a hash or when IntersectionObserver hasn't
-// yet fired for the current position.
+// Initial on-load active-link check
 (function () {
   const links = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
   const sections = Array.from(document.querySelectorAll('section[id]'));
@@ -615,7 +596,6 @@ function resetForm() {
     });
     if (best) {
       links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + best.id));
-      // keep aria in sync
       document.querySelectorAll('.nav-links a').forEach((a) => a.removeAttribute('aria-current'));
       const active = document.querySelector('.nav-links a.active');
       if (active) active.setAttribute('aria-current', 'page');
@@ -665,10 +645,8 @@ function resetForm() {
   document.addEventListener("DOMContentLoaded", () => setTimeout(updateIndicator, 20));
   navLinksEl.addEventListener("click", () => setTimeout(updateIndicator, 60));
 
-  // watch for class changes on links to update immediately
   const mo = new MutationObserver(() => setTimeout(updateIndicator, 24));
   mo.observe(navLinksEl, { subtree: true, attributes: true, attributeFilter: ["class"] });
 
-  // initial placement
   setTimeout(updateIndicator, 120);
 })();
