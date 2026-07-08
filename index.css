@@ -958,6 +958,9 @@ nav.scrolled .nav-toggle.open span {
   position: relative;
   z-index: 1;
 }
+.form-header-row .section-title {
+  margin-bottom: 14px;
+}
 .qr-toggle-btn {
   display: inline-flex;
   align-items: center;
@@ -1966,11 +1969,127 @@ nav.scrolled .nav-toggle.open span {
   background: var(--gold-light);
 }
 
+/* UPDATES */
+.updates {
+  background: var(--surface-strong);
+}
+.updates .section-body {
+  max-width: 620px;
+  margin-top: -4px;
+}
+.updates-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+.update-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 26px 24px;
+  transition:
+    transform 0.25s,
+    border-color 0.25s,
+    box-shadow 0.25s;
+  box-shadow: 0 16px 40px rgba(4, 9, 26, 0.16);
+}
+.update-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(245, 196, 0, 0.35);
+  box-shadow: 0 24px 52px rgba(4, 9, 26, 0.22);
+}
+.update-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.update-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: rgba(212, 160, 23, 0.14);
+  color: var(--gold-light);
+  white-space: nowrap;
+}
+.update-tag.community {
+  background: rgba(37, 211, 102, 0.14);
+  color: #6ee7a0;
+}
+.update-tag.event {
+  background: rgba(37, 88, 184, 0.2);
+  color: #8fb4ff;
+}
+.update-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.update-date-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+.update-card h3 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+  line-height: 1.15;
+}
+.update-card p {
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.75;
+  flex: 1;
+}
+.update-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  color: var(--gold-light);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: gap 0.2s ease;
+}
+.update-card-link::after {
+  content: "→";
+  transition: transform 0.2s ease;
+}
+.update-card-link:hover::after {
+  transform: translateX(4px);
+}
+
 /* REGISTRATION */
 .registration {
   background: var(--blue-dark);
   position: relative;
   overflow: hidden;
+  padding: 72px 5%;
 }
 .registration::before {
   content: "";
@@ -1985,29 +2104,29 @@ nav.scrolled .nav-toggle.open span {
 .reg-inner {
   display: grid;
   grid-template-columns: 1fr;
-  max-width: 640px;
+  max-width: 600px;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 40px;
+  margin-top: 28px;
   position: relative;
   z-index: 1;
 }
 .reg-form-wrap {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 40px 36px;
+  border-radius: 22px;
+  padding: 28px 26px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 .cloudwatch-panel {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: 158px minmax(0, 1fr);
+  gap: 20px;
   align-items: center;
-  margin-bottom: 28px;
-  padding: 24px;
-  border-radius: 22px;
+  margin-bottom: 20px;
+  padding: 18px;
+  border-radius: 20px;
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0.1),
@@ -2018,17 +2137,17 @@ nav.scrolled .nav-toggle.open span {
 }
 .cloudwatch-stage {
   position: relative;
-  height: 180px;
-  width: 220px;
+  height: 130px;
+  width: 158px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .cloudwatch-copy {
   font-family: "Cormorant Garamond", serif;
-  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
   font-weight: 700;
-  line-height: 1.05;
+  line-height: 1.1;
   color: white;
   max-width: 320px;
 }
@@ -2038,8 +2157,8 @@ nav.scrolled .nav-toggle.open span {
 .cloudwatch-stage::before {
   content: "";
   position: absolute;
-  width: 220px;
-  height: 220px;
+  width: 158px;
+  height: 158px;
   border-radius: 50%;
   background: radial-gradient(
     circle,
@@ -2051,19 +2170,19 @@ nav.scrolled .nav-toggle.open span {
 .cloudwatch-shadow {
   position: absolute;
   left: 50%;
-  bottom: 18px;
-  width: 176px;
-  height: 24px;
+  bottom: 13px;
+  width: 127px;
+  height: 17px;
   transform: translateX(-50%);
   border-radius: 999px;
   background: rgba(5, 10, 28, 0.24);
-  filter: blur(10px);
+  filter: blur(8px);
 }
 .cloudwatch-avatar {
   position: relative;
-  width: 208px;
-  height: 132px;
-  border-radius: 44px;
+  width: 150px;
+  height: 95px;
+  border-radius: 32px;
   background: linear-gradient(180deg, #fff8e1 0%, #f7d98e 52%, #eda65b 100%);
   border: 1px solid rgba(212, 160, 23, 0.24);
   box-shadow: 0 22px 48px rgba(86, 43, 8, 0.24);
@@ -2078,35 +2197,35 @@ nav.scrolled .nav-toggle.open span {
   border: 1px solid rgba(212, 160, 23, 0.24);
 }
 .cloudwatch-avatar::before {
-  top: -26px;
-  left: 22px;
-  width: 78px;
-  height: 78px;
+  top: -19px;
+  left: 16px;
+  width: 56px;
+  height: 56px;
 }
 .cloudwatch-avatar::after {
-  top: -30px;
-  right: 22px;
-  width: 84px;
-  height: 84px;
+  top: -22px;
+  right: 16px;
+  width: 60px;
+  height: 60px;
 }
 .cloudwatch-cap {
-  top: -38px;
+  top: -27px;
   left: 50%;
-  width: 96px;
-  height: 96px;
+  width: 69px;
+  height: 69px;
   transform: translateX(-50%);
 }
 .cloudwatch-face {
   position: absolute;
   left: 50%;
-  top: 44px;
-  width: 156px;
-  height: 76px;
+  top: 32px;
+  width: 112px;
+  height: 55px;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: 20px;
   border-radius: 999px;
   background: linear-gradient(180deg, #fff8e8 0%, #f6d8a4 100%);
   border: 1px solid rgba(212, 160, 23, 0.2);
@@ -2116,8 +2235,8 @@ nav.scrolled .nav-toggle.open span {
 }
 .cloudwatch-eye {
   position: relative;
-  width: 30px;
-  height: 34px;
+  width: 22px;
+  height: 24px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -2131,9 +2250,9 @@ nav.scrolled .nav-toggle.open span {
     background-color 0.15s ease;
 }
 .cloudwatch-pupil {
-  width: 13px;
-  height: 13px;
-  margin-bottom: 5px;
+  width: 9px;
+  height: 9px;
+  margin-bottom: 4px;
   border-radius: 50%;
   background: #5a3311;
   transform: translate(0px, 0px);
@@ -2145,11 +2264,11 @@ nav.scrolled .nav-toggle.open span {
 .cloudwatch-mouth {
   position: absolute;
   left: 50%;
-  bottom: 14px;
-  width: 42px;
-  height: 20px;
+  bottom: 10px;
+  width: 30px;
+  height: 14px;
   transform: translateX(-50%);
-  border: 3px solid rgba(142, 83, 24, 0.78);
+  border: 2px solid rgba(142, 83, 24, 0.78);
   border-top: 0;
   border-radius: 0 0 42px 42px;
   opacity: 0.8;
@@ -2202,13 +2321,13 @@ nav.scrolled .nav-toggle.open span {
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 14px;
 }
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 6px;
+  margin-bottom: 14px;
 }
 .form-group label {
   font-size: 10px;
@@ -2223,7 +2342,7 @@ nav.scrolled .nav-toggle.open span {
   background: rgba(255, 255, 255, 0.07);
   border: 1.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
-  padding: 13px 16px;
+  padding: 11px 14px;
   font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 14px;
   color: white;
@@ -2254,11 +2373,11 @@ nav.scrolled .nav-toggle.open span {
 }
 .form-group textarea {
   resize: vertical;
-  min-height: 96px;
+  min-height: 72px;
 }
 .form-submit-btn {
   width: 100%;
-  padding: 16px;
+  padding: 14px;
   background: linear-gradient(135deg, #f5c400, #d4a017);
   color: #0f1524;
   border: none;
