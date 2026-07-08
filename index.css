@@ -2041,11 +2041,13 @@ nav.scrolled .nav-toggle.open span {
 }
 .reg-inner {
   display: grid;
-  grid-template-columns: 1fr;
-  max-width: 600px;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 56px;
+  align-items: center;
+  max-width: 1100px;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 18px;
+  margin-top: 0;
   position: relative;
   z-index: 1;
 }
