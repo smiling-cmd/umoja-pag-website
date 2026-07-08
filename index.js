@@ -564,3 +564,88 @@ function resetForm() {
     successText.textContent =
       "Thank you for registering. Our team will be in touch shortly. God bless you!";
 }
+
+// ── GALLERY LIGHTBOX ───────────────────────────────────────
+(function () {
+  const imgs = Array.from(document.querySelectorAll("#gallery img"));
+  if (!imgs.length) return;
+
+  // create lightbox markup
+  const lb = document.createElement("div");
+  lb.className = "lightbox hidden";
+  lb.innerHTML = `
+    <button class="close" aria-label="Close">✕</button>
+    <button class="nav prev" aria-label="Previous">❮</button>
+    <img src="" alt="" />
+    <button class="nav next" aria-label="Next">❯</button>
+  `;
+  document.body.appendChild(lb);
+
+  const lbImg = lb.querySelector("img");
+  const btnClose = lb.querySelector(".close");
+  const btnPrev = lb.querySelector(".prev");
+  const btnNext = lb.querySelector(".next");
+
+  let current = 0;
+
+  function show(index) {
+    current = (index + imgs.length) % imgs.length;
+    const el = imgs[current];
+    lbImg.src = el.src;
+    lbImg.alt = el.alt || "Gallery image";
+    lb.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+    btnClose.focus();
+  }
+
+  function hide() {
+    lb.classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+
+  imgs.forEach((img, i) => {
+    img.addEventListener("click", () => show(i));
+  });
+
+  btnClose.addEventListener("click", hide);
+  btnPrev.addEventListener("click", () => show(current - 1));
+  btnNext.addEventListener("click", () => show(current + 1));
+  lb.addEventListener("click", (e) => {
+    if (e.target === lb) hide();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (lb.classList.contains("hidden")) return;
+    if (e.key === "Escape") hide();
+    if (e.key === "ArrowLeft") show(current - 1);
+    if (e.key === "ArrowRight") show(current + 1);
+  });
+})();
+
+// Keep aria-current in sync with the visible `.active` nav link
+(function () {
+  const navLinks = document.querySelectorAll(".nav-links a");
+  if (!navLinks.length) return;
+
+  function syncAria() {
+    navLinks.forEach((a) => a.removeAttribute("aria-current"));
+    const active = document.querySelector(".nav-links a.active");
+    if (active) active.setAttribute("aria-current", "page");
+  }
+
+  // light-weight throttle
+  let t = 0;
+  function throttledSync() {
+    const now = Date.now();
+    if (now - t > 120) {
+      t = now;
+      syncAria();
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", syncAria);
+  window.addEventListener("scroll", throttledSync, { passive: true });
+  document.getElementById("navLinks")?.addEventListener("click", () => {
+    // small delay to allow other handlers to toggle `.active`
+    setTimeout(syncAria, 40);
+  });
+})();
