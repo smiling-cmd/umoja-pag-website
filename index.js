@@ -463,7 +463,7 @@ async function submitForm() {
     }
   } catch (e) {
     saveRegistrationDraft(payload);
-    err.innerHTML = 'Could not send your registration online. Your details were saved on this device, but please also reach us directly so we don\'t miss you: <a href="tel:+254796752298" style="color:#fecaca;text-decoration:underline;">call 0796 752 298</a> or <a href="mailto:smilesyvonne35@gmail.com" style="color:#fecaca;text-decoration:underline;">email us</a>.';
+    err.innerHTML = 'Could not send your registration online. Your details were saved on this device, but please also reach us directly so we don\'t miss you: <a href="tel:+254796752298" style="color:#fecaca;text-decoration:underline;">call 0796 752 298</a> or <a href="mailto:info@umojapagchurch.org" style="color:#fecaca;text-decoration:underline;">email us</a>.';
     err.style.display = "block";
     console.error("Formspree submission error:", e);
   } finally {
