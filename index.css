@@ -2188,6 +2188,7 @@ nav.scrolled .nav-toggle.open span {
 .lightbox img {
   max-width: 94%;
   max-height: 86vh;
+  object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 28px 84px rgba(0, 0, 0, 0.75);
 }
