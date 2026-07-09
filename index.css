@@ -1234,6 +1234,8 @@ nav.scrolled .nav-toggle.open span {
   display: block;
   transform: scale(1.08);
   animation: ministryImageDrift 20s ease-in-out infinite alternate;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 .ministry-card-media::after {
   content: "";
