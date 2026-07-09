@@ -2857,8 +2857,11 @@ footer::before {
     grid-template-columns: 1fr;
     gap: 36px;
   }
-  .school-highlight-media img {
-    height: 260px;
+  .school-photo-top img {
+    height: 240px;
+  }
+  .school-photo-bottom img {
+    height: 180px;
   }
   .hero {
     align-items: flex-start;
