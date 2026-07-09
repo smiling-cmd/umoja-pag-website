@@ -639,7 +639,9 @@ nav.scrolled .nav-toggle.open span {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.6s;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  backface-visibility: hidden;
+  will-change: transform;
 }
 .about-img-main:hover img {
   transform: scale(1.04);
@@ -905,7 +907,9 @@ nav.scrolled .nav-toggle.open span {
   object-position: center;
   background: #0b1019;
   display: block;
-  transition: transform 0.5s ease;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  backface-visibility: hidden;
+  will-change: transform;
 }
 .school-photo-top:hover img {
   transform: scale(1.04);
@@ -915,7 +919,7 @@ nav.scrolled .nav-toggle.open span {
   overflow: hidden;
   box-shadow: 0 16px 40px rgba(0,0,0,0.45);
   transform: translateX(28px) rotate(1.2deg);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
   border: 4px solid rgba(255,255,255,0.08);
 }
 .school-photo-bottom:hover {
@@ -928,7 +932,9 @@ nav.scrolled .nav-toggle.open span {
   object-fit: cover;
   object-position: center 30%;
   display: block;
-  transition: transform 0.5s ease;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  backface-visibility: hidden;
+  will-change: transform;
 }
 .school-photo-bottom:hover img {
   transform: scale(1.04);
