@@ -14,24 +14,34 @@ window.addEventListener(
   const sections = Array.from(document.querySelectorAll("section[id]"));
   if (!sections.length || !links.length) return;
 
-  // rootMargin: push the top boundary down by navbar height so the
-  // section is only "active" once it clears the fixed navbar.
   const navH = navbar ? navbar.offsetHeight : 80;
   const io = new IntersectionObserver(
     (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        links.forEach((a) => {
-          a.classList.toggle(
-            "active",
-            a.getAttribute("href") === "#" + entry.target.id,
-          );
-        });
+      function visibleHeight(el) {
+        const r = el.getBoundingClientRect();
+        const vh = window.innerHeight || document.documentElement.clientHeight;
+        const top = Math.max(0, r.top);
+        const bottom = Math.min(vh, r.bottom);
+        return Math.max(0, bottom - top);
+      }
+
+      let best = null;
+      let bestScore = 0;
+      sections.forEach((s) => {
+        const score = visibleHeight(s);
+        if (score > bestScore) {
+          bestScore = score;
+          best = s;
+        }
+      });
+      if (!best) return;
+      links.forEach((a) => {
+        a.classList.toggle("active", a.getAttribute("href") === "#" + best.id);
       });
     },
     {
-      rootMargin: `-${navH + 4}px 0px -55% 0px`,
-      threshold: 0,
+      rootMargin: `-${navH + 4}px 0px -40% 0px`,
+      threshold: Array.from({ length: 21 }, (_, i) => i / 20),
     },
   );
   sections.forEach((s) => io.observe(s));
@@ -97,122 +107,6 @@ if (heroDirectionsLink && directionsCard) {
     directionsCard.open = true;
   });
 }
-
-// ── MINISTRY CATALOGUE CAROUSEL ───────────────────────────────
-(function () {
-  const track = document.getElementById("catTrack");
-  const window_ = document.getElementById("catWindow");
-  const prevBtn = document.getElementById("catPrev");
-  const nextBtn = document.getElementById("catNext");
-  const dotsWrap = document.getElementById("catDots");
-  const catalogue = document.getElementById("ministryCatalogue");
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  if (!track || !window_ || !prevBtn || !nextBtn || !dotsWrap || !catalogue)
-    return;
-
-  const cards = Array.from(track.children);
-  const GAP = 18;
-  let currentPage = 0;
-  let dots = [];
-  let pageCount = 1;
-  let cardsPerView = 1;
-  let autoTimer = null;
-
-  function getCardsPerView() {
-    if (window.innerWidth <= 640) return 1;
-    if (window.innerWidth <= 900) return 2;
-    return 3;
-  }
-
-  function buildDots() {
-    dotsWrap.innerHTML = "";
-    dots = [];
-    pageCount = Math.max(1, Math.ceil(cards.length / cardsPerView));
-    for (let i = 0; i < pageCount; i += 1) {
-      const d = document.createElement("button");
-      d.className = "catalogue-dot" + (i === currentPage ? " active" : "");
-      d.setAttribute("aria-label", "Go to showcase page " + (i + 1));
-      d.addEventListener("click", () => {
-        goTo(i);
-        restartAuto();
-      });
-      dotsWrap.appendChild(d);
-      dots.push(d);
-    }
-  }
-
-  function maxOffset() {
-    return Math.max(0, track.scrollWidth - window_.clientWidth);
-  }
-
-  function pageOffset(page) {
-    const firstCard = cards[0];
-    if (!firstCard) return 0;
-    const step = firstCard.offsetWidth + GAP;
-    return Math.min(page * step * cardsPerView, maxOffset());
-  }
-
-  function goTo(page) {
-    currentPage = ((page % pageCount) + pageCount) % pageCount;
-    track.style.transform = `translateX(-${pageOffset(currentPage)}px)`;
-    dots.forEach((d, i) => d.classList.toggle("active", i === currentPage));
-  }
-
-  function stopAuto() {
-    if (autoTimer) {
-      clearInterval(autoTimer);
-      autoTimer = null;
-    }
-  }
-
-  function restartAuto() {
-    stopAuto();
-    if (reducedMotion.matches || pageCount <= 1) return;
-    autoTimer = window.setInterval(() => goTo(currentPage + 1), 4200);
-  }
-
-  function refreshCarousel() {
-    cardsPerView = getCardsPerView();
-    catalogue.style.setProperty("--catalog-columns", String(cardsPerView));
-    currentPage = Math.min(
-      currentPage,
-      Math.max(0, Math.ceil(cards.length / cardsPerView) - 1),
-    );
-    buildDots();
-    goTo(currentPage);
-    restartAuto();
-  }
-
-  prevBtn.addEventListener("click", () => {
-    goTo(currentPage - 1);
-    restartAuto();
-  });
-  nextBtn.addEventListener("click", () => {
-    goTo(currentPage + 1);
-    restartAuto();
-  });
-
-  window_.tabIndex = 0;
-  window_.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") {
-      goTo(currentPage - 1);
-      restartAuto();
-    }
-    if (e.key === "ArrowRight") {
-      goTo(currentPage + 1);
-      restartAuto();
-    }
-  });
-
-  catalogue.addEventListener("mouseenter", stopAuto);
-  catalogue.addEventListener("mouseleave", restartAuto);
-  catalogue.addEventListener("focusin", stopAuto);
-  catalogue.addEventListener("focusout", restartAuto);
-  reducedMotion.addEventListener("change", refreshCarousel);
-
-  refreshCarousel();
-  window.addEventListener("resize", refreshCarousel, { passive: true });
-})();
 
 // ── CLOUDWATCH (eye-follower) ─────────────────────────────────
 const cloudwatchAvatar = document.getElementById("cloudwatchAvatar");
@@ -322,8 +216,11 @@ if (cloudwatchAvatar) {
 }
 
 // ── QR CODE ───────────────────────────────────────────────────
-// Use a stored public base URL when available so the QR points to a
-// reachable HTTP(S) address instead of a local file:// URL.
+// Default public site URL. Used whenever no per-browser override has been
+// set via "Set public URL for QR" and we're not already being served from
+// a real http(s) origin. Update this if the production domain changes.
+const DEFAULT_SITE_BASE = "https://umojapagchurch.org";
+
 function getSiteBase() {
   try {
     const stored = localStorage.getItem("umoja_site_base");
@@ -333,7 +230,7 @@ function getSiteBase() {
     if (location.protocol && location.protocol.startsWith("http"))
       return location.origin + location.pathname;
   } catch (e) {}
-  return null;
+  return DEFAULT_SITE_BASE;
 }
 
 function setSiteUrl() {
@@ -383,6 +280,33 @@ function renderQRCode() {
 
 // regenerate QR on load
 renderQRCode();
+
+// ── QR CODE MODAL (toggled via "Get QR Code to Print" button) ──
+(function () {
+  const toggleBtn = document.getElementById("qrToggleBtn");
+  const overlay = document.getElementById("qrModalOverlay");
+  const closeBtn = document.getElementById("qrModalClose");
+  if (!toggleBtn || !overlay || !closeBtn) return;
+
+  function openQrModal() {
+    overlay.classList.add("open");
+    closeBtn.focus();
+  }
+  function closeQrModal() {
+    overlay.classList.remove("open");
+    toggleBtn.focus();
+  }
+
+  toggleBtn.addEventListener("click", openQrModal);
+  closeBtn.addEventListener("click", closeQrModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeQrModal();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("open"))
+      closeQrModal();
+  });
+})();
 
 function shareWhatsApp() {
   const regUrl = buildRegUrl();
@@ -539,7 +463,7 @@ async function submitForm() {
     }
   } catch (e) {
     saveRegistrationDraft(payload);
-    err.textContent = "Could not send your registration. Please try again or contact us directly.";
+    err.innerHTML = 'Could not send your registration online. Your details were saved on this device, but please also reach us directly so we don\'t miss you: <a href="tel:+254796752298" style="color:#fecaca;text-decoration:underline;">call 0796 752 298</a> or <a href="mailto:info@umojapagchurch.org" style="color:#fecaca;text-decoration:underline;">email us</a>.';
     err.style.display = "block";
     console.error("Formspree submission error:", e);
   } finally {
@@ -548,7 +472,6 @@ async function submitForm() {
   }
 }
 
-// FIX: removed broken fragment line ['ageGroup','regFor'].forE
 function resetForm() {
   ["firstName", "lastName", "phone", "email", "area", "notes"].forEach((id) => {
     document.getElementById(id).value = "";
@@ -564,3 +487,166 @@ function resetForm() {
     successText.textContent =
       "Thank you for registering. Our team will be in touch shortly. God bless you!";
 }
+
+// ── GALLERY LIGHTBOX ───────────────────────────────────────
+(function () {
+  const imgs = Array.from(document.querySelectorAll("#gallery img"));
+  if (!imgs.length) return;
+
+  const lb = document.createElement("div");
+  lb.className = "lightbox hidden";
+  lb.innerHTML = `
+    <button class="close" aria-label="Close">✕</button>
+    <button class="nav prev" aria-label="Previous">❮</button>
+    <img src="" alt="" />
+    <button class="nav next" aria-label="Next">❯</button>
+  `;
+  document.body.appendChild(lb);
+
+  const lbImg = lb.querySelector("img");
+  const btnClose = lb.querySelector(".close");
+  const btnPrev = lb.querySelector(".prev");
+  const btnNext = lb.querySelector(".next");
+
+  let current = 0;
+
+  function show(index) {
+    current = (index + imgs.length) % imgs.length;
+    const el = imgs[current];
+    lbImg.src = el.src;
+    lbImg.alt = el.alt || "Gallery image";
+    lb.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+    btnClose.focus();
+  }
+
+  function hide() {
+    lb.classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+
+  imgs.forEach((img, i) => {
+    img.addEventListener("click", () => show(i));
+  });
+
+  btnClose.addEventListener("click", hide);
+  btnPrev.addEventListener("click", () => show(current - 1));
+  btnNext.addEventListener("click", () => show(current + 1));
+  lb.addEventListener("click", (e) => {
+    if (e.target === lb) hide();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (lb.classList.contains("hidden")) return;
+    if (e.key === "Escape") hide();
+    if (e.key === "ArrowLeft") show(current - 1);
+    if (e.key === "ArrowRight") show(current + 1);
+  });
+})();
+
+// Keep aria-current in sync with the visible `.active` nav link
+(function () {
+  const navLinks = document.querySelectorAll(".nav-links a");
+  if (!navLinks.length) return;
+
+  function syncAria() {
+    navLinks.forEach((a) => a.removeAttribute("aria-current"));
+    const active = document.querySelector(".nav-links a.active");
+    if (active) active.setAttribute("aria-current", "page");
+  }
+
+  let t = 0;
+  function throttledSync() {
+    const now = Date.now();
+    if (now - t > 120) {
+      t = now;
+      syncAria();
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", syncAria);
+  window.addEventListener("scroll", throttledSync, { passive: true });
+  document.getElementById("navLinks")?.addEventListener("click", () => {
+    setTimeout(syncAria, 40);
+  });
+})();
+
+// Initial on-load active-link check
+(function () {
+  const links = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  if (!links.length || !sections.length) return;
+
+  function computeVisibleSize(rect) {
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const top = Math.max(0, rect.top);
+    const bottom = Math.min(vh, rect.bottom);
+    return Math.max(0, bottom - top) * rect.width;
+  }
+
+  function setActiveByVisibility() {
+    let best = null;
+    let bestScore = 0;
+    sections.forEach((s) => {
+      const r = s.getBoundingClientRect();
+      const score = computeVisibleSize(r);
+      if (score > bestScore) {
+        bestScore = score;
+        best = s;
+      }
+    });
+    if (best) {
+      links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + best.id));
+      document.querySelectorAll('.nav-links a').forEach((a) => a.removeAttribute('aria-current'));
+      const active = document.querySelector('.nav-links a.active');
+      if (active) active.setAttribute('aria-current', 'page');
+    }
+  }
+
+  window.addEventListener('load', () => setTimeout(setActiveByVisibility, 80));
+  window.addEventListener('resize', () => setTimeout(setActiveByVisibility, 120));
+})();
+
+// Sliding nav underline indicator
+(function () {
+  const navLinksEl = document.getElementById("navLinks");
+  if (!navLinksEl) return;
+
+  const indicator = document.createElement("div");
+  indicator.className = "nav-indicator";
+  navLinksEl.appendChild(indicator);
+
+  function updateIndicator() {
+    const active = navLinksEl.querySelector("a.active");
+    if (!active) {
+      indicator.style.opacity = "0";
+      return;
+    }
+    const linkRect = active.getBoundingClientRect();
+    const containerRect = navLinksEl.getBoundingClientRect();
+    const targetWidth = Math.max(18, Math.round(linkRect.width * 0.5));
+    const x = Math.round(linkRect.left - containerRect.left + (linkRect.width - targetWidth) / 2);
+    indicator.style.width = targetWidth + "px";
+    indicator.style.transform = `translateX(${x}px)`;
+    indicator.style.opacity = "1";
+  }
+
+  let last = 0;
+  function throttled() {
+    const now = Date.now();
+    if (now - last > 80) {
+      last = now;
+      updateIndicator();
+    }
+  }
+
+  window.addEventListener("resize", throttled);
+  window.addEventListener("scroll", throttled, { passive: true });
+  window.addEventListener("load", () => setTimeout(updateIndicator, 60));
+  document.addEventListener("DOMContentLoaded", () => setTimeout(updateIndicator, 20));
+  navLinksEl.addEventListener("click", () => setTimeout(updateIndicator, 60));
+
+  const mo = new MutationObserver(() => setTimeout(updateIndicator, 24));
+  mo.observe(navLinksEl, { subtree: true, attributes: true, attributeFilter: ["class"] });
+
+  setTimeout(updateIndicator, 120);
+})();
