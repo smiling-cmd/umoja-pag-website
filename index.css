@@ -1381,7 +1381,7 @@ nav.scrolled .nav-toggle.open span {
 }
 .project-card {
   min-height: 248px;
-  padding: 28px;
+  padding: 0;
   border-radius: 20px;
   background: var(--surface-strong);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -1389,10 +1389,28 @@ nav.scrolled .nav-toggle.open span {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
   transition:
     transform 0.25s ease,
     border-color 0.25s ease,
     box-shadow 0.25s ease;
+}
+.project-card-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.project-card:hover .project-card-img {
+  transform: scale(1.04);
+}
+.project-card-body {
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
 }
 .project-card:hover {
   transform: translateY(-4px);
@@ -1426,7 +1444,7 @@ nav.scrolled .nav-toggle.open span {
   font-weight: 700;
   line-height: 1.05;
   color: var(--blue-dark);
-  margin: 24px 0 12px;
+  margin: 12px 0 12px;
 }
 .project-card p {
   font-size: 13px;
