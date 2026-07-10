@@ -1,5 +1,6 @@
 let token = localStorage.getItem('umoja_admin_token');
   let currentPage = 1;
+  let currentMembers = []; // holds the most recently loaded registration rows, so the edit modal can look up a row's data without a second API call
   let searchTimer;
   const loginPass = document.getElementById('loginPass');
   const loginWatcher = document.getElementById('loginWatcher');
@@ -145,6 +146,7 @@ let token = localStorage.getItem('umoja_admin_token');
 
     try {
       const data = await api('/api/admin/registrations?' + params);
+      currentMembers = data.registrations;
       if (!data.registrations.length) {
         tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">🔍</div><div>No registrations found</div></div></td></tr>';
         document.getElementById('pagination').innerHTML = '';
@@ -167,7 +169,10 @@ let token = localStorage.getItem('umoja_admin_token');
             </select>
           </td>
           <td style="font-size:12px;color:var(--muted)">${r.created_at.split(' ')[0]}</td>
-          <td><button class="delete-btn" onclick="deleteReg(${r.id},'${r.first_name} ${r.last_name}')" title="Delete">🗑</button></td>
+          <td>
+            <button class="edit-btn" onclick="openEditModal(${r.id})" title="Edit">✎</button>
+            <button class="delete-btn" onclick="deleteReg(${r.id},'${r.first_name} ${r.last_name}')" title="Delete">🗑</button>
+          </td>
         </tr>
       `).join('');
 
@@ -201,6 +206,62 @@ let token = localStorage.getItem('umoja_admin_token');
       loadMembers();
       loadStats();
     } catch(e) { alert('Failed to delete: ' + e.message); }
+  }
+
+  // ── Edit Modal ───────────────────────────────────────────
+  function openEditModal(id) {
+    const reg = currentMembers.find(r => r.id === id);
+    if (!reg) { alert('Could not find that registration — try refreshing.'); return; }
+
+    document.getElementById('editId').value        = reg.id;
+    document.getElementById('editFirstName').value = reg.first_name || '';
+    document.getElementById('editLastName').value  = reg.last_name  || '';
+    document.getElementById('editEmail').value     = reg.email      || '';
+    document.getElementById('editPhone').value     = reg.phone      || '';
+    document.getElementById('editArea').value      = reg.area       || '';
+    document.getElementById('editRegFor').value    = reg.reg_for    || '';
+    document.getElementById('editAgeGroup').value  = reg.age_group  || '';
+    document.getElementById('editNotes').value     = reg.notes      || '';
+
+    document.getElementById('editError').style.display = 'none';
+    document.getElementById('editModalOverlay').style.display = 'flex';
+  }
+
+  function closeEditModal() {
+    document.getElementById('editModalOverlay').style.display = 'none';
+  }
+
+  async function saveEditModal() {
+    const id = document.getElementById('editId').value;
+    const errEl = document.getElementById('editError');
+    errEl.style.display = 'none';
+
+    const payload = {
+      first_name: document.getElementById('editFirstName').value.trim(),
+      last_name:  document.getElementById('editLastName').value.trim(),
+      email:      document.getElementById('editEmail').value.trim(),
+      phone:      document.getElementById('editPhone').value.trim(),
+      area:       document.getElementById('editArea').value.trim(),
+      reg_for:    document.getElementById('editRegFor').value,
+      age_group:  document.getElementById('editAgeGroup').value.trim(),
+      notes:      document.getElementById('editNotes').value.trim(),
+    };
+
+    if (!payload.first_name || !payload.last_name || !payload.phone) {
+      errEl.textContent = 'First name, last name, and phone are required.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      await api(`/api/admin/registrations/${id}`, 'PUT', payload);
+      closeEditModal();
+      loadMembers();
+      loadStats();
+    } catch (e) {
+      errEl.textContent = e.message || 'Failed to save changes.';
+      errEl.style.display = 'block';
+    }
   }
 
   async function exportCSV() {

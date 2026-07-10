@@ -153,5 +153,57 @@
 
 <script src="admin.js"></script>
 
-</body>
-</html>
+<!-- EDIT REGISTRATION MODAL -->
+<div class="modal-overlay" id="editModalOverlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Edit Registration</div>
+      <button class="modal-close" onclick="closeEditModal()" title="Close">✕</button>
+    </div>
+
+    <input type="hidden" id="editId">
+
+    <div class="modal-grid">
+      <div class="login-group">
+        <label for="editFirstName">First Name</label>
+        <input type="text" id="editFirstName">
+      </div>
+      <div class="login-group">
+        <label for="editLastName">Last Name</label>
+        <input type="text" id="editLastName">
+      </div>
+      <div class="login-group">
+        <label for="editEmail">Email</label>
+        <input type="email" id="editEmail">
+      </div>
+      <div class="login-group">
+        <label for="editPhone">Phone</label>
+        <input type="text" id="editPhone">
+      </div>
+      <div class="login-group">
+        <label for="editArea">Area</label>
+        <input type="text" id="editArea">
+      </div>
+      <div class="login-group">
+        <label for="editRegFor">Ministry</label>
+        <select id="editRegFor" class="filter-input" style="width:100%">
+          <option>New Member Registration</option>
+          <option>Worship Team</option>
+          <option>Choir</option>
+          <option>Media Team</option>
+          <option>Sunday School (Junior)</option>
+          <option>Sunday School (Senior)</option>
+          <option>Sunday School (Teens)</option>
+          <option>Cell Group</option>
+          <option>General Church Activity</option>
+        </select>
+      </div>
+      <div class="login-group">
+        <label for="editAgeGroup">Age Group</label>
+        <input type="text" id="editAgeGroup">
+      </div>
+      <div class="login-group modal-grid-full">
+        <label for="editNotes">Notes</label>
+        <textarea id="editNotes" rows="3"></textarea>
+      </div>
+    </div>
