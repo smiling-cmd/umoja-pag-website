@@ -364,11 +364,18 @@ let token = localStorage.getItem('umoja_admin_token');
   async function loadAnalytics() {
     try {
       const data = await api('/api/admin/stats');
-      const rows = data.byMonth.map(r => ({ ...r, label: r.month }));
-      renderBars('monthChart', rows, 'label');
+
+      const monthRows = data.byMonth.map(r => ({ ...r, label: r.month }));
+      renderBars('monthChart', monthRows, 'label');
+
+      const statusLabels = { pending: '⏳ Pending', contacted: '📞 Contacted', active: '✅ Active', inactive: '⛔ Inactive' };
+      const statusRows = data.byStatus.map(r => ({ ...r, label: statusLabels[r.status] || r.status }));
+      renderBars('statusChart', statusRows, 'label');
+
+      const ageRows = data.byAgeGroup.map(r => ({ ...r, label: r.age_group }));
+      renderBars('ageChart', ageRows, 'label');
     } catch(e) { console.error(e); }
   }
-
   // ── Init ─────────────────────────────────────────────────
   window.addEventListener('load', () => {
     if (token) {

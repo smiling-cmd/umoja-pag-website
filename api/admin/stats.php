@@ -37,6 +37,31 @@ try {
          ORDER BY count DESC"
     )->fetchAll(PDO::FETCH_ASSOC);
 
+    // Registrations grouped by month, last 12 months, oldest to newest
+    $byMonth = $pdo->query(
+        "SELECT DATE_FORMAT(created_at, '%b %Y') AS month, COUNT(*) AS count
+         FROM registrations
+         WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+         GROUP BY DATE_FORMAT(created_at, '%Y-%m'), month
+         ORDER BY DATE_FORMAT(created_at, '%Y-%m') ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+
+    // Registrations grouped by status, in pipeline order
+    $byStatus = $pdo->query(
+        "SELECT status, COUNT(*) AS count
+         FROM registrations
+         GROUP BY status
+         ORDER BY FIELD(status, 'pending', 'contacted', 'active', 'inactive')"
+    )->fetchAll(PDO::FETCH_ASSOC);
+
+    // Registrations grouped by age group
+    $byAgeGroup = $pdo->query(
+        "SELECT age_group, COUNT(*) AS count
+         FROM registrations
+         GROUP BY age_group
+         ORDER BY count DESC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+
     echo json_encode([
         'success' => true,
         'stats' => [
@@ -47,6 +72,9 @@ try {
         ],
         'byMinistry' => $byMinistry,
         'byArea'     => $byArea,
+        'byMonth'    => $byMonth,
+        'byStatus'   => $byStatus,
+        'byAgeGroup' => $byAgeGroup,
     ]);
 } catch (PDOException $e) {
     http_response_code(500);

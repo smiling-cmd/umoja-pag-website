@@ -118,6 +118,7 @@ const cloudwatchPrivateFields = ["phone", "email"]
   .map((id) => document.getElementById(id))
   .filter(Boolean);
 const cloudwatchEmailField = document.getElementById("email");
+const cloudwatchPhoneField = document.getElementById("phone");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let cloudwatchBlinkTimeout = null;
 let cloudwatchMessageTimeout = null;
@@ -131,18 +132,39 @@ function shakeCloudwatch() {
   window.setTimeout(() => cloudwatchAvatar.classList.remove("is-shaking"), 900);
 }
 function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
-function handleInvalidEmail() {
-  if (!cloudwatchEmailField) return;
-  cloudwatchEmailField.style.borderColor = "#EF4444";
-  cloudwatchEmailField.focus();
+function normalizePhoneNumber(phone) {
+  const cleaned = phone.replace(/[\s().-]/g, "");
+  if (/^0(7|1)\d{8}$/.test(cleaned)) return "+254" + cleaned.slice(1);
+  if (/^254(7|1)\d{8}$/.test(cleaned)) return "+" + cleaned;
+  return cleaned;
+}
+function isValidPhoneNumber(phone) {
+  return /^\+254(7|1)\d{8}$/.test(normalizePhoneNumber(phone));
+}
+function showFieldError(field, message) {
+  if (!field) return;
+  field.style.borderColor = "#EF4444";
+  field.focus();
   setCloudwatchClosed(false);
   setCloudwatchFrown(true);
   shakeCloudwatch();
-  setCloudwatchMessage("Kindly enter correct details", {
-    resetAfter: 2400,
-  });
+  setCloudwatchMessage(message, { resetAfter: 2600 });
+}
+function clearFieldError(field) {
+  if (!field) return;
+  field.style.borderColor = "";
+  setCloudwatchFrown(false);
+}
+function handleInvalidEmail() {
+  showFieldError(cloudwatchEmailField, "Please enter a valid email address.");
+}
+function handleInvalidPhone() {
+  showFieldError(
+    cloudwatchPhoneField,
+    "Please enter a valid Kenyan phone number.",
+  );
 }
 
 function setCloudwatchClosed(closed) {
@@ -197,10 +219,11 @@ if (cloudwatchAvatar) {
   });
   if (cloudwatchEmailField) {
     cloudwatchEmailField.addEventListener("input", () => {
-      cloudwatchEmailField.style.borderColor = "";
+      clearFieldError(cloudwatchEmailField);
       if (
         cloudwatchCopy &&
-        cloudwatchCopy.textContent.trim() === "Kindly enter correct details"
+        cloudwatchCopy.textContent.trim() ===
+          "Please enter a valid email address."
       ) {
         clearTimeout(cloudwatchMessageTimeout);
         cloudwatchCopy.innerHTML = cloudwatchDefaultMessage;
@@ -210,6 +233,15 @@ if (cloudwatchAvatar) {
     cloudwatchEmailField.addEventListener("blur", () => {
       const emailValue = cloudwatchEmailField.value.trim();
       if (emailValue && !isValidEmail(emailValue)) handleInvalidEmail();
+    });
+  }
+  if (cloudwatchPhoneField) {
+    cloudwatchPhoneField.addEventListener("input", () =>
+      clearFieldError(cloudwatchPhoneField),
+    );
+    cloudwatchPhoneField.addEventListener("blur", () => {
+      const phoneValue = cloudwatchPhoneField.value.trim();
+      if (phoneValue && !isValidPhoneNumber(phoneValue)) handleInvalidPhone();
     });
   }
   if (!reduceMotion.matches) window.setInterval(blinkCloudwatch, 3000);
@@ -382,7 +414,7 @@ function getRegistrationPayload() {
   return {
     firstName: document.getElementById("firstName").value.trim(),
     lastName: document.getElementById("lastName").value.trim(),
-    phone: document.getElementById("phone").value.trim(),
+    phone: normalizePhoneNumber(document.getElementById("phone").value.trim()),
     email: document.getElementById("email").value.trim(),
     ageGroup: document.getElementById("ageGroup").value.trim(),
     area: document.getElementById("area").value.trim(),
@@ -416,6 +448,7 @@ async function submitForm() {
   const btn = document.getElementById("submitBtn");
   const err = document.getElementById("formError");
   const emailField = document.getElementById("email");
+  const phoneField = document.getElementById("phone");
   err.style.display = "none";
   for (const id of required) {
     const el = document.getElementById(id);
@@ -437,6 +470,13 @@ async function submitForm() {
       });
       return;
     }
+  }
+  if (!isValidPhoneNumber(phoneField.value.trim())) {
+    err.textContent =
+      "Please enter a valid Kenyan phone number, for example 0700 000 000 or +254 700 000 000.";
+    err.style.display = "block";
+    handleInvalidPhone();
+    return;
   }
   if (emailField.value.trim() && !isValidEmail(emailField.value.trim())) {
     err.textContent = "Please enter a valid email address.";

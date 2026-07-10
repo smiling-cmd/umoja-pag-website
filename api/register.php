@@ -26,6 +26,19 @@ $area      = trim($input['area']      ?? '');
 $regFor    = trim($input['regFor']    ?? '');
 $notes     = trim($input['notes']     ?? '');
 
+function normalizeKenyanPhone(string $phone): string {
+    $cleaned = preg_replace('/[\s().-]+/', '', $phone);
+    if (preg_match('/^0(7|1)\d{8}$/', $cleaned)) {
+        return '+254' . substr($cleaned, 1);
+    }
+    if (preg_match('/^254(7|1)\d{8}$/', $cleaned)) {
+        return '+' . $cleaned;
+    }
+    return $cleaned;
+}
+
+$phone = normalizeKenyanPhone($phone);
+
 // --- Validate required fields ---
 $errors = [];
 if ($firstName === '') $errors[] = 'First name is required';
@@ -37,6 +50,10 @@ if ($area === '')      $errors[] = 'Area is required';
 
 if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $errors[] = 'Email address is invalid';
+}
+
+if ($phone !== '' && !preg_match('/^\+254(7|1)\d{8}$/', $phone)) {
+    $errors[] = 'Phone number is invalid';
 }
 
 if (!empty($errors)) {

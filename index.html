@@ -995,12 +995,21 @@
                 ><input
                   type="tel"
                   id="phone"
+                  inputmode="tel"
+                  autocomplete="tel"
+                  pattern="^(\+?254|0)[\s-]?(7|1)([\s-]?\d){8}$"
+                  title="Use a valid Kenyan number, for example 0700 000 000 or +254 700 000 000"
                   placeholder="+254 700 000 000"
                 />
               </div>
               <div class="form-group">
                 <label for="email">Email Address</label
-                ><input type="email" id="email" placeholder="your@email.com" />
+                ><input
+                  type="email"
+                  id="email"
+                  autocomplete="email"
+                  placeholder="your@email.com"
+                />
               </div>
             </div>
             <div class="form-row">
