@@ -4,6 +4,12 @@ RewriteEngine On
 RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 
+# Route PATCH /api/admin/registrations/{id}/status -> registration_status.php?id={id}
+RewriteRule ^api/admin/registrations/([0-9]+)/status$ api/admin/registration_status.php?id=$1 [L,QSA]
+
+# Route DELETE /api/admin/registrations/{id} -> registration_delete.php?id={id}
+RewriteRule ^api/admin/registrations/([0-9]+)$ api/admin/registration_delete.php?id=$1 [L,QSA]
+
 # Allow requests like /api/auth/login to automatically find login.php
 # without needing the .php extension in the URL.
 RewriteCond %{REQUEST_FILENAME} !-d
