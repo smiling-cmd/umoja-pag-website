@@ -376,7 +376,7 @@ function copyLink() {
 }
 
 // ── REGISTRATION FORM ─────────────────────────────────────────
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/xpqgrdvw";
+const REGISTER_ENDPOINT = "/api/register";
 
 function getRegistrationPayload() {
   return {
@@ -448,24 +448,24 @@ async function submitForm() {
   btn.textContent = "Sending...";
   const payload = getRegistrationPayload();
   try {
-    const res = await fetch(FORMSPREE_ENDPOINT, {
+    const res = await fetch(REGISTER_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    if (res.ok) {
+    if (res.ok && data.success) {
       showRegistrationSuccess(
         "Thank you for registering. Our team will be in touch shortly. God bless you!",
       );
     } else {
-      throw new Error((data.errors || []).map((e) => e.message).join(", ") || "Submission failed.");
+      throw new Error((data.errors || []).join(", ") || data.message || "Submission failed.");
     }
   } catch (e) {
     saveRegistrationDraft(payload);
     err.innerHTML = 'Could not send your registration online. Your details were saved on this device, but please also reach us directly so we don\'t miss you: <a href="tel:+254796752298" style="color:#fecaca;text-decoration:underline;">call 0796 752 298</a> or <a href="mailto:info@umojapagchurch.org" style="color:#fecaca;text-decoration:underline;">email us</a>.';
     err.style.display = "block";
-    console.error("Formspree submission error:", e);
+    console.error("Registration submission error:", e);
   } finally {
     btn.disabled = false;
     btn.textContent = "Submit Registration →";
