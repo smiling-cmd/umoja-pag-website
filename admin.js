@@ -1,6 +1,7 @@
 let token = localStorage.getItem('umoja_admin_token');
   let currentPage = 1;
   let currentMembers = []; // holds the most recently loaded registration rows, so the edit modal can look up a row's data without a second API call
+  let selectedIds = new Set(); // tracks which registration ids are checked for bulk actions
   let searchTimer;
   const loginPass = document.getElementById('loginPass');
   const loginWatcher = document.getElementById('loginWatcher');
@@ -142,18 +143,21 @@ let token = localStorage.getItem('umoja_admin_token');
     if (status)  params.set('status',  status);
 
     const tbody = document.getElementById('membersTable');
-    tbody.innerHTML = '<tr><td colspan="9" class="loading">Loading...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="loading">Loading...</td></tr>';
+    selectedIds.clear();
+    updateBulkBar();
 
     try {
       const data = await api('/api/admin/registrations?' + params);
       currentMembers = data.registrations;
       if (!data.registrations.length) {
-        tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">🔍</div><div>No registrations found</div></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><div class="icon">🔍</div><div>No registrations found</div></div></td></tr>';
         document.getElementById('pagination').innerHTML = '';
         return;
       }
       tbody.innerHTML = data.registrations.map(r => `
         <tr>
+          <td><input type="checkbox" class="row-check" data-id="${r.id}" onchange="toggleSelect(${r.id}, this)" ${selectedIds.has(r.id) ? 'checked' : ''}></td>
           <td style="color:var(--muted)">#${r.id}</td>
           <td><strong>${r.first_name} ${r.last_name}</strong>${r.email ? `<br><span style="font-size:11px;color:var(--muted)">${r.email}</span>` : ''}</td>
           <td>${r.phone}</td>
@@ -185,7 +189,7 @@ let token = localStorage.getItem('umoja_admin_token');
         if (data.page < data.pages) pag.innerHTML += `<button class="page-btn" onclick="changePage(${data.page+1})">Next →</button>`;
       }
     } catch(e) {
-      tbody.innerHTML = `<tr><td colspan="9" style="color:var(--red);padding:20px">${e.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="10" style="color:var(--red);padding:20px">${e.message}</td></tr>`;
     }
   }
 
@@ -207,7 +211,66 @@ let token = localStorage.getItem('umoja_admin_token');
       loadStats();
     } catch(e) { alert('Failed to delete: ' + e.message); }
   }
+  // ── Bulk Selection ───────────────────────────────────────
+  function toggleSelect(id, checkbox) {
+    if (checkbox.checked) selectedIds.add(id);
+    else selectedIds.delete(id);
+    updateBulkBar();
+  }
 
+  function toggleSelectAll(checkbox) {
+    const boxes = document.querySelectorAll('.row-check');
+    boxes.forEach(box => {
+      box.checked = checkbox.checked;
+      const id = parseInt(box.dataset.id, 10);
+      if (checkbox.checked) selectedIds.add(id);
+      else selectedIds.delete(id);
+    });
+    updateBulkBar();
+  }
+
+  function clearSelection() {
+    selectedIds.clear();
+    document.querySelectorAll('.row-check').forEach(box => box.checked = false);
+    const selectAll = document.getElementById('selectAllCheckbox');
+    if (selectAll) selectAll.checked = false;
+    updateBulkBar();
+  }
+
+  function updateBulkBar() {
+    const bar = document.getElementById('bulkBar');
+    const count = document.getElementById('bulkCount');
+    if (selectedIds.size > 0) {
+      bar.classList.add('active');
+      count.textContent = `${selectedIds.size} selected`;
+    } else {
+      bar.classList.remove('active');
+    }
+  }
+
+  async function applyBulkStatus() {
+    if (selectedIds.size === 0) return;
+    const status = document.getElementById('bulkStatusSelect').value;
+    try {
+      await api('/api/admin/bulk-status', 'POST', { ids: Array.from(selectedIds), status });
+      loadMembers();
+      loadStats();
+    } catch (e) {
+      alert('Failed to update statuses: ' + e.message);
+    }
+  }
+
+  async function bulkDelete() {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Delete ${selectedIds.size} selected registration(s)? This cannot be undone.`)) return;
+    try {
+      await api('/api/admin/bulk-delete', 'POST', { ids: Array.from(selectedIds) });
+      loadMembers();
+      loadStats();
+    } catch (e) {
+      alert('Failed to delete: ' + e.message);
+    }
+  }
   // ── Edit Modal ───────────────────────────────────────────
   function openEditModal(id) {
     const reg = currentMembers.find(r => r.id === id);
