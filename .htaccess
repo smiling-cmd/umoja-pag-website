@@ -1,26 +1,31 @@
 DirectoryIndex index.html
 RewriteEngine On
 
-RewriteCond %{HTTP:Authorization} ^(.*)
+# ── Pass Authorization header through to PHP ─────────────────────────────────
+# Some shared hosts (including Hostafrica/Apache CGI mode) strip the
+# Authorization header before it reaches PHP. This rule preserves it
+# so jwt_require_auth() can read it correctly.
+RewriteCond %{HTTP:Authorization} ^(.+)
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 
-# Route PATCH /api/admin/registrations/{id}/status -> registration_status.php?id={id}
+# ── PATCH /api/admin/registrations/{id}/status ───────────────────────────────
+RewriteCond %{REQUEST_METHOD} PATCH
 RewriteRule ^api/admin/registrations/([0-9]+)/status$ api/admin/registration_status.php?id=$1 [L,QSA]
 
-# Route PUT /api/admin/registrations/{id} -> registration_update.php?id={id}
+# ── PUT /api/admin/registrations/{id} ────────────────────────────────────────
 RewriteCond %{REQUEST_METHOD} PUT
 RewriteRule ^api/admin/registrations/([0-9]+)$ api/admin/registration_update.php?id=$1 [L,QSA]
 
-# Route DELETE /api/admin/registrations/{id} -> registration_delete.php?id={id}
+# ── DELETE /api/admin/registrations/{id} ─────────────────────────────────────
 RewriteCond %{REQUEST_METHOD} DELETE
 RewriteRule ^api/admin/registrations/([0-9]+)$ api/admin/registration_delete.php?id=$1 [L,QSA]
 
-# Route DELETE /api/admin/admins/{id} -> admins_delete.php?id={id}
+# ── DELETE /api/admin/admins/{id} ────────────────────────────────────────────
 RewriteCond %{REQUEST_METHOD} DELETE
 RewriteRule ^api/admin/admins/([0-9]+)$ api/admin/admins_delete.php?id=$1 [L,QSA]
 
-# Allow requests like /api/auth/login to automatically find login.php
-# without needing the .php extension in the URL.
+# ── Generic PHP extension finder ─────────────────────────────────────────────
+# Allows URLs like /api/auth/login to resolve to login.php automatically.
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^(.*)$ $1.php [L]
