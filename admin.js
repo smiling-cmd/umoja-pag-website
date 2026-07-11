@@ -326,6 +326,95 @@ let token = localStorage.getItem('umoja_admin_token');
       errEl.style.display = 'block';
     }
   }
+  // ── Manage Admins ────────────────────────────────────────
+  function getCurrentAdminId() {
+    if (!token) return null;
+    try {
+      return JSON.parse(atob(token.split('.')[1])).sub;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function openAdminsModal() {
+    document.getElementById('newAdminUsername').value = '';
+    document.getElementById('newAdminPassword').value = '';
+    document.getElementById('adminsError').style.display = 'none';
+    document.getElementById('adminsModalOverlay').style.display = 'flex';
+    await loadAdminsList();
+  }
+
+  function closeAdminsModal() {
+    document.getElementById('adminsModalOverlay').style.display = 'none';
+  }
+
+  async function loadAdminsList() {
+    const wrap = document.getElementById('adminsListWrap');
+    wrap.innerHTML = '<div class="loading">Loading...</div>';
+    try {
+      const data = await api('/api/admin/admins-list');
+      const currentId = getCurrentAdminId();
+
+      if (!data.admins.length) {
+        wrap.innerHTML = '<div class="empty-state">No admins found</div>';
+        return;
+      }
+
+      wrap.innerHTML = data.admins.map(a => `
+        <div class="admin-row">
+          <div>
+            <div class="admin-row-name">${a.username}${String(a.id) === String(currentId) ? '<span class="admin-row-you">You</span>' : ''}</div>
+            <div class="admin-row-date">Added ${a.created_at ? a.created_at.split(' ')[0] : '—'}</div>
+          </div>
+          ${String(a.id) === String(currentId)
+            ? ''
+            : `<button class="delete-btn" onclick="deleteAdmin(${a.id}, '${a.username}')" title="Remove">🗑</button>`
+          }
+        </div>
+      `).join('');
+    } catch (e) {
+      wrap.innerHTML = `<div style="color:var(--red);padding:10px">${e.message}</div>`;
+    }
+  }
+
+  async function createAdmin() {
+    const errEl = document.getElementById('adminsError');
+    errEl.style.display = 'none';
+
+    const username = document.getElementById('newAdminUsername').value.trim();
+    const password = document.getElementById('newAdminPassword').value;
+
+    if (!username || !password) {
+      errEl.textContent = 'Username and password are required.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (password.length < 8) {
+      errEl.textContent = 'Password must be at least 8 characters.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      await api('/api/admin/admins-create', 'POST', { username, password });
+      document.getElementById('newAdminUsername').value = '';
+      document.getElementById('newAdminPassword').value = '';
+      await loadAdminsList();
+    } catch (e) {
+      errEl.textContent = e.message || 'Failed to create admin.';
+      errEl.style.display = 'block';
+    }
+  }
+
+  async function deleteAdmin(id, username) {
+    if (!confirm(`Remove admin "${username}"? They will no longer be able to sign in.`)) return;
+    try {
+      await api(`/api/admin/admins/${id}`, 'DELETE');
+      await loadAdminsList();
+    } catch (e) {
+      alert('Failed to remove admin: ' + e.message);
+    }
+  }
 
   async function exportCSV() {
     if (!token) {

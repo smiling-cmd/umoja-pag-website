@@ -840,3 +840,50 @@ tr:hover td {
   height: 16px;
   cursor: pointer;
 }
+/* ── MANAGE ADMINS ── */
+.manage-admins-link {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  cursor: pointer;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.manage-admins-link:hover {
+  color: var(--orange);
+  background: rgba(255, 255, 255, 0.06);
+}
+.admin-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.admin-row:last-child {
+  border-bottom: none;
+}
+.admin-row-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+.admin-row-date {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.admin-row-you {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--blue);
+  background: #dbeafe;
+  padding: 2px 8px;
+  border-radius: 50px;
+  margin-left: 8px;
+}

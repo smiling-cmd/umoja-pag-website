@@ -56,6 +56,7 @@
     </nav>
     <div class="sidebar-bottom">
       <div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:10px;" id="adminUser"></div>
+      <a class="manage-admins-link" onclick="openAdminsModal()">⚙ Manage Admins</a>
       <button class="logout-btn" onclick="logout()">Sign Out</button>
     </div>
   </div>
@@ -234,6 +235,31 @@
     <div class="modal-actions">
       <button class="page-btn" onclick="closeEditModal()">Cancel</button>
       <button class="login-btn" style="width:auto;padding:10px 24px" onclick="saveEditModal()">Save Changes</button>
+    </div>
+  </div>
+</div>
+<!-- MANAGE ADMINS MODAL -->
+<div class="modal-overlay" id="adminsModalOverlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Manage Admins</div>
+      <button class="modal-close" onclick="closeAdminsModal()" title="Close">✕</button>
+    </div>
+
+    <div class="login-group">
+      <label for="newAdminUsername">New admin username</label>
+      <input type="text" id="newAdminUsername" placeholder="e.g. jane">
+    </div>
+    <div class="login-group">
+      <label for="newAdminPassword">New admin password</label>
+      <input type="password" id="newAdminPassword" placeholder="At least 8 characters">
+    </div>
+    <div class="login-error" id="adminsError"></div>
+    <button class="login-btn" style="width:auto;padding:10px 24px;margin-bottom:20px" onclick="createAdmin()">Add Admin</button>
+
+    <div class="modal-title" style="font-size:14px;margin-bottom:10px">Current Admins</div>
+    <div id="adminsListWrap">
+      <div class="loading">Loading...</div>
     </div>
   </div>
 </div>

@@ -15,6 +15,10 @@ RewriteRule ^api/admin/registrations/([0-9]+)$ api/admin/registration_update.php
 RewriteCond %{REQUEST_METHOD} DELETE
 RewriteRule ^api/admin/registrations/([0-9]+)$ api/admin/registration_delete.php?id=$1 [L,QSA]
 
+# Route DELETE /api/admin/admins/{id} -> admins_delete.php?id={id}
+RewriteCond %{REQUEST_METHOD} DELETE
+RewriteRule ^api/admin/admins/([0-9]+)$ api/admin/admins_delete.php?id=$1 [L,QSA]
+
 # Allow requests like /api/auth/login to automatically find login.php
 # without needing the .php extension in the URL.
 RewriteCond %{REQUEST_FILENAME} !-d
