@@ -50,5 +50,5 @@ try {
     echo json_encode(['success' => true, 'message' => 'Admin removed']);
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database error', 'detail' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'A server error occurred. Please try again.']);
 }
