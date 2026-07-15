@@ -1,39 +1,73 @@
 /* Styles for ministries detail page — reuses index.css's :root palette (--gold, --surface, --text, --muted, --border) */
 
+body {
+  background:
+    radial-gradient(600px 400px at 10% 0%, rgba(212, 160, 23, 0.08), transparent 60%),
+    radial-gradient(700px 500px at 100% 30%, rgba(212, 160, 23, 0.05), transparent 55%),
+    var(--surface);
+}
+
 main {
   padding: 130px 5% 60px;
   max-width: 1100px;
   margin: 0 auto;
 }
+.page-intro {
+  margin-bottom: 44px;
+}
+.page-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+.page-eyebrow::before {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 2px;
+  background: var(--gold);
+}
 .section-intro {
   color: var(--muted);
-  margin-bottom: 40px;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   max-width: 640px;
+  line-height: 1.7;
 }
 
 .min-card {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 24px;
-  background: var(--surface-strong);
-  border: 1px solid var(--border);
-  padding: 22px;
-  border-radius: 20px;
-  margin-bottom: 28px;
+  grid-template-columns: 320px 1fr;
+  gap: 32px;
+  padding-bottom: 48px;
+  margin-bottom: 48px;
+  border-bottom: 1px solid var(--border);
   align-items: start;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+.min-card:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 .min-card img {
   width: 100%;
-  height: 200px;
+  height: 260px;
   object-fit: cover;
-  border-radius: 14px;
+  border-radius: 18px;
+  transition: transform 0.4s ease;
+}
+.min-card:hover img {
+  transform: scale(1.02);
 }
 .min-card h2 {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-family: "Cormorant Garamond", serif;
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--text);
 }
@@ -42,11 +76,50 @@ main {
   color: var(--text);
 }
 .min-desc-more {
-  margin: 2px 0 14px;
+  margin: 2px 0 16px;
   color: var(--muted);
   font-size: 14.5px;
-  line-height: 1.7;
+  line-height: 1.75;
 }
+
+/* Guiding scripture — the warm emotional anchor for each ministry */
+.verse-block {
+  position: relative;
+  background: linear-gradient(135deg, rgba(212, 160, 23, 0.12), rgba(212, 160, 23, 0.04));
+  border: 1px solid rgba(212, 160, 23, 0.28);
+  border-left: 3px solid var(--gold);
+  border-radius: 14px;
+  padding: 16px 20px 16px 44px;
+  margin: 4px 0 18px;
+}
+.verse-block::before {
+  content: "\201C";
+  position: absolute;
+  top: 2px;
+  left: 12px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: rgba(212, 160, 23, 0.55);
+  line-height: 1;
+}
+.verse-text {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--gold-pale);
+  line-height: 1.5;
+  margin: 0 0 6px !important;
+}
+.verse-ref {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 !important;
+}
+
 .sub-list {
   margin: 8px 0 0;
   color: var(--muted);
@@ -58,7 +131,7 @@ main {
 
 .expect-title {
   font-weight: 700;
-  margin: 16px 0 8px;
+  margin: 18px 0 8px;
   font-size: 13px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -78,43 +151,37 @@ main {
 }
 
 .info-panel {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px 16px;
-  margin: 6px 0 16px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin: 8px 0 16px;
+}
+.info-row {
+  font-size: 13px;
+  white-space: nowrap;
 }
 .info-row strong {
-  display: block;
   color: var(--gold);
   font-weight: 700;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: 3px;
+  margin-right: 6px;
 }
 .info-row span {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text);
 }
 .info-placeholder {
   color: var(--gold-light);
   font-style: italic;
 }
-@media (max-width: 520px) {
-  .info-panel {
-    grid-template-columns: 1fr;
-  }
-}
 
 .leader {
   display: flex;
   gap: 14px;
   align-items: flex-start;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 .leader img {
   width: 72px;
@@ -122,13 +189,13 @@ main {
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-  box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.25);
+  box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.3);
 }
 .leader .leader-body {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(212, 160, 23, 0.06);
   border: 1px solid var(--border);
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 .leader .leader-name {
   font-weight: 700;
@@ -148,7 +215,7 @@ main {
 }
 
 .btn-row {
-  margin-top: 16px;
+  margin-top: 18px;
 }
 
 @media (max-width: 780px) {
@@ -156,6 +223,12 @@ main {
     grid-template-columns: 1fr;
   }
   .min-card img {
-    height: 180px;
+    height: 220px;
+  }
+  .verse-block {
+    padding: 14px 16px 14px 40px;
+  }
+  .verse-text {
+    font-size: 1.05rem;
   }
 }

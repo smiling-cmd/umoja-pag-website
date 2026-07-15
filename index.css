@@ -1337,6 +1337,33 @@ nav.scrolled .nav-toggle.open span {
   font-weight: 700;
   padding: 5px 12px;
   border-radius: 50px;
+  position: relative;
+  cursor: default;
+}
+.sub-tag[data-location]::after {
+  content: attr(data-location);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--surface-strong);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 5;
+}
+.sub-tag[data-location]:hover::after,
+.sub-tag[data-location]:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 .pastor-feature {
   display: grid;

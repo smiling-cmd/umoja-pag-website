@@ -410,6 +410,67 @@ function copyLink() {
 // ── REGISTRATION FORM ─────────────────────────────────────────
 const REGISTER_ENDPOINT = "/api/register";
 
+// Show the "Which Cell Group?" selector only when it's relevant —
+// cell groups are location-based, so new members need to pick one too.
+const CELL_GROUP_TRIGGERS = ["Cell Group", "New Member Registration"];
+const regForSelect = document.getElementById("regFor");
+const cellGroupGroup = document.getElementById("cellGroupGroup");
+const cellGroupSelect = document.getElementById("cellGroup");
+
+function isCellGroupFieldNeeded() {
+  return CELL_GROUP_TRIGGERS.includes(regForSelect ? regForSelect.value : "");
+}
+
+function syncCellGroupField() {
+  if (!regForSelect || !cellGroupGroup || !cellGroupSelect) return;
+  const needed = isCellGroupFieldNeeded();
+  cellGroupGroup.style.display = needed ? "block" : "none";
+  if (!needed) {
+    cellGroupSelect.style.borderColor = "";
+    cellGroupSelect.selectedIndex = 0;
+  }
+}
+
+if (regForSelect) {
+  regForSelect.addEventListener("change", syncCellGroupField);
+  syncCellGroupField();
+}
+if (cellGroupSelect) {
+  cellGroupSelect.addEventListener("change", () => {
+    cellGroupSelect.style.borderColor = "";
+  });
+}
+
+// Best-effort duplicate guard: a person shouldn't end up registered with
+// two different cell groups. This only recognizes returning visitors on
+// the same browser/device (via localStorage) — the authoritative check
+// should also live server-side against phone number in the admin backend.
+const CELL_GROUP_RECORDS_KEY = "umoja_cell_group_registrations";
+
+function getCellGroupRecords() {
+  try {
+    return JSON.parse(localStorage.getItem(CELL_GROUP_RECORDS_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function getExistingCellGroupForPhone(phone) {
+  if (!phone) return null;
+  return getCellGroupRecords()[phone] || null;
+}
+
+function rememberCellGroupRegistration(phone, cellGroup) {
+  if (!phone || !cellGroup) return;
+  try {
+    const records = getCellGroupRecords();
+    records[phone] = cellGroup;
+    localStorage.setItem(CELL_GROUP_RECORDS_KEY, JSON.stringify(records));
+  } catch {
+    // Some browsers block localStorage in private or file modes.
+  }
+}
+
 function getRegistrationPayload() {
   return {
     firstName: document.getElementById("firstName").value.trim(),
@@ -419,6 +480,9 @@ function getRegistrationPayload() {
     ageGroup: document.getElementById("ageGroup").value.trim(),
     area: document.getElementById("area").value.trim(),
     regFor: document.getElementById("regFor").value.trim(),
+    cellGroup: isCellGroupFieldNeeded()
+      ? document.getElementById("cellGroup").value.trim()
+      : "",
     notes: document.getElementById("notes").value.trim(),
   };
 }
@@ -445,6 +509,7 @@ function saveRegistrationDraft(payload) {
 
 async function submitForm() {
   const required = ["firstName", "lastName", "phone", "ageGroup", "regFor"];
+  if (isCellGroupFieldNeeded()) required.push("cellGroup");
   const btn = document.getElementById("submitBtn");
   const err = document.getElementById("formError");
   const emailField = document.getElementById("email");
@@ -478,6 +543,18 @@ async function submitForm() {
     handleInvalidPhone();
     return;
   }
+  const normalizedPhone = normalizePhoneNumber(phoneField.value.trim());
+  if (isCellGroupFieldNeeded()) {
+    const chosenCellGroup = cellGroupSelect.value.trim();
+    const existingCellGroup = getExistingCellGroupForPhone(normalizedPhone);
+    if (existingCellGroup && existingCellGroup !== chosenCellGroup) {
+      err.textContent = `This phone number is already registered with the ${existingCellGroup} Cell Group. One person can only belong to one cell group — please contact the church office if you need to switch.`;
+      err.style.display = "block";
+      cellGroupSelect.style.borderColor = "#EF4444";
+      cellGroupSelect.focus();
+      return;
+    }
+  }
   if (emailField.value.trim() && !isValidEmail(emailField.value.trim())) {
     err.textContent = "Please enter a valid email address.";
     err.style.display = "block";
@@ -495,6 +572,9 @@ async function submitForm() {
     });
     const data = await res.json();
     if (res.ok && data.success) {
+      if (payload.cellGroup) {
+        rememberCellGroupRegistration(normalizedPhone, payload.cellGroup);
+      }
       showRegistrationSuccess(
         "Thank you for registering. Our team will be in touch shortly. God bless you!",
       );
@@ -516,9 +596,10 @@ function resetForm() {
   ["firstName", "lastName", "phone", "email", "area", "notes"].forEach((id) => {
     document.getElementById(id).value = "";
   });
-  ["ageGroup", "regFor"].forEach((id) => {
+  ["ageGroup", "regFor", "cellGroup"].forEach((id) => {
     document.getElementById(id).selectedIndex = 0;
   });
+  syncCellGroupField();
   document.getElementById("formError").style.display = "none";
   document.getElementById("formSuccess").style.display = "none";
   document.getElementById("formContent").style.display = "block";
