@@ -4,7 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ministries — Umoja P.A.G Church</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="ministries.css" />
   </head>
   <body>
     <nav id="navbar">
@@ -14,98 +19,353 @@
           <div class="nav-logo-name">Umoja <span>P.A.G</span> Church</div>
         </div>
       </a>
-      <ul class="nav-links">
+      <ul class="nav-links" id="navLinks">
         <li><a href="index.html#home">Home</a></li>
         <li><a href="index.html#about">About</a></li>
         <li><a href="index.html#cell-groups">Cell Groups</a></li>
-        <li><a href="index.html#ministries">Ministries</a></li>
+        <li><a href="index.html#ministries" class="active" aria-current="page">Ministries</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="index.html#giving">Giving</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="index.html#updates">Updates</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="index.html#register">Register</a></li>
       </ul>
+      <div class="nav-right">
+        <a
+          class="nav-social-link youtube"
+          href="http://www.youtube.com/@umojapagchurch3626"
+          target="_blank"
+          rel="noopener"
+        >
+          <img src="images/Youtube.png" alt="YouTube" />
+        </a>
+        <a
+          class="nav-social-link facebook"
+          href="https://web.facebook.com/umojapag.churchkenya/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src="images/facebook.jpg" alt="Facebook" />
+        </a>
+        <a class="nav-cta" href="index.html#register">Join Us</a>
+        <button
+          class="nav-toggle"
+          id="navToggle"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="navLinks"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
     </nav>
+    <div class="nav-overlay" id="navOverlay"></div>
 
-    <main class="section" style="padding:40px; max-width:900px; margin:0 auto;">
+    <main>
       <h1 class="section-title">Ministries</h1>
-      <p>Explore our ministries below. Click a section to learn more.</p>
+      <p class="section-intro">Explore our ministries and connect with leaders who can walk with you.</p>
 
-      <section id="cell-groups" style="margin-top:30px;">
-        <h2>Cell Groups</h2>
-        <p>
-          Our Cell Groups meet across Umoja neighbourhoods for midweek fellowship,
-          prayer, Bible study, and mutual care. They are the primary place to
-          build deep relationships and be discipled in community.
-        </p>
-        <ul>
-          <li>Jericho</li>
-          <li>Nazareth</li>
-          <li>Bethlehem</li>
-          <li>Judah</li>
-          <li>Galilee</li>
-          <li>Jerusalem</li>
-        </ul>
-        <p>
-          Interested in joining a cell group? <a href="index.html#register">Register here</a> and indicate "Cell Group".
-        </p>
-      </section>
+      <article class="min-card" id="cell-groups">
+        <img src="images/Church.jpg" alt="Cell Groups in Umoja" />
+        <div>
+          <h2>Cell Groups</h2>
+          <p>Local neighbourhood fellowships that meet weekly for prayer, Bible study and mutual care.</p>
+          <p class="min-desc-more">Cell groups are the heartbeat of our church family — smaller circles where you're known by name, not just a face in the crowd. Each group works through the same weekly study so the whole church grows together, while making room for the prayer requests, testimonies, and everyday life of the people in the room.</p>
+          <div class="sub-list">
+            <strong>Neighbourhoods:</strong> Jericho, Nazareth, Bethlehem, Judah, Galilee, Jerusalem
+          </div>
+          <div class="expect-title">What to expect</div>
+          <ul class="expect-list">
+            <li>Opening prayer and worship, followed by a guided Bible study</li>
+            <li>Open sharing time — testimonies, prayer requests, practical support</li>
+            <li>Tea/refreshments and fellowship after the study</li>
+            <li>A group leader who follows up with you during the week</li>
+          </ul>
+          <div class="info-panel">
+            <div class="info-row"><strong>Meets</strong><span class="info-placeholder">[add day &amp; time, e.g. Wednesdays, 6:00 PM]</span></div>
+            <div class="info-row"><strong>Where</strong><span class="info-placeholder">[add host home / venue per neighbourhood]</span></div>
+            <div class="info-row"><strong>Who</strong><span>Open to all — members and first-time visitors welcome</span></div>
+            <div class="info-row"><strong>To join</strong><span>Pick the neighbourhood closest to you and register below; a leader will reach out</span></div>
+          </div>
+          <div class="leader">
+            <img src="images/pastor.jpg" alt="Cell Groups leader" />
+            <div class="leader-body">
+              <p class="leader-name">Mary Wanjiru</p>
+              <p class="leader-role">Cell Groups Coordinator</p>
+              <p class="leader-msg">"Cell groups are where life happens — come as you are; we will pray, study, and grow together."</p>
+            </div>
+          </div>
+          <div class="btn-row">
+            <a class="btn-primary" href="index.html#register">Join a cell group</a>
+          </div>
+        </div>
+      </article>
 
-      <hr />
+      <article class="min-card" id="worship-team">
+        <img src="images/worship team.jpg" alt="Worship Team" />
+        <div>
+          <h2>Worship Team</h2>
+          <p>Leading the church into God's presence each Sunday through music and worship leadership.</p>
+          <p class="min-desc-more">Whether you sing, play an instrument, or run sound from the booth, the worship team exists to help the whole congregation focus on God in every service. New members go through a short onboarding period alongside the team before joining a Sunday rotation, so you're never thrown in unprepared.</p>
+          <div class="expect-title">What to expect</div>
+          <ul class="expect-list">
+            <li>Weekly rehearsal to prepare the set list for the coming Sunday(s)</li>
+            <li>A rotation schedule so serving doesn't clash with your other commitments</li>
+            <li>Mentorship from experienced vocalists and musicians</li>
+            <li>Opportunities to grow in both skill and spiritual leadership</li>
+          </ul>
+          <div class="info-panel">
+            <div class="info-row"><strong>Rehearsals</strong><span class="info-placeholder">[add rehearsal day &amp; time]</span></div>
+            <div class="info-row"><strong>Serves</strong><span class="info-placeholder">[add which services, e.g. 1st &amp; 2nd Sunday service]</span></div>
+            <div class="info-row"><strong>Who</strong><span>Vocalists, instrumentalists, and sound/tech support</span></div>
+            <div class="info-row"><strong>Requirements</strong><span class="info-placeholder">[add audition/interview details if any]</span></div>
+          </div>
+          <div class="leader">
+            <img src="images/worship team.jpg" alt="Worship leader" />
+            <div class="leader-body">
+              <p class="leader-name">Samuel Otieno</p>
+              <p class="leader-role">Worship Pastor</p>
+              <p class="leader-msg">"We aim to lead worship that opens hearts to encounter Jesus — musicians and vocalists are welcome."</p>
+            </div>
+          </div>
+          <div class="btn-row"><a class="btn-primary" href="index.html#register">Serve with worship</a></div>
+        </div>
+      </article>
 
-      <section id="worship-team" style="margin-top:30px;">
-        <h2>Worship Team</h2>
-        <p>
-          The Worship Team leads congregational praise and worship on Sundays.
-          Opportunities include musicians, vocalists, sound techs, and stage support.
-        </p>
-      </section>
+      <article class="min-card" id="choir">
+        <img src="images/choir.jpg" alt="Choir" />
+        <div>
+          <h2>Choir</h2>
+          <p>Choral ministry for special services and congregational encouragement.</p>
+          <p class="min-desc-more">The choir ministers through song at special services, festive celebrations, and select Sundays throughout the year — bringing harmony, testimony, and encouragement to the congregation. Members rehearse together to learn parts and build the kind of unity that makes choral singing come alive.</p>
+          <div class="expect-title">What to expect</div>
+          <ul class="expect-list">
+            <li>Weekly rehearsals to learn and practise new pieces</li>
+            <li>Vocal part training (soprano, alto, tenor, bass) for all experience levels</li>
+            <li>Ministering at designated services and special church events</li>
+            <li>A welcoming space to grow your voice and your faith together</li>
+          </ul>
+          <div class="info-panel">
+            <div class="info-row"><strong>Rehearsals</strong><span class="info-placeholder">[add rehearsal day &amp; time]</span></div>
+            <div class="info-row"><strong>Ministers</strong><span class="info-placeholder">[add which Sundays/special services]</span></div>
+            <div class="info-row"><strong>Who</strong><span>Open to all voice ranges and experience levels</span></div>
+            <div class="info-row"><strong>Requirements</strong><span>No prior choir experience needed — just a willing heart to learn</span></div>
+          </div>
+          <div class="leader">
+            <img src="images/choir.jpg" alt="Choir leader" />
+            <div class="leader-body">
+              <p class="leader-name">Esther Njeri</p>
+              <p class="leader-role">Choir Director</p>
+              <p class="leader-msg">"Our choir brings songs of hope and testimony — join us to minister and grow your voice."</p>
+            </div>
+          </div>
+          <div class="btn-row"><a class="btn-primary" href="index.html#register">Join the choir</a></div>
+        </div>
+      </article>
 
-      <section id="choir" style="margin-top:30px;">
-        <h2>Choir</h2>
-        <p>
-          Our Choir ministers through choral worship and special musical presentations.
-          Choir members rehearse weekly and serve on Sunday services and special events.
-        </p>
-      </section>
+      <article class="min-card" id="media-team">
+        <img src="images/media team.jpeg" alt="Media Team" />
+        <div>
+          <h2>Media Team</h2>
+          <p>Sound, visuals, and streaming — help us communicate the message clearly online and in-house.</p>
+          <p class="min-desc-more">From live sound mixing to camera work, lyric slides, and streaming to YouTube and Facebook, the media team makes sure every service is heard and seen clearly — in the sanctuary and by those watching from home. It's hands-on, practical serving that suits anyone who enjoys tech, photography, or design.</p>
+          <div class="expect-title">What to expect</div>
+          <ul class="expect-list">
+            <li>Hands-on training on sound desk, cameras, and streaming software</li>
+            <li>A rotation across roles — sound, visuals/slides, live-stream, photography</li>
+            <li>Arriving early on serving days to set up and test equipment</li>
+            <li>A team environment where technical and creative skills both matter</li>
+          </ul>
+          <div class="info-panel">
+            <div class="info-row"><strong>Setup call time</strong><span class="info-placeholder">[add arrival/setup time before service]</span></div>
+            <div class="info-row"><strong>Serves</strong><span class="info-placeholder">[add which services/events]</span></div>
+            <div class="info-row"><strong>Who</strong><span>Anyone interested in sound, video, photography, or streaming</span></div>
+            <div class="info-row"><strong>Requirements</strong><span>No experience required — training provided</span></div>
+          </div>
+          <div class="leader">
+            <img src="images/media team.jpeg" alt="Media leader" />
+            <div class="leader-body">
+              <p class="leader-name">Kevin Mwangi</p>
+              <p class="leader-role">Media Lead</p>
+              <p class="leader-msg">"We need technicians and creatives to help share our services with the wider community."</p>
+            </div>
+          </div>
+          <div class="btn-row"><a class="btn-primary" href="index.html#register">Serve on media</a></div>
+        </div>
+      </article>
 
-      <section id="media-team" style="margin-top:30px;">
-        <h2>Media Team</h2>
-        <p>
-          The Media Team supports live streaming, recording, and AV production to
-          ensure the message reaches both the room and online viewers.
-        </p>
-      </section>
+      <article class="min-card" id="sunday-school">
+        <img src="images/sunday schoool.jpg" alt="Sunday School" />
+        <div>
+          <h2>Sunday School</h2>
+          <p>Age-appropriate Bible teaching for children and teens delivered by caring volunteers.</p>
+          <p class="min-desc-more">Children and teens are split into age-appropriate classes so lessons, songs, and activities always match where they're at. Every teacher and helper is there because they love seeing young people meet Jesus in a way that's fun, safe, and easy for parents to trust during the service.</p>
+          <div class="expect-title">What to expect</div>
+          <ul class="expect-list">
+            <li>Age-graded classes with Bible stories, songs, and simple activities</li>
+            <li>Caring, vetted volunteers leading each class</li>
+            <li>A safe check-in/check-out process for parents</li>
+            <li>Occasional special programs and holiday activities</li>
+          </ul>
+          <div class="info-panel">
+            <div class="info-row"><strong>Classes meet</strong><span class="info-placeholder">[add day/time, e.g. during 2nd service]</span></div>
+            <div class="info-row"><strong>Age groups</strong><span class="info-placeholder">[add age brackets used for classes]</span></div>
+            <div class="info-row"><strong>Who</strong><span>Children and teens of church members and visitors</span></div>
+            <div class="info-row"><strong>To volunteer</strong><span class="info-placeholder">[add vetting/training requirement for volunteers]</span></div>
+          </div>
+          <div class="leader">
+            <img src="images/sunday schoool.jpg" alt="Sunday School leader" />
+            <div class="leader-body">
+              <p class="leader-name">Grace Akinyi</p>
+              <p class="leader-role">Children's Ministry Lead</p>
+              <p class="leader-msg">"We create safe, fun spaces where children learn about Jesus and grow in faith."</p>
+            </div>
+          </div>
+          <div class="btn-row"><a class="btn-primary" href="index.html#register">Volunteer</a></div>
+        </div>
+      </article>
 
-      <section id="sunday-school" style="margin-top:30px;">
-        <h2>Sunday School</h2>
-        <p>
-          Sunday School offers Bible teaching for children and teens, with age-appropriate
-          classes and caring volunteers.
-        </p>
-      </section>
+      <article class="min-card" id="womens-fellowship">
+        <img src="images/women guild.jpg" alt="Women's Fellowship" />
+        <div>
+          <h2>Women's Fellowship</h2>
+          <p>Prayer, discipleship, and mutual encouragement for women of all ages.</p>
+          <p class="min-desc-more">A space where women gather across generations to pray, study the Word, and support one another through the real seasons of life — work, family, singleness, marriage, and everything in between. Expect honest conversation as much as Bible teaching.</p>
+          <div class="expect-title">What to expect</div>
+          <ul class="expect-list">
+            <li>Prayer and worship to open each gathering</li>
+            <li>Bible study or a guest-led topical discussion</li>
+            <li>Mentorship pairing between older and younger women</li>
+            <li>Occasional retreats, seminars, and outreach activities</li>
+          </ul>
+          <div class="info-panel">
+            <div class="info-row"><strong>Meets</strong><span class="info-placeholder">[add day &amp; time]</span></div>
+            <div class="info-row"><strong>Where</strong><span class="info-placeholder">[add venue]</span></div>
+            <div class="info-row"><strong>Who</strong><span>All women of the church — no age limit</span></div>
+            <div class="info-row"><strong>To join</strong><span>Just show up, or register below and a leader will follow up</span></div>
+          </div>
+          <div class="leader">
+            <img src="images/women guild.jpg" alt="Women's leader" />
+            <div class="leader-body">
+              <p class="leader-name">Ruth Kamau</p>
+              <p class="leader-role">Women's Ministry</p>
+              <p class="leader-msg">"Come and be strengthened by fellowship, prayer, and the Word."</p>
+            </div>
+          </div>
+          <div class="btn-row"><a class="btn-primary" href="index.html#register">Get involved</a></div>
+        </div>
+      </article>
 
-      <section id="womens-fellowship" style="margin-top:30px;">
-        <h2>Women's Fellowship</h2>
-        <p>
-          A place for women to gather for prayer, discipleship, and mutual encouragement.
-        </p>
-      </section>
+      <article class="min-card" id="mens-fellowship">
+        <img src="images/men Guild.jpg" alt="Men's Fellowship" />
+        <div>
+          <h2>Men's Fellowship</h2>
+          <p>Fellowship, accountability, and leadership formation for men.</p>
+          <p class="min-desc-more">Men's Fellowship exists to build men who lead well — at home, at work, and in the church. Meetings combine the Word with honest, practical conversation about the pressures men actually face, and real accountability from other men walking the same road.</p>
+          <div class="expect-title">What to expect</div>
+          <ul class="expect-list">
+            <li>Bible-based teaching on leadership, family, and integrity</li>
+            <li>Open discussion and prayer in small accountability groups</li>
+            <li>Mentorship from older, more established men in the church</li>
+            <li>Occasional service projects and men's outreach events</li>
+          </ul>
+          <div class="info-panel">
+            <div class="info-row"><strong>Meets</strong><span class="info-placeholder">[add day &amp; time]</span></div>
+            <div class="info-row"><strong>Where</strong><span class="info-placeholder">[add venue]</span></div>
+            <div class="info-row"><strong>Who</strong><span>All men of the church — no age limit</span></div>
+            <div class="info-row"><strong>To join</strong><span>Just show up, or register below and a leader will follow up</span></div>
+          </div>
+          <div class="leader">
+            <img src="images/men Guild.jpg" alt="Men's leader" />
+            <div class="leader-body">
+              <p class="leader-name">Peter Ouma</p>
+              <p class="leader-role">Men's Coordinator</p>
+              <p class="leader-msg">"We meet to encourage one another to lead well at home, work and church."</p>
+            </div>
+          </div>
+          <div class="btn-row"><a class="btn-primary" href="index.html#register">Join men's fellowship</a></div>
+        </div>
+      </article>
 
-      <section id="mens-fellowship" style="margin-top:30px;">
-        <h2>Men's Fellowship</h2>
-        <p>
-          Men gather for fellowship, accountability, and leadership formation.
-        </p>
-      </section>
+      <article class="min-card" id="youth">
+        <img src="images/youthh.jpeg" alt="Youth Ministry" />
+        <div>
+          <h2>Youth</h2>
+          <p>Mentoring, worship, and outreach for young people as they grow in faith.</p>
+          <p class="min-desc-more">Youth service is a space built for young people to bring their real questions, doubts, and excitement about faith — not just sit through a lesson. Between the dedicated 12:30 PM Youth Service, small-group mentoring, and outreach events, the goal is a community that walks with young people, not just teaches at them.</p>
+          <div class="expect-title">What to expect</div>
+          <ul class="expect-list">
+            <li>Youth-focused worship and teaching every Sunday at 12:30 PM</li>
+            <li>Small mentoring groups for deeper connection and accountability</li>
+            <li>Games, outreach events, and camps throughout the year</li>
+            <li>A safe space to ask honest questions about faith and life</li>
+          </ul>
+          <div class="info-panel">
+            <div class="info-row"><strong>Meets</strong><span>Sundays, 12:30 PM Youth Service</span></div>
+            <div class="info-row"><strong>Small groups</strong><span class="info-placeholder">[add small group day/time if separate from Sunday]</span></div>
+            <div class="info-row"><strong>Who</strong><span class="info-placeholder">[add age range, e.g. Teens 13–19]</span></div>
+            <div class="info-row"><strong>To join</strong><span>Just come to the 12:30 PM service, or register below</span></div>
+          </div>
+          <div class="leader">
+            <img src="images/youthh.jpeg" alt="Youth leader" />
+            <div class="leader-body">
+              <p class="leader-name">Joyce Njeri</p>
+              <p class="leader-role">Youth Leader</p>
+              <p class="leader-msg">"We invest in the next generation — come and be part of life-changing community."</p>
+            </div>
+          </div>
+          <div class="btn-row"><a class="btn-primary" href="index.html#register">Youth events</a></div>
+        </div>
+      </article>
 
-      <section id="youth" style="margin-top:30px;">
-        <h2>Youth</h2>
-        <p>
-          Our Youth ministry focuses on mentoring, worship, outreach, and building
-          a strong faith foundation for young people.
-        </p>
-      </section>
-
-      <div style="margin-top:40px;">
+      <div style="margin-top:28px;display:flex;gap:12px;">
         <a class="btn-primary" href="index.html#ministries">Back to Home</a>
         <a class="btn-ghost" href="index.html#register" style="margin-left:12px;">Register</a>
       </div>
     </main>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-brand-name">Umoja <span>P.A.G</span> Church</div>
+          <div class="footer-tagline">
+            "United in Faith, Rooted in Love" · Umoja, Nairobi, Kenya
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Navigate</h4>
+          <a href="index.html">Home</a><a href="index.html#about">About Us</a
+          ><a href="index.html#cell-groups">Cell Groups</a><a href="index.html#ministries">Ministries</a><a href="index.html#projects">Projects</a
+          ><a href="index.html#giving">Giving</a><a href="index.html#contact">Contact</a
+          ><a href="index.html#updates">Updates</a><a href="index.html#gallery">Gallery</a><a href="index.html#register">Register</a>
+        </div>
+        <div class="footer-col">
+          <h4>Services</h4>
+          <a href="index.html#home">Sunday 8:15 AM</a><a href="index.html#home">Sunday 10:15 AM</a
+          ><a href="index.html#home">Youth 12:30 PM</a><a href="index.html#gallery">Gallery</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a
+            href="http://www.youtube.com/@umojapagchurch3626"
+            target="_blank"
+            rel="noopener"
+            >YouTube</a
+          ><a
+            href="https://web.facebook.com/umojapag.churchkenya/"
+            target="_blank"
+            rel="noopener"
+            >Facebook</a
+          ><a href="tel:+254796752298">+254 796 752 298</a
+          ><a href="mailto:info@umojapagchurch.org">Email Us</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="index.js"></script>
   </body>
 </html>
