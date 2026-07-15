@@ -1352,6 +1352,9 @@ nav.scrolled .nav-toggle.open span {
   z-index: 1;
   box-shadow: 0 24px 60px rgba(4, 9, 26, 0.22);
 }
+.pastor-feature-about {
+  margin-top: 80px;
+}
 .pastor-media {
   position: relative;
   overflow: hidden;

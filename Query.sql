@@ -33,7 +33,6 @@ CREATE TABLE IF NOT EXISTS registrations (
 
 -- ============================================
 -- IMPORTANT: This creates a placeholder admin user
--- with a TEMPORARY password that you MUST change.
 -- The password below is: ChangeMe123!
 -- It is stored properly hashed, not in plain text.
 -- ============================================
