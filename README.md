@@ -97,7 +97,7 @@ Authorization: Bearer <token>
 
 ## Notes for Future Deployment
 
-When moving to a live host (e.g. Hostafrica), update the four connection
+When moving to a live host in this case Hostafrica, update the four connection
 variables at the top of `db.php` to match the production database credentials.
 No other code changes should be required.
 
