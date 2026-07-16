@@ -89,7 +89,12 @@ let token = localStorage.getItem('umoja_admin_token');
     if (body) opts.body = JSON.stringify(body);
     const res  = await fetch(url, opts);
     const data = await res.json();
-    if (!data.success) throw new Error(data.message || 'Request failed');
+    if (!data.success) {
+      const msg = Array.isArray(data.errors) && data.errors.length
+        ? data.errors.join(' ')
+        : (data.message || 'Request failed');
+      throw new Error(msg);
+    }
     return data;
   }
 

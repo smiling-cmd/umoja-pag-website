@@ -2,6 +2,7 @@
 // api/register.php — Public registration endpoint
 header('Content-Type: application/json');
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../registration_rules.php';
 
 // Only allow POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -24,27 +25,23 @@ $email     = trim($input['email']     ?? '');
 $ageGroup  = trim($input['ageGroup']  ?? '');
 $area      = trim($input['area']      ?? '');
 $regFor    = trim($input['regFor']    ?? '');
+$cellGroup = trim($input['cellGroup'] ?? '');
 $notes     = trim($input['notes']     ?? '');
 
-function normalizeKenyanPhone(string $phone): string {
-    $cleaned = preg_replace('/[\s().-]+/', '', $phone);
-    if (preg_match('/^0(7|1)\d{8}$/', $cleaned)) {
-        return '+254' . substr($cleaned, 1);
-    }
-    if (preg_match('/^254(7|1)\d{8}$/', $cleaned)) {
-        return '+' . $cleaned;
-    }
-    return $cleaned;
-}
-
 $phone = normalizeKenyanPhone($phone);
+$regFor = normalizeRegFor($regFor, $cellGroup !== '' ? $cellGroup : null);
 
 // --- Validate required fields ---
 $errors = [];
 if ($firstName === '') $errors[] = 'First name is required';
 if ($lastName === '')  $errors[] = 'Last name is required';
 if ($phone === '')     $errors[] = 'Phone number is required';
-if ($regFor === '')    $errors[] = 'Please select what you are registering for';
+if ($regFor === '' || $regFor === 'Cell Group') {
+    $errors[] = 'Please select what you are registering for';
+}
+if (trim($input['regFor'] ?? '') === 'Cell Group' && $cellGroup === '') {
+    $errors[] = 'Please select which cell group you are joining';
+}
 if ($ageGroup === '')  $errors[] = 'Please select an age group';
 if ($area === '')      $errors[] = 'Area is required';
 
@@ -59,6 +56,18 @@ if ($phone !== '' && !preg_match('/^\+254(7|1)\d{8}$/', $phone)) {
 if (!empty($errors)) {
     http_response_code(422);
     echo json_encode(['success' => false, 'message' => 'Validation failed', 'errors' => $errors]);
+    exit;
+}
+
+$duplicateError = validateRegistrationUniqueness(
+    $pdo,
+    $phone,
+    $email !== '' ? $email : null,
+    $regFor
+);
+if ($duplicateError !== null) {
+    http_response_code(409);
+    echo json_encode(['success' => false, 'message' => $duplicateError, 'errors' => [$duplicateError]]);
     exit;
 }
 

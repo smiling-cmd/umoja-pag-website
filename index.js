@@ -429,9 +429,32 @@ function printQR() {
 }
 
 // ── REGISTRATION FORM ─────────────────────────────────────────
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/xpqgrdvw";
+const REGISTER_ENDPOINT = "/api/register";
+
+function normalizeKenyanPhoneClient(phone) {
+  const cleaned = phone.replace(/[\s().-]+/g, "");
+  if (/^0(7|1)\d{8}$/.test(cleaned)) return "+254" + cleaned.slice(1);
+  if (/^254(7|1)\d{8}$/.test(cleaned)) return "+" + cleaned;
+  return cleaned;
+}
+
+function isValidKenyanPhone(phone) {
+  return /^\+254(7|1)\d{8}$/.test(normalizeKenyanPhoneClient(phone));
+}
+
+function updateCellGroupVisibility() {
+  const regFor = document.getElementById("regFor").value.trim();
+  const group = document.getElementById("cellGroupGroup");
+  const cellSelect = document.getElementById("cellGroup");
+  const show = regFor === "Cell Group";
+  group.style.display = show ? "block" : "none";
+  cellSelect.required = show;
+  if (!show) cellSelect.selectedIndex = 0;
+}
 
 function getRegistrationPayload() {
+  const regFor = document.getElementById("regFor").value.trim();
+  const cellGroup = document.getElementById("cellGroup").value.trim();
   return {
     firstName: document.getElementById("firstName").value.trim(),
     lastName: document.getElementById("lastName").value.trim(),
@@ -439,7 +462,8 @@ function getRegistrationPayload() {
     email: document.getElementById("email").value.trim(),
     ageGroup: document.getElementById("ageGroup").value.trim(),
     area: document.getElementById("area").value.trim(),
-    regFor: document.getElementById("regFor").value.trim(),
+    regFor,
+    cellGroup: regFor === "Cell Group" ? cellGroup : "",
     notes: document.getElementById("notes").value.trim(),
   };
 }
@@ -497,28 +521,51 @@ async function submitForm() {
     handleInvalidEmail();
     return;
   }
+  if (document.getElementById("regFor").value.trim() === "Cell Group") {
+    const cellGroup = document.getElementById("cellGroup");
+    if (!cellGroup.value.trim()) {
+      cellGroup.style.borderColor = "#EF4444";
+      cellGroup.focus();
+      err.textContent = "Please select which cell group you are joining.";
+      err.style.display = "block";
+      return;
+    }
+  }
+  if (!isValidKenyanPhone(document.getElementById("phone").value.trim())) {
+    err.textContent = "Please enter a valid Kenyan phone number (e.g. 0712345678).";
+    err.style.display = "block";
+    return;
+  }
   btn.disabled = true;
   btn.textContent = "Sending...";
   const payload = getRegistrationPayload();
   try {
-    const res = await fetch(FORMSPREE_ENDPOINT, {
+    const res = await fetch(REGISTER_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    if (res.ok) {
+    if (res.ok && data.success) {
       showRegistrationSuccess(
         "Thank you for registering. Our team will be in touch shortly. God bless you!",
       );
     } else {
-      throw new Error((data.errors || []).map((e) => e.message).join(", ") || "Submission failed.");
+      const message = Array.isArray(data.errors) && data.errors.length
+        ? data.errors.join(" ")
+        : (data.message || "Submission failed.");
+      throw new Error(message);
     }
   } catch (e) {
     saveRegistrationDraft(payload);
-    err.innerHTML = 'Could not send your registration online. Your details were saved on this device, but please also reach us directly so we don\'t miss you: <a href="tel:+254796752298" style="color:#fecaca;text-decoration:underline;">call 0796 752 298</a> or <a href="mailto:info@umojapagchurch.org" style="color:#fecaca;text-decoration:underline;">email us</a>.';
+    const isDuplicate = /already registered|one ministry|one cell group|new member registration/i.test(String(e.message || ""));
+    if (isDuplicate) {
+      err.textContent = e.message;
+    } else {
+      err.innerHTML = 'Could not send your registration online. Your details were saved on this device, but please also reach us directly so we don\'t miss you: <a href="tel:+254796752298" style="color:#fecaca;text-decoration:underline;">call 0796 752 298</a> or <a href="mailto:info@umojapagchurch.org" style="color:#fecaca;text-decoration:underline;">email us</a>.';
+    }
     err.style.display = "block";
-    console.error("Formspree submission error:", e);
+    console.error("Registration submission error:", e);
   } finally {
     btn.disabled = false;
     btn.textContent = "Submit Registration →";
@@ -529,9 +576,10 @@ function resetForm() {
   ["firstName", "lastName", "phone", "email", "area", "notes"].forEach((id) => {
     document.getElementById(id).value = "";
   });
-  ["ageGroup", "regFor"].forEach((id) => {
+  ["ageGroup", "regFor", "cellGroup"].forEach((id) => {
     document.getElementById(id).selectedIndex = 0;
   });
+  updateCellGroupVisibility();
   document.getElementById("formError").style.display = "none";
   document.getElementById("formSuccess").style.display = "none";
   document.getElementById("formContent").style.display = "block";
@@ -540,6 +588,9 @@ function resetForm() {
     successText.textContent =
       "Thank you for registering. Our team will be in touch shortly. God bless you!";
 }
+
+document.getElementById("regFor")?.addEventListener("change", updateCellGroupVisibility);
+window.addEventListener("load", updateCellGroupVisibility);
 
 // ── GALLERY LIGHTBOX ───────────────────────────────────────
 (function () {

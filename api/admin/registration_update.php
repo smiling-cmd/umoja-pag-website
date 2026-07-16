@@ -4,6 +4,7 @@
 header('Content-Type: application/json');
 require_once __DIR__ . '/../../db.php';
 require_once __DIR__ . '/../../jwt.php';
+require_once __DIR__ . '/../../registration_rules.php';
 
 $payload = jwt_require_auth();
 
@@ -51,6 +52,48 @@ if (isset($params[':email']) && $params[':email'] !== null
     && !filter_var($params[':email'], FILTER_VALIDATE_EMAIL)) {
     http_response_code(422);
     echo json_encode(['success' => false, 'message' => 'Invalid email address']);
+    exit;
+}
+
+// Normalize phone when updated
+if (isset($params[':phone']) && $params[':phone'] !== null) {
+    $normalizedPhone = normalizeKenyanPhone($params[':phone']);
+    if (!preg_match('/^\+254(7|1)\d{8}$/', $normalizedPhone)) {
+        http_response_code(422);
+        echo json_encode(['success' => false, 'message' => 'Phone number is invalid']);
+        exit;
+    }
+    $params[':phone'] = $normalizedPhone;
+}
+
+// Enforce one ministry / one cell group / one activity per contact
+$current = $pdo->prepare(
+    'SELECT phone, email, reg_for FROM registrations WHERE id = :id LIMIT 1'
+);
+$current->execute([':id' => $id]);
+$row = $current->fetch(PDO::FETCH_ASSOC);
+if (!$row) {
+    http_response_code(404);
+    echo json_encode(['success' => false, 'message' => 'Registration not found']);
+    exit;
+}
+
+$checkPhone = $params[':phone'] ?? $row['phone'];
+$checkEmail = array_key_exists('email', $input)
+    ? ($params[':email'] ?? null)
+    : ($row['email'] ?: null);
+$checkRegFor = $params[':reg_for'] ?? $row['reg_for'];
+
+$duplicateError = validateRegistrationUniqueness(
+    $pdo,
+    $checkPhone,
+    $checkEmail,
+    $checkRegFor,
+    $id
+);
+if ($duplicateError !== null) {
+    http_response_code(409);
+    echo json_encode(['success' => false, 'message' => $duplicateError, 'errors' => [$duplicateError]]);
     exit;
 }
 
