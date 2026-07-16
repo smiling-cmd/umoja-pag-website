@@ -47,7 +47,7 @@ try {
     $sql = "SELECT id, first_name, last_name, email, phone, area, reg_for, age_group, status, created_at
             FROM registrations
             $whereSql
-            ORDER BY created_at DESC
+            ORDER BY id ASC
             LIMIT :limit OFFSET :offset";
 
     $stmt = $pdo->prepare($sql);
