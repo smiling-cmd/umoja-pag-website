@@ -40,6 +40,26 @@ function normalizeKenyanPhone(string $phone): string
 }
 
 /**
+ * Normalizes the "registering for" value. When someone picks "Cell Group"
+ * on the form, the specific cell group they chose is folded into the
+ * value so each cell group counts as its own distinct activity for
+ * duplicate-checking purposes — e.g. "Cell Group — Jericho" is treated as
+ * different from "Cell Group — Nazareth", so joining one doesn't block
+ * joining another later once the first is active.
+ *
+ * @param string      $regFor    Raw "Registering For" selection
+ * @param string|null $cellGroup The specific cell group chosen, if any
+ * @return string Normalized reg_for value
+ */
+function normalizeRegFor(string $regFor, ?string $cellGroup): string
+{
+    if ($regFor === 'Cell Group' && $cellGroup !== null && $cellGroup !== '') {
+        return 'Cell Group — ' . $cellGroup;
+    }
+    return $regFor;
+}
+
+/**
  * Enforces duplicate-contact rules when creating or editing a registration.
  *
  * Rule 1 — same event, twice: a phone number OR email can never register
