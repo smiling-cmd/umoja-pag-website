@@ -1,4 +1,13 @@
-/* Styles for ministries detail page — reuses index.css's :root palette (--gold, --surface, --text, --muted, --border) */
+/* ============================================================
+   Ministries — Umoja P.A.G Church
+   Signature: each ministry photo is framed as a chapel window
+   (echoes the arched windows on the actual church building),
+   entries are separated by a small cross-marked divider, and
+   read in an alternating processional rhythm down the page —
+   like walking a nave and looking through each window in turn.
+   Two accents carry meaning: gold = the sacred (scripture, what
+   to expect), blue = the practical (meeting details).
+   ============================================================ */
 
 body {
   background:
@@ -9,11 +18,13 @@ body {
 
 main {
   padding: 130px 5% 60px;
-  max-width: 1100px;
+  max-width: 1060px;
   margin: 0 auto;
 }
+
 .page-intro {
-  margin-bottom: 44px;
+  margin-bottom: 64px;
+  max-width: 640px;
 }
 .page-eyebrow {
   display: inline-flex;
@@ -36,59 +47,107 @@ main {
 .section-intro {
   color: var(--muted);
   font-size: 1.08rem;
-  max-width: 640px;
   line-height: 1.7;
 }
 
+/* ── Each ministry entry ─────────────────────────────────── */
 .min-card {
+  position: relative;
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 32px;
-  padding-bottom: 48px;
-  margin-bottom: 48px;
-  border-bottom: 1px solid var(--border);
+  grid-template-columns: minmax(240px, 300px) 1fr;
+  gap: 44px;
   align-items: start;
+  padding-top: 64px;
+  border-top: 1px solid var(--border);
 }
-.min-card:last-of-type {
-  border-bottom: none;
-  padding-bottom: 0;
-  margin-bottom: 0;
+.min-card:first-of-type {
+  padding-top: 0;
+  border-top: none;
 }
-.min-card img {
+/* Cross-marked divider, sitting on the hairline between entries */
+.min-card:not(:first-of-type)::before {
+  content: "\271D";
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  color: var(--gold);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+/* Alternate the rhythm: photo right on even entries */
+.min-card:nth-of-type(even) {
+  grid-template-columns: 1fr minmax(240px, 300px);
+}
+.min-card:nth-of-type(even) > img {
+  order: 2;
+}
+.min-card:nth-of-type(even) > div {
+  order: 1;
+}
+
+/* ── Chapel-window photo frame ───────────────────────────── */
+.min-card > img {
   width: 100%;
-  height: 260px;
+  height: 340px;
   object-fit: cover;
-  border-radius: 18px;
-  transition: transform 0.4s ease;
+  object-position: center 30%;
+  border-radius: 50% 50% 6px 6px;
+  border: 3px solid rgba(212, 160, 23, 0.45);
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.45),
+    0 -30px 60px rgba(212, 160, 23, 0.1);
+  transition: transform 0.5s ease, border-color 0.3s ease;
 }
-.min-card:hover img {
-  transform: scale(1.02);
+.min-card:hover > img {
+  transform: translateY(-4px);
+  border-color: rgba(212, 160, 23, 0.75);
 }
+
 .min-card h2 {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   font-family: "Cormorant Garamond", serif;
-  font-size: 2rem;
+  font-size: 2.1rem;
   font-weight: 700;
   color: var(--text);
 }
-.min-card p {
+.min-card > div > p {
   margin: 0 0 8px;
   color: var(--text);
 }
+/* Illuminated first letter on the opening line of each entry */
+.min-card > div > p:first-of-type::first-letter {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 3.4rem;
+  font-weight: 700;
+  color: var(--gold);
+  float: left;
+  line-height: 0.75;
+  margin: 6px 8px 0 0;
+}
 .min-desc-more {
-  margin: 2px 0 16px;
+  margin: 2px 0 18px;
   color: var(--muted);
   font-size: 14.5px;
   line-height: 1.75;
+  clear: left;
 }
 
-/* Guiding scripture — the warm emotional anchor for each ministry */
+/* ── Guiding scripture — the warm emotional anchor ───────── */
 .verse-block {
   position: relative;
   background: linear-gradient(135deg, rgba(212, 160, 23, 0.12), rgba(212, 160, 23, 0.04));
   border: 1px solid rgba(212, 160, 23, 0.28);
   border-left: 3px solid var(--gold);
-  border-radius: 14px;
+  border-radius: 4px 14px 14px 4px;
   padding: 16px 20px 16px 44px;
   margin: 4px 0 18px;
 }
@@ -124,6 +183,7 @@ main {
   margin: 8px 0 0;
   color: var(--muted);
   font-size: 14px;
+  clear: left;
 }
 .sub-list strong {
   color: var(--gold);
@@ -150,6 +210,7 @@ main {
   color: var(--gold);
 }
 
+/* ── Practical details — the second, cooler accent ───────── */
 .info-panel {
   display: flex;
   flex-wrap: wrap;
@@ -161,7 +222,7 @@ main {
   white-space: nowrap;
 }
 .info-row strong {
-  color: var(--gold);
+  color: var(--blue-light);
   font-weight: 700;
   font-size: 11px;
   text-transform: uppercase;
@@ -219,16 +280,19 @@ main {
 }
 
 @media (max-width: 780px) {
-  .min-card {
+  .min-card,
+  .min-card:nth-of-type(even) {
     grid-template-columns: 1fr;
   }
-  .min-card img {
-    height: 220px;
+  .min-card:nth-of-type(even) > img,
+  .min-card:nth-of-type(even) > div {
+    order: initial;
   }
-  .verse-block {
-    padding: 14px 16px 14px 40px;
+  .min-card > img {
+    height: 240px;
+    border-radius: 50% 50% 4px 4px;
   }
-  .verse-text {
-    font-size: 1.05rem;
+  .min-card h2 {
+    font-size: 1.7rem;
   }
 }

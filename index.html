@@ -932,7 +932,7 @@
             class="qr-toggle-btn reveal d2"
             id="qrToggleBtn"
           >
-            📱 Get QR Code to Print →
+             Scan QR code to Register →
           </button>
         </div>
         <div class="reg-form-wrap reveal">
@@ -1079,15 +1079,18 @@
           >
             ✕
           </button>
-          <div class="qr-eyebrow">✦ Scan to Register</div>
-          <div class="qr-title">
-            Umoja P.A.G Church<br />Registration QR Code
+          <div class="qr-eyebrow">✦ Umoja P.A.G Church</div>
+          <div class="qr-title">Scan to Register</div>
+          <div
+            class="qr-frame"
+            id="qrExpandBtn"
+            role="button"
+            tabindex="0"
+            aria-label="Expand QR code to full screen"
+          >
+            <div class="qr-box" id="qrCanvas"></div>
           </div>
-          <div class="qr-frame"><div class="qr-box" id="qrCanvas"></div></div>
-          <p class="qr-desc">
-            Scan with any smartphone camera to open this form. Print on
-            bulletins or display at the entrance.
-          </p>
+          <p class="qr-tap-hint">⤢ Tap the code to enlarge</p>
           <div id="qrHint">
             <a
               href="#"
@@ -1099,17 +1102,26 @@
             >
           </div>
           <div class="qr-btns">
-            <button class="qr-btn qr-wa" onclick="shareWhatsApp()">
-              💬 Share on WhatsApp
-            </button>
-            <button class="qr-btn qr-dl" onclick="downloadQR()">
-              ⬇ Download QR Image
-            </button>
-            <button class="qr-btn qr-cp" onclick="copyLink()">
-              🔗 Copy Link
+            <button class="qr-btn qr-print" onclick="printQR()">
+              🖨 Print QR Code
             </button>
           </div>
         </div>
+      </div>
+
+      <div class="qr-expand-overlay" id="qrExpandOverlay">
+        <button
+          type="button"
+          class="qr-modal-close qr-expand-close"
+          id="qrExpandClose"
+          aria-label="Close expanded QR code"
+        >
+          ✕
+        </button>
+        <div class="qr-expand-frame">
+          <div class="qr-expand-box" id="qrExpandBox"></div>
+        </div>
+        <p class="qr-expand-caption">Umoja P.A.G Church — Scan to Register</p>
       </div>
     </section>
 

@@ -340,23 +340,59 @@ renderQRCode();
   });
 })();
 
-function shareWhatsApp() {
-  const regUrl = buildRegUrl();
-  window.open(
-    "https://wa.me/?text=" +
-      encodeURIComponent("✦ Register with Umoja P.A.G Church!\n\n" + regUrl),
-    "_blank",
-  );
+// ── EXPANDED (FULL-SCREEN) QR — tap the code inside the modal ──
+function renderExpandedQR() {
+  const box = document.getElementById("qrExpandBox");
+  if (!box) return;
+  box.innerHTML = "";
+  if (window.QRCode) {
+    new QRCode(box, {
+      text: buildRegUrl(),
+      width: 320,
+      height: 320,
+      colorDark: "#1A4B9C",
+      colorLight: "#FFFFFF",
+      correctLevel: QRCode.CorrectLevel.H,
+    });
+  }
 }
 
-function downloadQR() {
-  const canvas = document.querySelector("#qrCanvas canvas");
-  if (!canvas) {
-    alert(
-      "QR code is not ready yet. Please check your internet connection and try again.",
-    );
-    return;
+(function () {
+  const expandBtn = document.getElementById("qrExpandBtn");
+  const expandOverlay = document.getElementById("qrExpandOverlay");
+  const expandClose = document.getElementById("qrExpandClose");
+  if (!expandBtn || !expandOverlay || !expandClose) return;
+
+  function openExpand() {
+    renderExpandedQR();
+    expandOverlay.classList.add("open");
+    expandClose.focus();
   }
+  function closeExpand() {
+    expandOverlay.classList.remove("open");
+    expandBtn.focus();
+  }
+
+  expandBtn.addEventListener("click", openExpand);
+  expandBtn.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openExpand();
+    }
+  });
+  expandClose.addEventListener("click", closeExpand);
+  expandOverlay.addEventListener("click", (e) => {
+    if (e.target === expandOverlay) closeExpand();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && expandOverlay.classList.contains("open"))
+      closeExpand();
+  });
+})();
+
+function buildQrPosterDataUrl() {
+  const canvas = document.querySelector("#qrCanvas canvas");
+  if (!canvas) return null;
   const out = document.createElement("canvas");
   out.width = 320;
   out.height = 360;
@@ -378,33 +414,42 @@ function downloadQR() {
   ctx.fillStyle = "#6B7280";
   ctx.font = "11px sans-serif";
   ctx.fillText("Umoja, Nairobi", 160, 272);
-  const a = document.createElement("a");
-  a.download = "umoja-pag-register-qr.png";
-  a.href = out.toDataURL();
-  a.click();
+  return out.toDataURL();
 }
 
-function copyLink() {
-  const btn = document.querySelector(".qr-cp");
-  const regUrl = buildRegUrl();
-  const showCopied = () => {
-    if (!btn) return;
-    const orig = btn.textContent;
-    btn.textContent = "✅ Copied!";
-    btn.style.background = "#D1FAE5";
-    setTimeout(() => {
-      btn.textContent = orig;
-      btn.style.background = "";
-    }, 2000);
-  };
-  if (navigator.clipboard) {
-    navigator.clipboard
-      .writeText(regUrl)
-      .then(showCopied)
-      .catch(() => window.prompt("Copy this link:", regUrl));
-  } else {
-    window.prompt("Copy this link:", regUrl);
+function printQR() {
+  const dataUrl = buildQrPosterDataUrl();
+  if (!dataUrl) {
+    alert(
+      "QR code is not ready yet. Please check your internet connection and try again.",
+    );
+    return;
   }
+  const printWin = window.open("", "_blank", "width=420,height=520");
+  if (!printWin) {
+    alert("Please allow pop-ups for this site to print the QR code.");
+    return;
+  }
+  printWin.document.write(`
+    <html>
+      <head>
+        <title>Umoja P.A.G Church — Registration QR</title>
+        <style>
+          body { margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; background: #fff; }
+          img { width: 320px; height: 360px; }
+        </style>
+      </head>
+      <body>
+        <img src="${dataUrl}" alt="Umoja P.A.G Church registration QR code" />
+        <script>
+          const img = document.querySelector("img");
+          img.onload = () => { window.print(); };
+          window.onafterprint = () => window.close();
+        <\/script>
+      </body>
+    </html>
+  `);
+  printWin.document.close();
 }
 
 // ── REGISTRATION FORM ─────────────────────────────────────────
@@ -770,4 +815,4 @@ function resetForm() {
   mo.observe(navLinksEl, { subtree: true, attributes: true, attributeFilter: ["class"] });
 
   setTimeout(updateIndicator, 120);
-})();
+})(); 
