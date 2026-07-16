@@ -9,6 +9,9 @@
 </head>
 <body>
 
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+
 <!-- LOGIN -->
 <div class="login-wrap" id="loginWrap">
   <div class="login-card">
@@ -56,7 +59,6 @@
     </nav>
     <div class="sidebar-bottom">
       <div style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:10px;" id="adminUser"></div>
-      <a class="manage-admins-link" onclick="openAdminsModal()">⚙ Manage Admins</a>
       <button class="logout-btn" onclick="logout()">Sign Out</button>
     </div>
   </div>
@@ -116,24 +118,11 @@
             <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
           </div>
         </div>
-        <div class="bulk-bar" id="bulkBar">
-          <span class="bulk-count" id="bulkCount">0 selected</span>
-          <select class="filter-input" id="bulkStatusSelect" aria-label="Bulk status">
-            <option value="pending">⏳ Pending</option>
-            <option value="contacted">📞 Contacted</option>
-            <option value="active">✅ Active</option>
-            <option value="inactive">⛔ Inactive</option>
-          </select>
-          <button class="page-btn" onclick="applyBulkStatus()">Apply Status</button>
-          <button class="delete-btn bulk-delete-btn" onclick="bulkDelete()">🗑 Delete Selected</button>
-          <button class="page-btn" onclick="clearSelection()">Clear</button>
-        </div>
 
         <div style="overflow-x:auto;">
           <table>
             <thead>
               <tr>
-                <th style="width:32px"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" aria-label="Select all"></th>
                 <th>#</th>
                 <th>Name</th>
                 <th>Phone</th>
@@ -146,7 +135,7 @@
               </tr>
             </thead>
             <tbody id="membersTable">
-              <tr><td colspan="10" class="loading">Loading...</td></tr>
+              <tr><td colspan="9" class="loading">Loading...</td></tr>
             </tbody>
           </table>
         </div>
@@ -156,116 +145,16 @@
     </div>
 
     <!-- ANALYTICS TAB -->
-<div class="section-tab" id="tab-analytics">
-  <div class="card">
-    <div class="card-header"><div class="card-title">Registrations by Month</div></div>
-    <div class="bar-wrap" id="monthChart"><div class="loading">Loading...</div></div>
-  </div>
-
-  <div class="charts-grid">
-    <div class="card">
-      <div class="card-header"><div class="card-title">By Status</div></div>
-      <div class="bar-wrap" id="statusChart"><div class="loading">Loading...</div></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">By Age Group</div></div>
-      <div class="bar-wrap" id="ageChart"><div class="loading">Loading...</div></div>
+    <div class="section-tab" id="tab-analytics">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Registrations by Month</div></div>
+        <div class="bar-wrap" id="monthChart"><div class="loading">Loading...</div></div>
+      </div>
     </div>
   </div>
 </div>
 
 <script src="admin.js"></script>
-
-<!-- EDIT REGISTRATION MODAL -->
-<div class="modal-overlay" id="editModalOverlay">
-  <div class="modal-card">
-    <div class="modal-header">
-      <div class="modal-title">Edit Registration</div>
-      <button class="modal-close" onclick="closeEditModal()" title="Close">✕</button>
-    </div>
-
-    <input type="hidden" id="editId">
-
-    <div class="modal-grid">
-      <div class="login-group">
-        <label for="editFirstName">First Name</label>
-        <input type="text" id="editFirstName">
-      </div>
-      <div class="login-group">
-        <label for="editLastName">Last Name</label>
-        <input type="text" id="editLastName">
-      </div>
-      <div class="login-group">
-        <label for="editEmail">Email</label>
-        <input type="email" id="editEmail">
-      </div>
-      <div class="login-group">
-        <label for="editPhone">Phone</label>
-        <input type="text" id="editPhone">
-      </div>
-      <div class="login-group">
-        <label for="editArea">Area</label>
-        <input type="text" id="editArea">
-      </div>
-      <div class="login-group">
-        <label for="editRegFor">Ministry / Purpose</label>
-        <select id="editRegFor" class="filter-input" style="width:100%">
-          <option>New Member Registration</option>
-          <option>Worship Team</option>
-          <option>Choir</option>
-          <option>Media Team</option>
-          <option>Sunday School (Junior)</option>
-          <option>Sunday School (Senior)</option>
-          <option>Sunday School (Teens)</option>
-          <option>Cell Group</option>
-          <option>General Church Activity</option>
-        </select>
-        <p class="form-hint" style="margin-top:6px;font-size:12px;color:var(--muted,#64748b);line-height:1.4">
-          One ministry per phone or email. Cell groups are separate — a person may have one ministry and one cell group.
-        </p>
-      </div>
-      <div class="login-group">
-        <label for="editAgeGroup">Age Group</label>
-        <input type="text" id="editAgeGroup">
-      </div>
-      <div class="login-group modal-grid-full">
-        <label for="editNotes">Notes</label>
-        <textarea id="editNotes" rows="3"></textarea>
-      </div>
-    </div>
-    <div class="login-error" id="editError"></div>
-
-    <div class="modal-actions">
-      <button class="page-btn" onclick="closeEditModal()">Cancel</button>
-      <button class="login-btn" style="width:auto;padding:10px 24px" onclick="saveEditModal()">Save Changes</button>
-    </div>
-  </div>
-</div>
-<!-- MANAGE ADMINS MODAL -->
-<div class="modal-overlay" id="adminsModalOverlay">
-  <div class="modal-card">
-    <div class="modal-header">
-      <div class="modal-title">Manage Admins</div>
-      <button class="modal-close" onclick="closeAdminsModal()" title="Close">✕</button>
-    </div>
-
-    <div class="login-group">
-      <label for="newAdminUsername">New admin username</label>
-      <input type="text" id="newAdminUsername" placeholder="e.g. jane">
-    </div>
-    <div class="login-group">
-      <label for="newAdminPassword">New admin password</label>
-      <input type="password" id="newAdminPassword" placeholder="At least 8 characters">
-    </div>
-    <div class="login-error" id="adminsError"></div>
-    <button class="login-btn" style="width:auto;padding:10px 24px;margin-bottom:20px" onclick="createAdmin()">Add Admin</button>
-
-    <div class="modal-title" style="font-size:14px;margin-bottom:10px">Current Admins</div>
-    <div id="adminsListWrap">
-      <div class="loading">Loading...</div>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>

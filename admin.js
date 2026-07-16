@@ -1,7 +1,5 @@
 let token = localStorage.getItem('umoja_admin_token');
   let currentPage = 1;
-  let currentMembers = []; // holds the most recently loaded registration rows, so the edit modal can look up a row's data without a second API call
-  let selectedIds = new Set(); // tracks which registration ids are checked for bulk actions
   let searchTimer;
   const loginPass = document.getElementById('loginPass');
   const loginWatcher = document.getElementById('loginWatcher');
@@ -89,12 +87,7 @@ let token = localStorage.getItem('umoja_admin_token');
     if (body) opts.body = JSON.stringify(body);
     const res  = await fetch(url, opts);
     const data = await res.json();
-    if (!data.success) {
-      const msg = Array.isArray(data.errors) && data.errors.length
-        ? data.errors.join(' ')
-        : (data.message || 'Request failed');
-      throw new Error(msg);
-    }
+    if (!data.success) throw new Error(data.message || 'Request failed');
     return data;
   }
 
@@ -137,6 +130,50 @@ let token = localStorage.getItem('umoja_admin_token');
     `).join('');
   }
 
+  // ── Toast notifications (replaces native browser alerts) ──
+  function showToast(message, type = 'error', duration = 5000) {
+    const container = document.getElementById('toastContainer');
+    if (!container) {
+      alert(message);
+      return;
+    }
+    const icons = { error: '⚠️', success: '✅', info: 'ℹ️' };
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+      <span class="toast-icon">${icons[type] || icons.info}</span>
+      <span class="toast-message"></span>
+      <button class="toast-close" aria-label="Dismiss">✕</button>
+    `;
+    toast.querySelector('.toast-message').textContent = message;
+
+    const remove = () => {
+      toast.classList.add('leaving');
+      setTimeout(() => toast.remove(), 180);
+    };
+    toast.querySelector('.toast-close').addEventListener('click', remove);
+    if (duration > 0) setTimeout(remove, duration);
+
+    container.appendChild(toast);
+  }
+
+  // ── Status progression (pending → contacted → active; inactive is terminal) ──
+  const STATUS_FLOW = ['pending', 'contacted', 'active', 'inactive'];
+  const STATUS_LABELS = {
+    pending:   '⏳ Pending',
+    contacted: '📞 Contacted',
+    active:    '✅ Active',
+    inactive:  '⛔ Inactive',
+  };
+
+  function statusOptionsHtml(current) {
+    const idx = STATUS_FLOW.indexOf(current);
+    const allowed = idx === -1 ? STATUS_FLOW : STATUS_FLOW.slice(idx);
+    return allowed
+      .map((s) => `<option value="${s}" ${s === current ? 'selected' : ''}>${STATUS_LABELS[s]}</option>`)
+      .join('');
+  }
+
   // ── Members ──────────────────────────────────────────────
   async function loadMembers() {
     const search  = document.getElementById('searchInput').value;
@@ -148,21 +185,17 @@ let token = localStorage.getItem('umoja_admin_token');
     if (status)  params.set('status',  status);
 
     const tbody = document.getElementById('membersTable');
-    tbody.innerHTML = '<tr><td colspan="10" class="loading">Loading...</td></tr>';
-    selectedIds.clear();
-    updateBulkBar();
+    tbody.innerHTML = '<tr><td colspan="9" class="loading">Loading...</td></tr>';
 
     try {
       const data = await api('/api/admin/registrations?' + params);
-      currentMembers = data.registrations;
       if (!data.registrations.length) {
-        tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><div class="icon">🔍</div><div>No registrations found</div></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">🔍</div><div>No registrations found</div></div></td></tr>';
         document.getElementById('pagination').innerHTML = '';
         return;
       }
       tbody.innerHTML = data.registrations.map(r => `
         <tr>
-          <td><input type="checkbox" class="row-check" data-id="${r.id}" onchange="toggleSelect(${r.id}, this)" ${selectedIds.has(r.id) ? 'checked' : ''}></td>
           <td style="color:var(--muted)">#${r.id}</td>
           <td><strong>${r.first_name} ${r.last_name}</strong>${r.email ? `<br><span style="font-size:11px;color:var(--muted)">${r.email}</span>` : ''}</td>
           <td>${r.phone}</td>
@@ -171,17 +204,11 @@ let token = localStorage.getItem('umoja_admin_token');
           <td>${r.age_group}</td>
           <td>
             <select class="status-select" onchange="updateStatus(${r.id}, this.value)">
-              <option value="pending"   ${r.status==='pending'   ?'selected':''}>⏳ Pending</option>
-              <option value="contacted" ${r.status==='contacted' ?'selected':''}>📞 Contacted</option>
-              <option value="active"    ${r.status==='active'    ?'selected':''}>✅ Active</option>
-              <option value="inactive"  ${r.status==='inactive'  ?'selected':''}>⛔ Inactive</option>
+              ${statusOptionsHtml(r.status)}
             </select>
           </td>
           <td style="font-size:12px;color:var(--muted)">${r.created_at.split(' ')[0]}</td>
-          <td>
-            <button class="edit-btn" onclick="openEditModal(${r.id})" title="Edit">✎</button>
-            <button class="delete-btn" onclick="deleteReg(${r.id},'${r.first_name} ${r.last_name}')" title="Delete">🗑</button>
-          </td>
+          <td><button class="delete-btn" onclick="deleteReg(${r.id},'${r.first_name} ${r.last_name}')" title="Delete">🗑</button></td>
         </tr>
       `).join('');
 
@@ -194,7 +221,7 @@ let token = localStorage.getItem('umoja_admin_token');
         if (data.page < data.pages) pag.innerHTML += `<button class="page-btn" onclick="changePage(${data.page+1})">Next →</button>`;
       }
     } catch(e) {
-      tbody.innerHTML = `<tr><td colspan="10" style="color:var(--red);padding:20px">${e.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" style="color:var(--red);padding:20px">${e.message}</td></tr>`;
     }
   }
 
@@ -205,7 +232,11 @@ let token = localStorage.getItem('umoja_admin_token');
     try {
       await api(`/api/admin/registrations/${id}/status`, 'PATCH', { status });
       loadStats();
-    } catch(e) { alert('Failed to update status: ' + e.message); }
+      loadMembers();
+    } catch(e) {
+      showToast('Failed to update status: ' + e.message, 'error');
+      loadMembers(); // re-sync the dropdown with the real (unchanged) status
+    }
   }
 
   async function deleteReg(id, name) {
@@ -214,216 +245,12 @@ let token = localStorage.getItem('umoja_admin_token');
       await api(`/api/admin/registrations/${id}`, 'DELETE');
       loadMembers();
       loadStats();
-    } catch(e) { alert('Failed to delete: ' + e.message); }
-  }
-  // ── Bulk Selection ───────────────────────────────────────
-  function toggleSelect(id, checkbox) {
-    if (checkbox.checked) selectedIds.add(id);
-    else selectedIds.delete(id);
-    updateBulkBar();
-  }
-
-  function toggleSelectAll(checkbox) {
-    const boxes = document.querySelectorAll('.row-check');
-    boxes.forEach(box => {
-      box.checked = checkbox.checked;
-      const id = parseInt(box.dataset.id, 10);
-      if (checkbox.checked) selectedIds.add(id);
-      else selectedIds.delete(id);
-    });
-    updateBulkBar();
-  }
-
-  function clearSelection() {
-    selectedIds.clear();
-    document.querySelectorAll('.row-check').forEach(box => box.checked = false);
-    const selectAll = document.getElementById('selectAllCheckbox');
-    if (selectAll) selectAll.checked = false;
-    updateBulkBar();
-  }
-
-  function updateBulkBar() {
-    const bar = document.getElementById('bulkBar');
-    const count = document.getElementById('bulkCount');
-    if (selectedIds.size > 0) {
-      bar.classList.add('active');
-      count.textContent = `${selectedIds.size} selected`;
-    } else {
-      bar.classList.remove('active');
-    }
-  }
-
-  async function applyBulkStatus() {
-    if (selectedIds.size === 0) return;
-    const status = document.getElementById('bulkStatusSelect').value;
-    try {
-      await api('/api/admin/bulk-status', 'POST', { ids: Array.from(selectedIds), status });
-      loadMembers();
-      loadStats();
-    } catch (e) {
-      alert('Failed to update statuses: ' + e.message);
-    }
-  }
-
-  async function bulkDelete() {
-    if (selectedIds.size === 0) return;
-    if (!confirm(`Delete ${selectedIds.size} selected registration(s)? This cannot be undone.`)) return;
-    try {
-      await api('/api/admin/bulk-delete', 'POST', { ids: Array.from(selectedIds) });
-      loadMembers();
-      loadStats();
-    } catch (e) {
-      alert('Failed to delete: ' + e.message);
-    }
-  }
-  // ── Edit Modal ───────────────────────────────────────────
-  function openEditModal(id) {
-    const reg = currentMembers.find(r => r.id === id);
-    if (!reg) { alert('Could not find that registration — try refreshing.'); return; }
-
-    document.getElementById('editId').value        = reg.id;
-    document.getElementById('editFirstName').value = reg.first_name || '';
-    document.getElementById('editLastName').value  = reg.last_name  || '';
-    document.getElementById('editEmail').value     = reg.email      || '';
-    document.getElementById('editPhone').value     = reg.phone      || '';
-    document.getElementById('editArea').value      = reg.area       || '';
-    document.getElementById('editRegFor').value    = reg.reg_for    || '';
-    document.getElementById('editAgeGroup').value  = reg.age_group  || '';
-    document.getElementById('editNotes').value     = reg.notes      || '';
-
-    document.getElementById('editError').style.display = 'none';
-    document.getElementById('editModalOverlay').style.display = 'flex';
-  }
-
-  function closeEditModal() {
-    document.getElementById('editModalOverlay').style.display = 'none';
-  }
-
-  async function saveEditModal() {
-    const id = document.getElementById('editId').value;
-    const errEl = document.getElementById('editError');
-    errEl.style.display = 'none';
-
-    const payload = {
-      first_name: document.getElementById('editFirstName').value.trim(),
-      last_name:  document.getElementById('editLastName').value.trim(),
-      email:      document.getElementById('editEmail').value.trim(),
-      phone:      document.getElementById('editPhone').value.trim(),
-      area:       document.getElementById('editArea').value.trim(),
-      reg_for:    document.getElementById('editRegFor').value,
-      age_group:  document.getElementById('editAgeGroup').value.trim(),
-      notes:      document.getElementById('editNotes').value.trim(),
-    };
-
-    if (!payload.first_name || !payload.last_name || !payload.phone) {
-      errEl.textContent = 'First name, last name, and phone are required.';
-      errEl.style.display = 'block';
-      return;
-    }
-
-    try {
-      await api(`/api/admin/registrations/${id}`, 'PUT', payload);
-      closeEditModal();
-      loadMembers();
-      loadStats();
-    } catch (e) {
-      errEl.textContent = e.message || 'Failed to save changes.';
-      errEl.style.display = 'block';
-    }
-  }
-  // ── Manage Admins ────────────────────────────────────────
-  function getCurrentAdminId() {
-    if (!token) return null;
-    try {
-      return JSON.parse(atob(token.split('.')[1])).sub;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  async function openAdminsModal() {
-    document.getElementById('newAdminUsername').value = '';
-    document.getElementById('newAdminPassword').value = '';
-    document.getElementById('adminsError').style.display = 'none';
-    document.getElementById('adminsModalOverlay').style.display = 'flex';
-    await loadAdminsList();
-  }
-
-  function closeAdminsModal() {
-    document.getElementById('adminsModalOverlay').style.display = 'none';
-  }
-
-  async function loadAdminsList() {
-    const wrap = document.getElementById('adminsListWrap');
-    wrap.innerHTML = '<div class="loading">Loading...</div>';
-    try {
-      const data = await api('/api/admin/admins-list');
-      const currentId = getCurrentAdminId();
-
-      if (!data.admins.length) {
-        wrap.innerHTML = '<div class="empty-state">No admins found</div>';
-        return;
-      }
-
-      wrap.innerHTML = data.admins.map(a => `
-        <div class="admin-row">
-          <div>
-            <div class="admin-row-name">${a.username}${String(a.id) === String(currentId) ? '<span class="admin-row-you">You</span>' : ''}</div>
-            <div class="admin-row-date">Added ${a.created_at ? a.created_at.split(' ')[0] : '—'}</div>
-          </div>
-          ${String(a.id) === String(currentId)
-            ? ''
-            : `<button class="delete-btn" onclick="deleteAdmin(${a.id}, '${a.username}')" title="Remove">🗑</button>`
-          }
-        </div>
-      `).join('');
-    } catch (e) {
-      wrap.innerHTML = `<div style="color:var(--red);padding:10px">${e.message}</div>`;
-    }
-  }
-
-  async function createAdmin() {
-    const errEl = document.getElementById('adminsError');
-    errEl.style.display = 'none';
-
-    const username = document.getElementById('newAdminUsername').value.trim();
-    const password = document.getElementById('newAdminPassword').value;
-
-    if (!username || !password) {
-      errEl.textContent = 'Username and password are required.';
-      errEl.style.display = 'block';
-      return;
-    }
-    if (password.length < 8) {
-      errEl.textContent = 'Password must be at least 8 characters.';
-      errEl.style.display = 'block';
-      return;
-    }
-
-    try {
-      await api('/api/admin/admins-create', 'POST', { username, password });
-      document.getElementById('newAdminUsername').value = '';
-      document.getElementById('newAdminPassword').value = '';
-      await loadAdminsList();
-    } catch (e) {
-      errEl.textContent = e.message || 'Failed to create admin.';
-      errEl.style.display = 'block';
-    }
-  }
-
-  async function deleteAdmin(id, username) {
-    if (!confirm(`Remove admin "${username}"? They will no longer be able to sign in.`)) return;
-    try {
-      await api(`/api/admin/admins/${id}`, 'DELETE');
-      await loadAdminsList();
-    } catch (e) {
-      alert('Failed to remove admin: ' + e.message);
-    }
+    } catch(e) { showToast('Failed to delete: ' + e.message, 'error'); }
   }
 
   async function exportCSV() {
     if (!token) {
-      alert('Please sign in before exporting data.');
+      showToast('Please sign in before exporting data.', 'error');
       return;
     }
 
@@ -450,7 +277,7 @@ let token = localStorage.getItem('umoja_admin_token');
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (e) {
-      alert(e.message || 'Export failed. Please try again.');
+      showToast(e.message || 'Export failed. Please try again.', 'error');
     }
   }
 
@@ -458,18 +285,11 @@ let token = localStorage.getItem('umoja_admin_token');
   async function loadAnalytics() {
     try {
       const data = await api('/api/admin/stats');
-
-      const monthRows = data.byMonth.map(r => ({ ...r, label: r.month }));
-      renderBars('monthChart', monthRows, 'label');
-
-      const statusLabels = { pending: '⏳ Pending', contacted: '📞 Contacted', active: '✅ Active', inactive: '⛔ Inactive' };
-      const statusRows = data.byStatus.map(r => ({ ...r, label: statusLabels[r.status] || r.status }));
-      renderBars('statusChart', statusRows, 'label');
-
-      const ageRows = data.byAgeGroup.map(r => ({ ...r, label: r.age_group }));
-      renderBars('ageChart', ageRows, 'label');
+      const rows = data.byMonth.map(r => ({ ...r, label: r.month }));
+      renderBars('monthChart', rows, 'label');
     } catch(e) { console.error(e); }
   }
+
   // ── Init ─────────────────────────────────────────────────
   window.addEventListener('load', () => {
     if (token) {

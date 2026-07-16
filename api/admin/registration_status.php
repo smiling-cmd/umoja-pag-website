@@ -31,14 +31,35 @@ if (!in_array($status, $allowed, true)) {
 }
 
 try {
-    $stmt = $pdo->prepare("UPDATE registrations SET status = :status WHERE id = :id");
-    $stmt->execute([':status' => $status, ':id' => $id]);
+    $current = $pdo->prepare("SELECT status FROM registrations WHERE id = :id LIMIT 1");
+    $current->execute([':id' => $id]);
+    $currentStatus = $current->fetchColumn();
 
-    if ($stmt->rowCount() === 0) {
+    if ($currentStatus === false) {
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Registration not found']);
         exit;
     }
+
+    $currentRank = array_search($currentStatus, $allowed, true);
+    $newRank     = array_search($status, $allowed, true);
+    // $currentStatus may pre-date this pipeline (e.g. null/legacy value) —
+    // treat anything not in $allowed as rank 0 so it can still move forward.
+    if ($currentRank === false) {
+        $currentRank = 0;
+    }
+
+    if ($newRank < $currentRank) {
+        http_response_code(409);
+        echo json_encode([
+            'success' => false,
+            'message' => "Status cannot move backward from \"$currentStatus\" to \"$status\".",
+        ]);
+        exit;
+    }
+
+    $stmt = $pdo->prepare("UPDATE registrations SET status = :status WHERE id = :id");
+    $stmt->execute([':status' => $status, ':id' => $id]);
 
     echo json_encode(['success' => true, 'message' => 'Status updated']);
 } catch (PDOException $e) {
