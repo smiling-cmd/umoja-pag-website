@@ -118,7 +118,6 @@ const cloudwatchPrivateFields = ["phone", "email"]
   .map((id) => document.getElementById(id))
   .filter(Boolean);
 const cloudwatchEmailField = document.getElementById("email");
-const cloudwatchPhoneField = document.getElementById("phone");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let cloudwatchBlinkTimeout = null;
 let cloudwatchMessageTimeout = null;
@@ -132,39 +131,18 @@ function shakeCloudwatch() {
   window.setTimeout(() => cloudwatchAvatar.classList.remove("is-shaking"), 900);
 }
 function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
-function normalizePhoneNumber(phone) {
-  const cleaned = phone.replace(/[\s().-]/g, "");
-  if (/^0(7|1)\d{8}$/.test(cleaned)) return "+254" + cleaned.slice(1);
-  if (/^254(7|1)\d{8}$/.test(cleaned)) return "+" + cleaned;
-  return cleaned;
-}
-function isValidPhoneNumber(phone) {
-  return /^\+254(7|1)\d{8}$/.test(normalizePhoneNumber(phone));
-}
-function showFieldError(field, message) {
-  if (!field) return;
-  field.style.borderColor = "#EF4444";
-  field.focus();
+function handleInvalidEmail() {
+  if (!cloudwatchEmailField) return;
+  cloudwatchEmailField.style.borderColor = "#EF4444";
+  cloudwatchEmailField.focus();
   setCloudwatchClosed(false);
   setCloudwatchFrown(true);
   shakeCloudwatch();
-  setCloudwatchMessage(message, { resetAfter: 2600 });
-}
-function clearFieldError(field) {
-  if (!field) return;
-  field.style.borderColor = "";
-  setCloudwatchFrown(false);
-}
-function handleInvalidEmail() {
-  showFieldError(cloudwatchEmailField, "Please enter a valid email address.");
-}
-function handleInvalidPhone() {
-  showFieldError(
-    cloudwatchPhoneField,
-    "Please enter a valid Kenyan phone number.",
-  );
+  setCloudwatchMessage("Kindly enter correct details", {
+    resetAfter: 2400,
+  });
 }
 
 function setCloudwatchClosed(closed) {
@@ -219,11 +197,10 @@ if (cloudwatchAvatar) {
   });
   if (cloudwatchEmailField) {
     cloudwatchEmailField.addEventListener("input", () => {
-      clearFieldError(cloudwatchEmailField);
+      cloudwatchEmailField.style.borderColor = "";
       if (
         cloudwatchCopy &&
-        cloudwatchCopy.textContent.trim() ===
-          "Please enter a valid email address."
+        cloudwatchCopy.textContent.trim() === "Kindly enter correct details"
       ) {
         clearTimeout(cloudwatchMessageTimeout);
         cloudwatchCopy.innerHTML = cloudwatchDefaultMessage;
@@ -233,15 +210,6 @@ if (cloudwatchAvatar) {
     cloudwatchEmailField.addEventListener("blur", () => {
       const emailValue = cloudwatchEmailField.value.trim();
       if (emailValue && !isValidEmail(emailValue)) handleInvalidEmail();
-    });
-  }
-  if (cloudwatchPhoneField) {
-    cloudwatchPhoneField.addEventListener("input", () =>
-      clearFieldError(cloudwatchPhoneField),
-    );
-    cloudwatchPhoneField.addEventListener("blur", () => {
-      const phoneValue = cloudwatchPhoneField.value.trim();
-      if (phoneValue && !isValidPhoneNumber(phoneValue)) handleInvalidPhone();
     });
   }
   if (!reduceMotion.matches) window.setInterval(blinkCloudwatch, 3000);
@@ -340,194 +308,138 @@ renderQRCode();
   });
 })();
 
-// ── EXPANDED (FULL-SCREEN) QR — tap the code inside the modal ──
-function renderExpandedQR() {
-  const box = document.getElementById("qrExpandBox");
-  if (!box) return;
-  box.innerHTML = "";
-  if (window.QRCode) {
-    new QRCode(box, {
-      text: buildRegUrl(),
-      width: 320,
-      height: 320,
-      colorDark: "#1A4B9C",
-      colorLight: "#FFFFFF",
-      correctLevel: QRCode.CorrectLevel.H,
-    });
-  }
-}
-
+// ── QR EXPAND (tap the small code to enlarge full-screen) ─────
 (function () {
-  const expandBtn = document.getElementById("qrExpandBtn");
-  const expandOverlay = document.getElementById("qrExpandOverlay");
-  const expandClose = document.getElementById("qrExpandClose");
-  if (!expandBtn || !expandOverlay || !expandClose) return;
-
-  function openExpand() {
-    renderExpandedQR();
-    expandOverlay.classList.add("open");
-    expandClose.focus();
-  }
-  function closeExpand() {
-    expandOverlay.classList.remove("open");
-    expandBtn.focus();
-  }
-
-  expandBtn.addEventListener("click", openExpand);
-  expandBtn.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      openExpand();
+  try {
+    const expandBtn = document.getElementById("qrExpandBtn");
+    const expandOverlay = document.getElementById("qrExpandOverlay");
+    const expandBox = document.getElementById("qrExpandBox");
+    const expandClose = document.getElementById("qrExpandClose");
+    if (!expandBtn || !expandOverlay || !expandBox || !expandClose) {
+      console.warn("QR expand elements not found on page — skipping setup.");
+      return;
     }
-  });
-  expandClose.addEventListener("click", closeExpand);
-  expandOverlay.addEventListener("click", (e) => {
-    if (e.target === expandOverlay) closeExpand();
-  });
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && expandOverlay.classList.contains("open"))
-      closeExpand();
-  });
+
+    function openExpand() {
+      const regUrl = buildRegUrl();
+      expandBox.innerHTML = "";
+      if (window.QRCode) {
+        new QRCode(expandBox, {
+          text: regUrl,
+          width: 320,
+          height: 320,
+          colorDark: "#1A4B9C",
+          colorLight: "#FFFFFF",
+          correctLevel: QRCode.CorrectLevel.H,
+        });
+      } else {
+        expandBox.innerHTML = `<a href="${regUrl}">Open registration form</a>`;
+      }
+      expandOverlay.classList.add("open");
+      expandClose.focus();
+    }
+    function closeExpand() {
+      expandOverlay.classList.remove("open");
+      expandBtn.focus();
+    }
+
+    expandBtn.addEventListener("click", openExpand);
+    expandBtn.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openExpand();
+      }
+    });
+    expandClose.addEventListener("click", closeExpand);
+    expandOverlay.addEventListener("click", (e) => {
+      if (e.target === expandOverlay) closeExpand();
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && expandOverlay.classList.contains("open"))
+        closeExpand();
+    });
+  } catch (e) {
+    console.error("QR expand setup failed:", e);
+  }
 })();
 
-function buildQrPosterDataUrl() {
-  const canvas = document.querySelector("#qrCanvas canvas");
-  if (!canvas) return null;
-  const out = document.createElement("canvas");
-  out.width = 320;
-  out.height = 360;
-  const ctx = out.getContext("2d");
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillRect(0, 0, 320, 360);
-  ctx.fillStyle = "#D4A017";
-  ctx.fillRect(0, 0, 320, 18);
-  ctx.fillStyle = "#1A4B9C";
-  ctx.fillRect(0, 342, 320, 18);
-  ctx.drawImage(canvas, 70, 28, 180, 180);
-  ctx.fillStyle = "#1A4B9C";
-  ctx.font = "bold 14px sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText("Umoja P.A.G Church", 160, 232);
-  ctx.fillStyle = "#D4A017";
-  ctx.font = "12px sans-serif";
-  ctx.fillText("Scan to Register", 160, 252);
-  ctx.fillStyle = "#6B7280";
-  ctx.font = "11px sans-serif";
-  ctx.fillText("Umoja, Nairobi", 160, 272);
-  return out.toDataURL();
-}
-
+// ── PRINT QR (hidden iframe — works around mobile popup blockers) ──
 function printQR() {
-  const dataUrl = buildQrPosterDataUrl();
-  if (!dataUrl) {
-    alert(
-      "QR code is not ready yet. Please check your internet connection and try again.",
-    );
-    return;
+  try {
+    const canvas = document.querySelector("#qrCanvas canvas");
+    if (!canvas) {
+      alert("QR code is not ready yet. Please try again in a moment.");
+      return;
+    }
+    const dataUrl = canvas.toDataURL("image/png");
+
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
+
+    const cleanup = () => {
+      if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+    };
+
+    iframe.onload = () => {
+      setTimeout(() => {
+        try {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        } catch (e) {
+          console.error("QR print failed:", e);
+          alert("Sorry, printing isn't available right now. Please try again.");
+        } finally {
+          setTimeout(cleanup, 1000);
+        }
+      }, 150);
+    };
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`
+      <!doctype html>
+      <html>
+        <head>
+          <title>Umoja P.A.G Church — Scan to Register</title>
+          <style>
+            body { font-family: sans-serif; text-align: center; padding-top: 60px; }
+            h2 { color: #1A4B9C; margin: 0 0 4px; }
+            p.tag { color: #D4A017; margin: 0 0 24px; font-size: 14px; }
+            img { width: 260px; height: 260px; }
+          </style>
+        </head>
+        <body>
+          <h2>Umoja P.A.G Church</h2>
+          <p class="tag">Scan to Register</p>
+          <img src="${dataUrl}" alt="QR code to register" />
+        </body>
+      </html>
+    `);
+    doc.close();
+  } catch (e) {
+    console.error("printQR failed:", e);
+    alert("Sorry, printing isn't available right now. Please try again.");
   }
-  const printWin = window.open("", "_blank", "width=420,height=520");
-  if (!printWin) {
-    alert("Please allow pop-ups for this site to print the QR code.");
-    return;
-  }
-  printWin.document.write(`
-    <html>
-      <head>
-        <title>Umoja P.A.G Church — Registration QR</title>
-        <style>
-          body { margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; background: #fff; }
-          img { width: 320px; height: 360px; }
-        </style>
-      </head>
-      <body>
-        <img src="${dataUrl}" alt="Umoja P.A.G Church registration QR code" />
-        <script>
-          const img = document.querySelector("img");
-          img.onload = () => { window.print(); };
-          window.onafterprint = () => window.close();
-        <\/script>
-      </body>
-    </html>
-  `);
-  printWin.document.close();
 }
 
 // ── REGISTRATION FORM ─────────────────────────────────────────
-const REGISTER_ENDPOINT = "/api/register";
-
-// Show the "Which Cell Group?" selector only when it's relevant —
-// cell groups are location-based, so new members need to pick one too.
-const CELL_GROUP_TRIGGERS = ["Cell Group", "New Member Registration"];
-const regForSelect = document.getElementById("regFor");
-const cellGroupGroup = document.getElementById("cellGroupGroup");
-const cellGroupSelect = document.getElementById("cellGroup");
-
-function isCellGroupFieldNeeded() {
-  return CELL_GROUP_TRIGGERS.includes(regForSelect ? regForSelect.value : "");
-}
-
-function syncCellGroupField() {
-  if (!regForSelect || !cellGroupGroup || !cellGroupSelect) return;
-  const needed = isCellGroupFieldNeeded();
-  cellGroupGroup.style.display = needed ? "block" : "none";
-  if (!needed) {
-    cellGroupSelect.style.borderColor = "";
-    cellGroupSelect.selectedIndex = 0;
-  }
-}
-
-if (regForSelect) {
-  regForSelect.addEventListener("change", syncCellGroupField);
-  syncCellGroupField();
-}
-if (cellGroupSelect) {
-  cellGroupSelect.addEventListener("change", () => {
-    cellGroupSelect.style.borderColor = "";
-  });
-}
-
-// Best-effort duplicate guard: a person shouldn't end up registered with
-// two different cell groups. This only recognizes returning visitors on
-// the same browser/device (via localStorage) — the authoritative check
-// should also live server-side against phone number in the admin backend.
-const CELL_GROUP_RECORDS_KEY = "umoja_cell_group_registrations";
-
-function getCellGroupRecords() {
-  try {
-    return JSON.parse(localStorage.getItem(CELL_GROUP_RECORDS_KEY) || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function getExistingCellGroupForPhone(phone) {
-  if (!phone) return null;
-  return getCellGroupRecords()[phone] || null;
-}
-
-function rememberCellGroupRegistration(phone, cellGroup) {
-  if (!phone || !cellGroup) return;
-  try {
-    const records = getCellGroupRecords();
-    records[phone] = cellGroup;
-    localStorage.setItem(CELL_GROUP_RECORDS_KEY, JSON.stringify(records));
-  } catch {
-    // Some browsers block localStorage in private or file modes.
-  }
-}
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/xpqgrdvw";
 
 function getRegistrationPayload() {
   return {
     firstName: document.getElementById("firstName").value.trim(),
     lastName: document.getElementById("lastName").value.trim(),
-    phone: normalizePhoneNumber(document.getElementById("phone").value.trim()),
+    phone: document.getElementById("phone").value.trim(),
     email: document.getElementById("email").value.trim(),
     ageGroup: document.getElementById("ageGroup").value.trim(),
     area: document.getElementById("area").value.trim(),
     regFor: document.getElementById("regFor").value.trim(),
-    cellGroup: isCellGroupFieldNeeded()
-      ? document.getElementById("cellGroup").value.trim()
-      : "",
     notes: document.getElementById("notes").value.trim(),
   };
 }
@@ -554,11 +466,9 @@ function saveRegistrationDraft(payload) {
 
 async function submitForm() {
   const required = ["firstName", "lastName", "phone", "ageGroup", "regFor"];
-  if (isCellGroupFieldNeeded()) required.push("cellGroup");
   const btn = document.getElementById("submitBtn");
   const err = document.getElementById("formError");
   const emailField = document.getElementById("email");
-  const phoneField = document.getElementById("phone");
   err.style.display = "none";
   for (const id of required) {
     const el = document.getElementById(id);
@@ -581,25 +491,6 @@ async function submitForm() {
       return;
     }
   }
-  if (!isValidPhoneNumber(phoneField.value.trim())) {
-    err.textContent =
-      "Please enter a valid Kenyan phone number, for example 0700 000 000 or +254 700 000 000.";
-    err.style.display = "block";
-    handleInvalidPhone();
-    return;
-  }
-  const normalizedPhone = normalizePhoneNumber(phoneField.value.trim());
-  if (isCellGroupFieldNeeded()) {
-    const chosenCellGroup = cellGroupSelect.value.trim();
-    const existingCellGroup = getExistingCellGroupForPhone(normalizedPhone);
-    if (existingCellGroup && existingCellGroup !== chosenCellGroup) {
-      err.textContent = `This phone number is already registered with the ${existingCellGroup} Cell Group. One person can only belong to one cell group — please contact the church office if you need to switch.`;
-      err.style.display = "block";
-      cellGroupSelect.style.borderColor = "#EF4444";
-      cellGroupSelect.focus();
-      return;
-    }
-  }
   if (emailField.value.trim() && !isValidEmail(emailField.value.trim())) {
     err.textContent = "Please enter a valid email address.";
     err.style.display = "block";
@@ -610,27 +501,24 @@ async function submitForm() {
   btn.textContent = "Sending...";
   const payload = getRegistrationPayload();
   try {
-    const res = await fetch(REGISTER_ENDPOINT, {
+    const res = await fetch(FORMSPREE_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    if (res.ok && data.success) {
-      if (payload.cellGroup) {
-        rememberCellGroupRegistration(normalizedPhone, payload.cellGroup);
-      }
+    if (res.ok) {
       showRegistrationSuccess(
         "Thank you for registering. Our team will be in touch shortly. God bless you!",
       );
     } else {
-      throw new Error((data.errors || []).join(", ") || data.message || "Submission failed.");
+      throw new Error((data.errors || []).map((e) => e.message).join(", ") || "Submission failed.");
     }
   } catch (e) {
     saveRegistrationDraft(payload);
     err.innerHTML = 'Could not send your registration online. Your details were saved on this device, but please also reach us directly so we don\'t miss you: <a href="tel:+254796752298" style="color:#fecaca;text-decoration:underline;">call 0796 752 298</a> or <a href="mailto:info@umojapagchurch.org" style="color:#fecaca;text-decoration:underline;">email us</a>.';
     err.style.display = "block";
-    console.error("Registration submission error:", e);
+    console.error("Formspree submission error:", e);
   } finally {
     btn.disabled = false;
     btn.textContent = "Submit Registration →";
@@ -641,10 +529,9 @@ function resetForm() {
   ["firstName", "lastName", "phone", "email", "area", "notes"].forEach((id) => {
     document.getElementById(id).value = "";
   });
-  ["ageGroup", "regFor", "cellGroup"].forEach((id) => {
+  ["ageGroup", "regFor"].forEach((id) => {
     document.getElementById(id).selectedIndex = 0;
   });
-  syncCellGroupField();
   document.getElementById("formError").style.display = "none";
   document.getElementById("formSuccess").style.display = "none";
   document.getElementById("formContent").style.display = "block";
@@ -815,4 +702,16 @@ function resetForm() {
   mo.observe(navLinksEl, { subtree: true, attributes: true, attributeFilter: ["class"] });
 
   setTimeout(updateIndicator, 120);
-})(); 
+})();
+// ── AUTO-EXPIRE OUTDATED UPDATES ───────────────────────────────
+// Give any .update-card a data-expire="YYYY-MM-DD" attribute and it
+// disappears automatically once that date has passed — no manual cleanup.
+(function () {
+  const cards = document.querySelectorAll(".update-card[data-expire]");
+  if (!cards.length) return;
+  const today = new Date();
+  cards.forEach((card) => {
+    const expiry = new Date(card.dataset.expire + "T23:59:59");
+    if (!isNaN(expiry) && today > expiry) card.remove();
+  });
+})();
