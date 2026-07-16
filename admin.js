@@ -194,9 +194,9 @@ let token = localStorage.getItem('umoja_admin_token');
         document.getElementById('pagination').innerHTML = '';
         return;
       }
-      tbody.innerHTML = data.registrations.map(r => `
+      tbody.innerHTML = data.registrations.map((r, i) => `
         <tr>
-          <td style="color:var(--muted)">#${r.id}</td>
+          <td style="color:var(--muted)">#${(currentPage - 1) * 20 + i + 1}</td>
           <td><strong>${r.first_name} ${r.last_name}</strong>${r.email ? `<br><span style="font-size:11px;color:var(--muted)">${r.email}</span>` : ''}</td>
           <td>${r.phone}</td>
           <td>${r.area || '—'}</td>
