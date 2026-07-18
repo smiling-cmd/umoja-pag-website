@@ -500,6 +500,16 @@ function saveRegistrationDraft(payload) {
 }
 
 async function submitForm() {
+  const honeypot = document.getElementById("companyWebsite");
+  if (honeypot && honeypot.value.trim()) {
+    // Bots fill every field they can see in the DOM, including this one,
+    // which is invisible to real visitors. Pretend it worked so they
+    // don't keep retrying, but never actually submit it.
+    showRegistrationSuccess(
+      "Thank you for registering. Our team will be in touch shortly. God bless you!",
+    );
+    return;
+  }
   const required = ["firstName", "lastName", "phone", "ageGroup", "regFor"];
   const btn = document.getElementById("submitBtn");
   const err = document.getElementById("formError");
