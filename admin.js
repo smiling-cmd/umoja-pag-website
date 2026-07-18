@@ -221,7 +221,8 @@ let token = localStorage.getItem('umoja_admin_token');
         if (data.page < data.pages) pag.innerHTML += `<button class="page-btn" onclick="changePage(${data.page+1})">Next →</button>`;
       }
     } catch(e) {
-      tbody.innerHTML = `<tr><td colspan="9" style="color:var(--red);padding:20px">${e.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" style="color:var(--red);paddingps
+      :20px">${e.message}</td></tr>`;
     }
   }
 
