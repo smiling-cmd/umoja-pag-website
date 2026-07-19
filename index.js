@@ -882,3 +882,202 @@ function closeLeaderModal() {
     console.error("Past events toggle error:", err);
   }
 })();
+
+// ── CHURCH CALENDAR ──────────────────────────────────────────
+// Add or edit entries in CALENDAR_EVENTS below to control what shows up
+// on the calendar and in the "Upcoming" list. date must be "YYYY-MM-DD".
+(function () {
+  try {
+    const CALENDAR_EVENTS = [
+      {
+        date: "2026-06-20",
+        title: "Kesha Night",
+        tag: "Past Event",
+        time: "7:00 PM",
+        description:
+          "A powerful night of prayer, worship, and seeking God's presence together as a church family.",
+      },
+      {
+        // TODO: confirm the exact Youth Camp date with the church office —
+        // currently a placeholder within the announced "August 2026" window.
+        date: "2026-08-15",
+        title: "Youth Camp & Family Fun Day",
+        tag: "Upcoming Event",
+        time: "All Day",
+        description:
+          "Annual Youth Camp followed by a Family Fun Day open to the whole congregation — games, music, and a shared meal to close out the summer season. Spots are limited, so register early.",
+        link: "#register",
+        linkText: "Register for the event",
+      },
+      {
+        date: "2026-08-31",
+        title: "Sanctuary Improvement — Phase II Target",
+        tag: "Facilities",
+        time: "",
+        description:
+          "Target completion date for new seating, upgraded stage lighting, and improved sound insulation in the main sanctuary.",
+        link: "#giving",
+        linkText: "Support this project",
+      },
+    ];
+
+    const grid = document.getElementById("calendarGrid");
+    const monthLabel = document.getElementById("calendarMonthLabel");
+    const prevBtn = document.getElementById("calendarPrev");
+    const nextBtn = document.getElementById("calendarNext");
+    const panel = document.getElementById("calendarEventPanel");
+    const agendaList = document.getElementById("calendarAgendaList");
+    if (!grid || !monthLabel || !prevBtn || !nextBtn || !panel) return;
+
+    const MONTH_NAMES = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December",
+    ];
+
+    const eventsByDate = new Map();
+    CALENDAR_EVENTS.forEach((ev) => {
+      if (!eventsByDate.has(ev.date)) eventsByDate.set(ev.date, []);
+      eventsByDate.get(ev.date).push(ev);
+    });
+
+    const pad = (n) => String(n).padStart(2, "0");
+    const toKey = (y, m, d) => `${y}-${pad(m + 1)}-${pad(d)}`;
+
+    const todayStr = toKey(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate(),
+    );
+    let viewDate = new Date();
+    viewDate.setDate(1);
+    let selectedDate = null;
+
+    function renderPanel(dateKey) {
+      const events = dateKey && eventsByDate.get(dateKey);
+      if (!events || !events.length) {
+        panel.classList.add("is-empty");
+        panel.innerHTML = "<p>Select a highlighted date to see event details.</p>";
+        return;
+      }
+      panel.classList.remove("is-empty");
+      panel.innerHTML = events
+        .map((ev) => {
+          const [y, m, d] = ev.date.split("-").map(Number);
+          const dateLabel = `${MONTH_NAMES[m - 1]} ${d}, ${y}`;
+          return `
+            <div class="calendar-event-card">
+              <span class="calendar-event-tag">${ev.tag}</span>
+              <h4 class="calendar-event-title">${ev.title}</h4>
+              <p class="calendar-event-meta">${dateLabel}${ev.time ? " · " + ev.time : ""}</p>
+              <p class="calendar-event-desc">${ev.description}</p>
+              ${ev.link ? `<a href="${ev.link}" class="calendar-event-link">${ev.linkText || "Learn more"}</a>` : ""}
+            </div>`;
+        })
+        .join("");
+    }
+
+    function renderAgenda() {
+      if (!agendaList) return;
+      const upcoming = CALENDAR_EVENTS.filter((ev) => ev.date >= todayStr).sort(
+        (a, b) => a.date.localeCompare(b.date),
+      );
+      if (!upcoming.length) {
+        agendaList.innerHTML =
+          '<li class="calendar-agenda-empty">No upcoming events scheduled.</li>';
+        return;
+      }
+      agendaList.innerHTML = upcoming
+        .map((ev) => {
+          const [, m, d] = ev.date.split("-").map(Number);
+          return `
+            <li class="calendar-agenda-item" data-date="${ev.date}">
+              <span class="calendar-agenda-date">${MONTH_NAMES[m - 1].slice(0, 3)} ${d}</span>
+              <span class="calendar-agenda-title">${ev.title}</span>
+            </li>`;
+        })
+        .join("");
+    }
+
+    function render() {
+      const y = viewDate.getFullYear();
+      const m = viewDate.getMonth();
+      monthLabel.textContent = `${MONTH_NAMES[m]} ${y}`;
+
+      const firstDay = new Date(y, m, 1).getDay();
+      const daysInMonth = new Date(y, m + 1, 0).getDate();
+      const daysInPrevMonth = new Date(y, m, 0).getDate();
+
+      const cells = [];
+      for (let i = firstDay - 1; i >= 0; i--) {
+        cells.push({ day: daysInPrevMonth - i, otherMonth: true });
+      }
+      for (let d = 1; d <= daysInMonth; d++) {
+        cells.push({ day: d, otherMonth: false });
+      }
+      let trailing = 1;
+      while (cells.length % 7 !== 0) {
+        cells.push({ day: trailing++, otherMonth: true });
+      }
+
+      grid.innerHTML = cells
+        .map((cell) => {
+          if (cell.otherMonth) {
+            return `<div class="calendar-day is-other-month"><span class="calendar-day-num">${cell.day}</span></div>`;
+          }
+          const key = toKey(y, m, cell.day);
+          const hasEvent = eventsByDate.has(key);
+          const isToday = key === todayStr;
+          const isSelected = key === selectedDate;
+          const classes = [
+            "calendar-day",
+            hasEvent ? "has-event" : "",
+            isToday ? "is-today" : "",
+            isSelected ? "is-selected" : "",
+          ]
+            .filter(Boolean)
+            .join(" ");
+          const tag = hasEvent ? "button" : "div";
+          const typeAttr = hasEvent ? 'type="button"' : "";
+          return `<${tag} ${typeAttr} class="${classes}" data-date="${key}">
+              <span class="calendar-day-num">${cell.day}</span>
+              ${hasEvent ? '<span class="calendar-day-dot"></span>' : ""}
+            </${tag}>`;
+        })
+        .join("");
+
+      renderPanel(selectedDate);
+    }
+
+    grid.addEventListener("click", (e) => {
+      const cell = e.target.closest(".calendar-day.has-event[data-date]");
+      if (!cell) return;
+      selectedDate = cell.dataset.date;
+      render();
+    });
+
+    prevBtn.addEventListener("click", () => {
+      viewDate.setMonth(viewDate.getMonth() - 1);
+      render();
+    });
+    nextBtn.addEventListener("click", () => {
+      viewDate.setMonth(viewDate.getMonth() + 1);
+      render();
+    });
+
+    if (agendaList) {
+      agendaList.addEventListener("click", (e) => {
+        const item = e.target.closest(".calendar-agenda-item[data-date]");
+        if (!item) return;
+        const [y, m] = item.dataset.date.split("-").map(Number);
+        viewDate = new Date(y, m - 1, 1);
+        selectedDate = item.dataset.date;
+        render();
+      });
+    }
+
+    renderAgenda();
+    render();
+  } catch (err) {
+    console.error("Calendar render error:", err);
+  }
+})();

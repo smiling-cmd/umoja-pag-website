@@ -306,7 +306,7 @@
           onclick="openLeaderModal('secretary')"
         >
           <div class="leadership-photo">
-            <img src="images/board.jpeg" alt="Secretary" loading="lazy" decoding="async" />
+            <img src="images/secretary.jpg" alt="Secretary" loading="lazy" decoding="async" />
           </div>
           <h4 class="leadership-name">Secretary Name</h4>
           <div class="leadership-role">Secretary</div>
@@ -317,7 +317,7 @@
           onclick="openLeaderModal('deacon')"
         >
           <div class="leadership-photo">
-            <img src="images/church main verse theme.jpeg" alt="Deacon" loading="lazy" decoding="async" />
+            <img src="images/deacon.jpg" alt="Deacon" loading="lazy" decoding="async" />
           </div>
           <h4 class="leadership-name">Deacon Name</h4>
           <div class="leadership-role">Deacon</div>
@@ -328,7 +328,7 @@
           onclick="openLeaderModal('motherDirector')"
         >
           <div class="leadership-photo">
-            <img src="images/women guild.jpg" alt="Mother Director" loading="lazy" decoding="async" />
+            <img src="images/women director.jpg" alt="Mother Director" loading="lazy" decoding="async" />
           </div>
           <h4 class="leadership-name">Mother Director Name</h4>
           <div class="leadership-role">Mother Director</div>
@@ -339,7 +339,7 @@
           onclick="openLeaderModal('treasurer')"
         >
           <div class="leadership-photo">
-            <img src="images/giving.jpg" alt="Treasurer" loading="lazy" decoding="async" />
+            <img src="images/Treasurer.jpg" alt="Treasurer" loading="lazy" decoding="async" />
           </div>
           <h4 class="leadership-name">Treasurer Name</h4>
           <div class="leadership-role">Treasurer</div>
@@ -350,7 +350,7 @@
           onclick="openLeaderModal('youthLeader')"
         >
           <div class="leadership-photo">
-            <img src="images/youth.jpg" alt="Youth Leader" loading="lazy" decoding="async" />
+            <img src="images/youth leader.jpg" alt="Youth Leader" loading="lazy" decoding="async" />
           </div>
           <h4 class="leadership-name">Youth Leader Name</h4>
           <div class="leadership-role">Youth Leader</div>
@@ -946,19 +946,19 @@
           </p>
           <a href="#giving" class="update-card-link">Support this project</a>
         </li>
-        <li class="update-card reveal d3" data-expire="2026-06-30">
+        <li class="update-card reveal d3" data-expire="2026-06-21">
           <div class="update-card-top">
-            <span class="update-tag community">Community</span>
+            <span class="update-tag event">Event</span>
             <span class="update-date"
               ><span class="update-date-dot"></span>June 2026</span
             >
           </div>
-          <h3>Volunteer Planning Night</h3>
+          <h3>Kesha Night</h3>
           <p>
-            Join us next Friday at 6:00 PM in the fellowship hall as we plan
-            upcoming outreach programs, ministry schedules, and the annual
-            community service day. Light refreshments will be served — all
-            volunteers, and anyone interested in serving, are welcome.
+            Friday, June 20th at 7:00 PM — a powerful night of prayer,
+            worship, and seeking God's presence together as a church family.
+            Thank you to everyone who joined us for this time of fellowship
+            and intercession.
           </p>
           <a href="#contact" class="update-card-link">Ask a question</a>
         </li>
@@ -983,6 +983,51 @@
         <button type="button" class="btn-ghost" id="pastEventsToggle">
           View Past Events
         </button>
+      </div>
+
+      <div class="updates-calendar-heading reveal">
+        <h3>Browse by <em>Calendar</em></h3>
+        <p>
+          See the same services and events laid out by date — tap a marked
+          day for details.
+        </p>
+      </div>
+      <div class="calendar-shell reveal d1">
+        <div class="calendar-card">
+          <div class="calendar-nav">
+            <button
+              type="button"
+              class="calendar-nav-btn"
+              id="calendarPrev"
+              aria-label="Previous month"
+            >
+              &#8249;
+            </button>
+            <span class="calendar-month-label" id="calendarMonthLabel"
+              >Month Year</span
+            >
+            <button
+              type="button"
+              class="calendar-nav-btn"
+              id="calendarNext"
+              aria-label="Next month"
+            >
+              &#8250;
+            </button>
+          </div>
+          <div class="calendar-weekdays">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span
+            ><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+          <div class="calendar-event-panel is-empty" id="calendarEventPanel">
+            <p>Select a highlighted date to see event details.</p>
+          </div>
+        </div>
+        <aside class="calendar-agenda">
+          <h3 class="calendar-agenda-heading">Upcoming</h3>
+          <ul class="calendar-agenda-list" id="calendarAgendaList"></ul>
+        </aside>
       </div>
     </section>
 
