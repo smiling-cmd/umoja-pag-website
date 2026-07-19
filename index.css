@@ -1766,7 +1766,7 @@ nav.scrolled .nav-toggle.open span {
   width: 200px;
   height: 200px;
   margin: 0 auto 20px;
-  border-radius: 50%;
+  border-radius: 22px;
   overflow: hidden;
   border: 3px solid rgba(212, 160, 23, 0.45);
   box-shadow: 0 8px 24px rgba(4, 9, 26, 0.35);
@@ -1775,6 +1775,7 @@ nav.scrolled .nav-toggle.open span {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: var(--photo-pos, 50% 25%);
   display: block;
 }
 .leadership-name {
@@ -1848,6 +1849,7 @@ nav.scrolled .nav-toggle.open span {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: var(--photo-pos, 50% 20%);
   display: block;
 }
 .leader-modal-role {
@@ -1869,6 +1871,26 @@ nav.scrolled .nav-toggle.open span {
   font-size: 14px;
   line-height: 1.8;
   color: var(--muted);
+  text-align: left;
+}
+.leader-modal-bio p {
+  margin: 0 0 14px;
+}
+.leader-modal-bio p:last-child {
+  margin-bottom: 0;
+}
+.leader-modal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+  justify-content: center;
+}
+.leader-modal-tags:empty {
+  display: none;
+}
+.leader-modal-tags .pastor-tag {
+  margin: 0;
 }
 @media (max-width: 520px) {
   .leadership-photo {
@@ -2651,6 +2673,16 @@ nav.scrolled .nav-toggle.open span {
 .event-card-meta-item svg {
   flex-shrink: 0;
   color: var(--gold-light);
+}
+.event-card-desc {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 0 0 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .event-card-link {
   margin-top: auto;

@@ -628,43 +628,69 @@ const LEADER_INFO = {
   secretary: {
     name: "Secretary Name",
     role: "Secretary",
-    photo: "images/board.jpeg",
-    bio: "Coordinates church records, correspondence, and communication between leadership and the congregation. Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+    photo: "images/secretary.jpg",
+    bio: [
+      "Coordinates church records, correspondence, and communication between leadership and the congregation, keeping the ministry organized and every member in the loop.",
+      "Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+    ],
+    tags: ["Administration", "Communication", "Church Records"],
   },
   deacon: {
     name: "Deacon Name",
     role: "Deacon",
-    photo: "images/church main verse theme.jpeg",
-    bio: "Serves the church through practical support, care for members, and assisting in worship and church operations. Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+    photo: "images/deacon.jpg",
+    bio: [
+      "Serves the church through practical support, care for members, and assisting in worship and church operations, helping every service and gathering run smoothly.",
+      "Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+    ],
+    tags: ["Pastoral Support", "Worship", "Operations"],
   },
   motherDirector: {
     name: "Mother Director Name",
     role: "Mother Director",
-    photo: "images/women guild.jpg",
-    bio: "Leads and mentors the Women's Guild, guiding fellowship, prayer, and outreach among the church's women. Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+    photo: "images/women director.jpg",
+    bio: [
+      "Leads and mentors the Women's Guild, guiding fellowship, prayer, and outreach among the church's women, and nurturing a strong sense of sisterhood in Christ.",
+      "Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+    ],
+    tags: ["Women's Guild", "Mentorship", "Outreach"],
   },
   treasurer: {
     name: "Treasurer Name",
     role: "Treasurer",
-    photo: "images/giving.jpg",
-    bio: "Oversees church finances, giving, and stewardship with transparency and faithfulness. Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+    photo: "images/Treasurer.jpg",
+    bio: [
+      "Oversees church finances, giving, and stewardship with transparency and faithfulness, ensuring every offering is accounted for and put to good use.",
+      "Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+    ],
+    tags: ["Stewardship", "Finance", "Transparency"],
   },
   youthLeader: {
     name: "Youth Leader Name",
     role: "Youth Leader",
-    photo: "images/youth.jpg",
-    bio: "Guides and disciples the church's youth, building a strong foundation of faith for the next generation. Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+    photo: "images/youth leader.jpg",
+    bio: [
+      "Guides and disciples the church's youth, building a strong foundation of faith for the next generation through mentorship, fellowship, and hands-on ministry.",
+      "Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+    ],
+    tags: ["Youth Ministry", "Discipleship", "Mentorship"],
   },
 };
 
 function openLeaderModal(key) {
   const info = LEADER_INFO[key];
   if (!info) return;
+  const bioParagraphs = Array.isArray(info.bio) ? info.bio : [info.bio];
   document.getElementById("leaderModalImg").src = info.photo;
   document.getElementById("leaderModalImg").alt = info.name;
   document.getElementById("leaderModalRole").textContent = info.role;
   document.getElementById("leaderModalName").textContent = info.name;
-  document.getElementById("leaderModalBio").textContent = info.bio;
+  document.getElementById("leaderModalBio").innerHTML = bioParagraphs
+    .map((p) => `<p>${p}</p>`)
+    .join("");
+  document.getElementById("leaderModalTags").innerHTML = (info.tags || [])
+    .map((tag) => `<span class="pastor-tag">${tag}</span>`)
+    .join("");
   document.getElementById("leaderModalOverlay").classList.add("open");
 }
 
@@ -869,7 +895,7 @@ function closeLeaderModal() {
         time: "",
         location: "Main Sanctuary",
         description:
-          "Work continues on new seating, upgraded stage lighting, and improved sound insulation in the main sanctuary. Phase II is on track for completion by end of August, thanks to the generosity of our congregation.",
+          "Work continues on new seating, upgraded stage lighting, and improved sound insulation in the main sanctuary. Phase II is on track for completion by end of August, thanks to the generosity of our congregation. Phase III — parking and landscaping — is already being planned for early next year.",
         link: "#giving",
         linkText: "Support this project",
       },
@@ -881,7 +907,7 @@ function closeLeaderModal() {
         time: "7:00 PM",
         location: "Umoja P.A.G Church",
         description:
-          "A powerful night of prayer, worship, and seeking God's presence together as a church family.",
+          "A powerful night of prayer, worship, and seeking God's presence together as a church family — open to the whole congregation, no registration needed. Come expectant for a fresh encounter with God through praise, intercession, and the Word.",
         link: "#contact",
         linkText: "Ask a question",
       },
@@ -895,7 +921,7 @@ function closeLeaderModal() {
         time: "All Day",
         location: "Umoja P.A.G Church",
         description:
-          "Annual Youth Camp followed by a Family Fun Day open to the whole congregation — games, music, and a shared meal to close out the summer season. Spots are limited, so register early.",
+          "Annual Youth Camp followed by a Family Fun Day open to the whole congregation — games, music, team challenges, and a shared meal to close out the summer season. Open to all ages; the Youth Camp portion is geared toward teens and young adults, with family activities for everyone else. Spots are limited, so register early.",
         link: "#register",
         linkText: "Register for the event",
       },
@@ -937,6 +963,7 @@ function closeLeaderModal() {
               ${ev.time ? `<span class="event-card-meta-item">${ICON_CLOCK} ${ev.time}</span>` : ""}
               ${ev.location ? `<span class="event-card-meta-item">${ICON_PIN} ${ev.location}</span>` : ""}
             </div>
+            ${ev.description ? `<p class="event-card-desc">${ev.description}</p>` : ""}
             ${ev.link ? `<a href="${ev.link}" class="event-card-link">${ev.linkText || "Learn more"}</a>` : ""}
           </div>
         </div>`;
