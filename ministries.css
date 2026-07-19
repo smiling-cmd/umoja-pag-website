@@ -83,6 +83,34 @@ main {
   font-size: 14px;
 }
 
+/* Small initials badge on the corner of each ministry photo.
+   Positioned absolutely (out of grid flow) so it never disturbs
+   the 2-column photo/content grid, regardless of which side the
+   photo sits on. */
+.min-marker {
+  position: absolute;
+  top: 12px;
+  left: 24px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1.5px solid var(--gold);
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+.min-card:nth-of-type(even) .min-marker {
+  left: auto;
+  right: 24px;
+}
+
 /* Alternate the rhythm: photo right on even entries */
 .min-card:nth-of-type(even) {
   grid-template-columns: 1fr minmax(240px, 300px);

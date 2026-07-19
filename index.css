@@ -265,6 +265,12 @@ nav.scrolled .nav-toggle.open span {
   align-items: flex-end;
   overflow: hidden;
 }
+.hero-bg-stack {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
 .hero-bg {
   position: absolute;
   inset: 0;
@@ -1329,7 +1335,7 @@ nav.scrolled .nav-toggle.open span {
   background:
     radial-gradient(circle at 12% 10%, rgba(245, 196, 0, 0.18), transparent 26%),
     radial-gradient(circle at 88% 24%, rgba(37, 88, 184, 0.18), transparent 26%),
-    linear-gradient(180deg, #0f1318 0%, #12151c 54%, #11131a 100%);
+    linear-gradient(180deg, #1c0049 0%, #22005b 54%, #180040 100%);
 }
 .project-detail-inner {
   max-width: 980px;
@@ -1782,7 +1788,7 @@ nav.scrolled .nav-toggle.open span {
       rgba(37, 88, 184, 0.18),
       transparent 26%
     ),
-    linear-gradient(180deg, #0f1318 0%, #12151c 54%, #11131a 100%);
+    linear-gradient(180deg, #1c0049 0%, #22005b 54%, #180040 100%);
   position: relative;
   overflow: hidden;
 }
@@ -3239,7 +3245,7 @@ footer::before {
   }
   .hero-content {
     grid-template-columns: 1fr;
-    padding: 80px 24px 100px;
+    padding: 130px 24px 100px;
     align-items: start;
   }
   .hero-right {
@@ -3355,7 +3361,7 @@ footer::before {
     min-height: max(100vh, 560px);
   }
   .hero-content {
-    padding: 80px 20px 160px;
+    padding: 130px 20px 160px;
     gap: 28px;
     align-items: start;
   }
