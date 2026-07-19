@@ -374,41 +374,30 @@ function printQR() {
     const dataUrl = canvas.toDataURL("image/png");
 
     const iframe = document.createElement("iframe");
-    // Some browsers skip printing truly 0x0 iframes — keep it 1px and
-    // pushed off-screen instead, which prints reliably everywhere.
-    iframe.setAttribute(
-      "style",
-      "position:fixed;left:-9999px;top:0;width:1px;height:1px;border:0;",
-    );
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
     document.body.appendChild(iframe);
 
-    let cleaned = false;
     const cleanup = () => {
-      if (cleaned) return;
-      cleaned = true;
       if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
     };
 
     iframe.onload = () => {
       setTimeout(() => {
         try {
-          const win = iframe.contentWindow;
-          // Prefer cleaning up once the print dialog actually closes;
-          // a fixed 1s timer can yank the iframe mid-dialog on slower
-          // devices and produce a blank page. Keep a longer fallback
-          // in case onafterprint isn't supported (older Safari/Firefox).
-          win.onafterprint = cleanup;
-          win.focus();
-          win.print();
-          setTimeout(cleanup, 60000);
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
         } catch (e) {
           console.error("QR print failed:", e);
-          alert(
-            "Sorry, printing isn't available right now. Please try again.",
-          );
-          cleanup();
+          alert("Sorry, printing isn't available right now. Please try again.");
+        } finally {
+          setTimeout(cleanup, 1000);
         }
-      }, 200);
+      }, 150);
     };
 
     const doc = iframe.contentWindow.document;
@@ -500,16 +489,6 @@ function saveRegistrationDraft(payload) {
 }
 
 async function submitForm() {
-  const honeypot = document.getElementById("companyWebsite");
-  if (honeypot && honeypot.value.trim()) {
-    // Bots fill every field they can see in the DOM, including this one,
-    // which is invisible to real visitors. Pretend it worked so they
-    // don't keep retrying, but never actually submit it.
-    showRegistrationSuccess(
-      "Thank you for registering. Our team will be in touch shortly. God bless you!",
-    );
-    return;
-  }
   const required = ["firstName", "lastName", "phone", "ageGroup", "regFor"];
   const btn = document.getElementById("submitBtn");
   const err = document.getElementById("formError");
