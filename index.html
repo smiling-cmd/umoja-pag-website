@@ -986,49 +986,18 @@
       </div>
 
       <div class="updates-calendar-heading reveal">
-        <h3>Browse by <em>Calendar</em></h3>
+        <h3>Upcoming <em>Events</em></h3>
         <p>
-          See the same services and events laid out by date — tap a marked
-          day for details.
+          Browse services and events by ministry, grouped by month.
         </p>
       </div>
-      <div class="calendar-shell reveal d1">
-        <div class="calendar-card">
-          <div class="calendar-nav">
-            <button
-              type="button"
-              class="calendar-nav-btn"
-              id="calendarPrev"
-              aria-label="Previous month"
-            >
-              &#8249;
-            </button>
-            <span class="calendar-month-label" id="calendarMonthLabel"
-              >Month Year</span
-            >
-            <button
-              type="button"
-              class="calendar-nav-btn"
-              id="calendarNext"
-              aria-label="Next month"
-            >
-              &#8250;
-            </button>
-          </div>
-          <div class="calendar-weekdays">
-            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span
-            ><span>Thu</span><span>Fri</span><span>Sat</span>
-          </div>
-          <div class="calendar-grid" id="calendarGrid"></div>
-          <div class="calendar-event-panel is-empty" id="calendarEventPanel">
-            <p>Select a highlighted date to see event details.</p>
-          </div>
-        </div>
-        <aside class="calendar-agenda">
-          <h3 class="calendar-agenda-heading">Upcoming</h3>
-          <ul class="calendar-agenda-list" id="calendarAgendaList"></ul>
-        </aside>
+
+      <div class="events-filter-row reveal">
+        <span class="events-filter-label">Filter by Ministry:</span>
+        <div class="events-filter-pills" id="eventsFilterPills"></div>
       </div>
+
+      <div class="events-by-month reveal" id="eventsByMonth"></div>
     </section>
 
     <!-- GALLERY -->

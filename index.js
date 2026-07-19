@@ -883,17 +883,21 @@ function closeLeaderModal() {
   }
 })();
 
-// ── CHURCH CALENDAR ──────────────────────────────────────────
+// ── CHURCH EVENTS ────────────────────────────────────────────────
 // Add or edit entries in CALENDAR_EVENTS below to control what shows up
-// on the calendar and in the "Upcoming" list. date must be "YYYY-MM-DD".
+// in the filtered events list. date must be "YYYY-MM-DD". category
+// drives the filter pills and card badge; give an event an image
+// (e.g. "images/kesha-night.jpg") to show a real poster instead of
+// the placeholder icon.
 (function () {
   try {
     const CALENDAR_EVENTS = [
       {
         date: "2026-06-20",
         title: "Kesha Night",
-        tag: "Past Event",
+        category: "Prayer & Worship",
         time: "7:00 PM",
+        location: "Umoja P.A.G Church",
         description:
           "A powerful night of prayer, worship, and seeking God's presence together as a church family.",
       },
@@ -902,8 +906,9 @@ function closeLeaderModal() {
         // currently a placeholder within the announced "August 2026" window.
         date: "2026-08-15",
         title: "Youth Camp & Family Fun Day",
-        tag: "Upcoming Event",
+        category: "Youth",
         time: "All Day",
+        location: "Umoja P.A.G Church",
         description:
           "Annual Youth Camp followed by a Family Fun Day open to the whole congregation — games, music, and a shared meal to close out the summer season. Spots are limited, so register early.",
         link: "#register",
@@ -912,8 +917,9 @@ function closeLeaderModal() {
       {
         date: "2026-08-31",
         title: "Sanctuary Improvement — Phase II Target",
-        tag: "Facilities",
+        category: "Facilities",
         time: "",
+        location: "Main Sanctuary",
         description:
           "Target completion date for new seating, upgraded stage lighting, and improved sound insulation in the main sanctuary.",
         link: "#giving",
@@ -921,162 +927,113 @@ function closeLeaderModal() {
       },
     ];
 
-    const grid = document.getElementById("calendarGrid");
-    const monthLabel = document.getElementById("calendarMonthLabel");
-    const prevBtn = document.getElementById("calendarPrev");
-    const nextBtn = document.getElementById("calendarNext");
-    const panel = document.getElementById("calendarEventPanel");
-    const agendaList = document.getElementById("calendarAgendaList");
-    if (!grid || !monthLabel || !prevBtn || !nextBtn || !panel) return;
-
     const MONTH_NAMES = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December",
     ];
-
-    const eventsByDate = new Map();
-    CALENDAR_EVENTS.forEach((ev) => {
-      if (!eventsByDate.has(ev.date)) eventsByDate.set(ev.date, []);
-      eventsByDate.get(ev.date).push(ev);
-    });
+    const ICON_CAL =
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+    const ICON_CLOCK =
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+    const ICON_PIN =
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.8"/></svg>';
 
     const pad = (n) => String(n).padStart(2, "0");
-    const toKey = (y, m, d) => `${y}-${pad(m + 1)}-${pad(d)}`;
 
-    const todayStr = toKey(
-      new Date().getFullYear(),
-      new Date().getMonth(),
-      new Date().getDate(),
-    );
-    let viewDate = new Date();
-    viewDate.setDate(1);
-    let selectedDate = null;
+    // ── Filter pills + month-grouped event cards ──
+    (function initEventsList() {
+      const pillsWrap = document.getElementById("eventsFilterPills");
+      const monthWrap = document.getElementById("eventsByMonth");
+      if (!pillsWrap || !monthWrap) return;
 
-    function renderPanel(dateKey) {
-      const events = dateKey && eventsByDate.get(dateKey);
-      if (!events || !events.length) {
-        panel.classList.add("is-empty");
-        panel.innerHTML = "<p>Select a highlighted date to see event details.</p>";
-        return;
-      }
-      panel.classList.remove("is-empty");
-      panel.innerHTML = events
-        .map((ev) => {
-          const [y, m, d] = ev.date.split("-").map(Number);
-          const dateLabel = `${MONTH_NAMES[m - 1]} ${d}, ${y}`;
-          return `
-            <div class="calendar-event-card">
-              <span class="calendar-event-tag">${ev.tag}</span>
-              <h4 class="calendar-event-title">${ev.title}</h4>
-              <p class="calendar-event-meta">${dateLabel}${ev.time ? " · " + ev.time : ""}</p>
-              <p class="calendar-event-desc">${ev.description}</p>
-              ${ev.link ? `<a href="${ev.link}" class="calendar-event-link">${ev.linkText || "Learn more"}</a>` : ""}
-            </div>`;
-        })
-        .join("");
-    }
+      const categories = [
+        "All",
+        ...Array.from(new Set(CALENDAR_EVENTS.map((ev) => ev.category))),
+      ];
+      let activeCategory = "All";
 
-    function renderAgenda() {
-      if (!agendaList) return;
-      const upcoming = CALENDAR_EVENTS.filter((ev) => ev.date >= todayStr).sort(
-        (a, b) => a.date.localeCompare(b.date),
-      );
-      if (!upcoming.length) {
-        agendaList.innerHTML =
-          '<li class="calendar-agenda-empty">No upcoming events scheduled.</li>';
-        return;
-      }
-      agendaList.innerHTML = upcoming
-        .map((ev) => {
-          const [, m, d] = ev.date.split("-").map(Number);
-          return `
-            <li class="calendar-agenda-item" data-date="${ev.date}">
-              <span class="calendar-agenda-date">${MONTH_NAMES[m - 1].slice(0, 3)} ${d}</span>
-              <span class="calendar-agenda-title">${ev.title}</span>
-            </li>`;
-        })
-        .join("");
-    }
-
-    function render() {
-      const y = viewDate.getFullYear();
-      const m = viewDate.getMonth();
-      monthLabel.textContent = `${MONTH_NAMES[m]} ${y}`;
-
-      const firstDay = new Date(y, m, 1).getDay();
-      const daysInMonth = new Date(y, m + 1, 0).getDate();
-      const daysInPrevMonth = new Date(y, m, 0).getDate();
-
-      const cells = [];
-      for (let i = firstDay - 1; i >= 0; i--) {
-        cells.push({ day: daysInPrevMonth - i, otherMonth: true });
-      }
-      for (let d = 1; d <= daysInMonth; d++) {
-        cells.push({ day: d, otherMonth: false });
-      }
-      let trailing = 1;
-      while (cells.length % 7 !== 0) {
-        cells.push({ day: trailing++, otherMonth: true });
+      function renderPills() {
+        pillsWrap.innerHTML = categories
+          .map(
+            (cat) => `
+            <button type="button" class="filter-pill${cat === activeCategory ? " is-active" : ""}" data-category="${cat}">
+              ${cat.toUpperCase()}
+            </button>`,
+          )
+          .join("");
       }
 
-      grid.innerHTML = cells
-        .map((cell) => {
-          if (cell.otherMonth) {
-            return `<div class="calendar-day is-other-month"><span class="calendar-day-num">${cell.day}</span></div>`;
-          }
-          const key = toKey(y, m, cell.day);
-          const hasEvent = eventsByDate.has(key);
-          const isToday = key === todayStr;
-          const isSelected = key === selectedDate;
-          const classes = [
-            "calendar-day",
-            hasEvent ? "has-event" : "",
-            isToday ? "is-today" : "",
-            isSelected ? "is-selected" : "",
-          ]
-            .filter(Boolean)
-            .join(" ");
-          const tag = hasEvent ? "button" : "div";
-          const typeAttr = hasEvent ? 'type="button"' : "";
-          return `<${tag} ${typeAttr} class="${classes}" data-date="${key}">
-              <span class="calendar-day-num">${cell.day}</span>
-              ${hasEvent ? '<span class="calendar-day-dot"></span>' : ""}
-            </${tag}>`;
-        })
-        .join("");
+      function renderList() {
+        const filtered = CALENDAR_EVENTS.filter(
+          (ev) => activeCategory === "All" || ev.category === activeCategory,
+        ).sort((a, b) => a.date.localeCompare(b.date));
 
-      renderPanel(selectedDate);
-    }
+        if (!filtered.length) {
+          monthWrap.innerHTML =
+            '<p class="events-empty-state">No events in this category yet.</p>';
+          return;
+        }
 
-    grid.addEventListener("click", (e) => {
-      const cell = e.target.closest(".calendar-day.has-event[data-date]");
-      if (!cell) return;
-      selectedDate = cell.dataset.date;
-      render();
-    });
+        const groups = new Map();
+        filtered.forEach((ev) => {
+          const [y, m] = ev.date.split("-").map(Number);
+          const key = `${y}-${pad(m)}`;
+          if (!groups.has(key)) groups.set(key, { y, m, events: [] });
+          groups.get(key).events.push(ev);
+        });
 
-    prevBtn.addEventListener("click", () => {
-      viewDate.setMonth(viewDate.getMonth() - 1);
-      render();
-    });
-    nextBtn.addEventListener("click", () => {
-      viewDate.setMonth(viewDate.getMonth() + 1);
-      render();
-    });
+        monthWrap.innerHTML = Array.from(groups.values())
+          .map(({ y, m, events }) => {
+            const cards = events
+              .map((ev) => {
+                const [, , d] = ev.date.split("-").map(Number);
+                const dateLabel = `${MONTH_NAMES[m - 1]} ${d}, ${y}`;
+                const media = ev.image
+                  ? `<img src="${ev.image}" alt="${ev.title}" loading="lazy" />`
+                  : ICON_CAL.replace('width="13" height="13"', 'width="40" height="40"');
+                return `
+                  <div class="event-card">
+                    <div class="event-card-media">
+                      <span class="event-card-badge">${ev.category}</span>
+                      ${media}
+                    </div>
+                    <div class="event-card-body">
+                      <h4>${ev.title}</h4>
+                      <div class="event-card-meta">
+                        <span class="event-card-meta-item">${ICON_CAL} ${dateLabel}</span>
+                        ${ev.time ? `<span class="event-card-meta-item">${ICON_CLOCK} ${ev.time}</span>` : ""}
+                        ${ev.location ? `<span class="event-card-meta-item">${ICON_PIN} ${ev.location}</span>` : ""}
+                      </div>
+                      ${ev.link ? `<a href="${ev.link}" class="event-card-link">${ev.linkText || "Learn more"}</a>` : ""}
+                    </div>
+                  </div>`;
+              })
+              .join("");
+            return `
+              <div class="events-month-group">
+                <div class="events-month-group-header">
+                  <h4>${MONTH_NAMES[m - 1]} ${y}</h4>
+                  <div class="events-month-rule"></div>
+                  <span class="events-month-count">${events.length} Event${events.length > 1 ? "s" : ""}</span>
+                </div>
+                <div class="events-grid">${cards}</div>
+              </div>`;
+          })
+          .join("");
+      }
 
-    if (agendaList) {
-      agendaList.addEventListener("click", (e) => {
-        const item = e.target.closest(".calendar-agenda-item[data-date]");
-        if (!item) return;
-        const [y, m] = item.dataset.date.split("-").map(Number);
-        viewDate = new Date(y, m - 1, 1);
-        selectedDate = item.dataset.date;
-        render();
+      pillsWrap.addEventListener("click", (e) => {
+        const btn = e.target.closest(".filter-pill");
+        if (!btn) return;
+        activeCategory = btn.dataset.category;
+        renderPills();
+        renderList();
       });
-    }
 
-    renderAgenda();
-    render();
+      renderPills();
+      renderList();
+    })();
+
   } catch (err) {
     console.error("Calendar render error:", err);
   }
