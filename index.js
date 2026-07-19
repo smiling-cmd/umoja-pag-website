@@ -623,6 +623,70 @@ window.addEventListener("load", updateCellGroupVisibility);
   }
 })();
 
+// ── LEADERSHIP DETAIL MODAL ────────────────────────────────
+const LEADER_INFO = {
+  secretary: {
+    name: "Secretary Name",
+    role: "Secretary",
+    photo: "images/board.jpeg",
+    bio: "Coordinates church records, correspondence, and communication between leadership and the congregation. Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+  },
+  deacon: {
+    name: "Deacon Name",
+    role: "Deacon",
+    photo: "images/church main verse theme.jpeg",
+    bio: "Serves the church through practical support, care for members, and assisting in worship and church operations. Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+  },
+  motherDirector: {
+    name: "Mother Director Name",
+    role: "Mother Director",
+    photo: "images/women guild.jpg",
+    bio: "Leads and mentors the Women's Guild, guiding fellowship, prayer, and outreach among the church's women. Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+  },
+  treasurer: {
+    name: "Treasurer Name",
+    role: "Treasurer",
+    photo: "images/giving.jpg",
+    bio: "Oversees church finances, giving, and stewardship with transparency and faithfulness. Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+  },
+  youthLeader: {
+    name: "Youth Leader Name",
+    role: "Youth Leader",
+    photo: "images/youth.jpg",
+    bio: "Guides and disciples the church's youth, building a strong foundation of faith for the next generation. Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
+  },
+};
+
+function openLeaderModal(key) {
+  const info = LEADER_INFO[key];
+  if (!info) return;
+  document.getElementById("leaderModalImg").src = info.photo;
+  document.getElementById("leaderModalImg").alt = info.name;
+  document.getElementById("leaderModalRole").textContent = info.role;
+  document.getElementById("leaderModalName").textContent = info.name;
+  document.getElementById("leaderModalBio").textContent = info.bio;
+  document.getElementById("leaderModalOverlay").classList.add("open");
+}
+
+function closeLeaderModal() {
+  document.getElementById("leaderModalOverlay").classList.remove("open");
+}
+
+(function () {
+  const overlay = document.getElementById("leaderModalOverlay");
+  const closeBtn = document.getElementById("leaderModalClose");
+  if (!overlay || !closeBtn) return;
+
+  closeBtn.addEventListener("click", closeLeaderModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeLeaderModal();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("open"))
+      closeLeaderModal();
+  });
+})();
+
 // ── GALLERY LIGHTBOX ───────────────────────────────────────
 (function () {
   const imgs = Array.from(document.querySelectorAll("#gallery img"));
@@ -787,13 +851,34 @@ window.addEventListener("load", updateCellGroupVisibility);
 })();
 // ── AUTO-EXPIRE OUTDATED UPDATES ───────────────────────────────
 // Give any .update-card a data-expire="YYYY-MM-DD" attribute and it
-// disappears automatically once that date has passed — no manual cleanup.
+// hides automatically once that date has passed. A "View Past Events"
+// button appears whenever there's at least one hidden card, letting
+// visitors reveal them again instead of losing them for good.
 (function () {
-  const cards = document.querySelectorAll(".update-card[data-expire]");
-  if (!cards.length) return;
-  const today = new Date();
-  cards.forEach((card) => {
-    const expiry = new Date(card.dataset.expire + "T23:59:59");
-    if (!isNaN(expiry) && today > expiry) card.remove();
-  });
+  try {
+    const cards = document.querySelectorAll(".update-card[data-expire]");
+    if (!cards.length) return;
+    const today = new Date();
+    let pastCount = 0;
+    cards.forEach((card) => {
+      const expiry = new Date(card.dataset.expire + "T23:59:59");
+      if (!isNaN(expiry) && today > expiry) {
+        card.classList.add("is-past");
+        pastCount++;
+      }
+    });
+
+    const row = document.getElementById("pastEventsRow");
+    const toggle = document.getElementById("pastEventsToggle");
+    const list = document.getElementById("updatesList");
+    if (!pastCount || !row || !toggle || !list) return;
+
+    row.hidden = false;
+    toggle.addEventListener("click", () => {
+      const showing = list.classList.toggle("show-past");
+      toggle.textContent = showing ? "Hide Past Events" : "View Past Events";
+    });
+  } catch (err) {
+    console.error("Past events toggle error:", err);
+  }
 })();

@@ -148,7 +148,7 @@
               >Join Us This Sunday →</a
             >
             <a
-              class="btn-ghost"
+              class="btn-ghost btn-watch-live"
               href="http://www.youtube.com/@umojapagchurch3626"
               target="_blank"
               rel="noopener"
@@ -227,13 +227,6 @@
     <section class="section about" id="about">
       <div class="about-inner">
         <div class="about-visual reveal">
-          <div class="about-badge">
-            <div class="about-badge-icon">📍</div>
-            <div>
-              <div class="about-badge-text">Umoja</div>
-              <div class="about-badge-sub">Nairobi, Kenya</div>
-            </div>
-          </div>
           <div class="about-img-main">
             <img
               src="images/Church.jpg"
@@ -296,9 +289,91 @@
           <div class="section-eyebrow gold-light">Leadership Spotlight</div>
           <h3>Pastor John Juma</h3>
           <p>Faithfully leading Umoja P.A.G Church with a heart for God's people, ministry growth, and helping every member find a place to serve and flourish.</p>
+          <p>It is my joy and privilege to walk alongside this congregation as we grow together in faith, love, and service to our community. Every person who walks through our doors is family, and every story of transformation reminds me why this calling is worth every sacrifice. My prayer is that Umoja P.A.G Church remains a house of refuge, healing, and hope for generations to come &mdash; a place where God's presence is tangible and His people are equipped to go out and make a difference in the world.</p>
+          <blockquote class="pastor-verse">
+            "For I know the plans I have for you," declares the Lord, "plans to prosper you and not to harm you, plans to give you hope and a future."
+            <span class="pastor-verse-ref">&mdash; Jeremiah 29:11</span>
+          </blockquote>
           <div class="pastor-tags">
             <span class="pastor-tag">Prayer</span><span class="pastor-tag">Mentorship</span><span class="pastor-tag">Pastoral Care</span><span class="pastor-tag">Preaching</span>
           </div>
+        </div>
+      </div>
+
+      <div class="leadership-grid reveal d3">
+        <div
+          class="leadership-card"
+          onclick="openLeaderModal('secretary')"
+        >
+          <div class="leadership-photo">
+            <img src="images/board.jpeg" alt="Secretary" loading="lazy" decoding="async" />
+          </div>
+          <h4 class="leadership-name">Secretary Name</h4>
+          <div class="leadership-role">Secretary</div>
+          <button class="leadership-more" type="button">Learn More →</button>
+        </div>
+        <div
+          class="leadership-card"
+          onclick="openLeaderModal('deacon')"
+        >
+          <div class="leadership-photo">
+            <img src="images/church main verse theme.jpeg" alt="Deacon" loading="lazy" decoding="async" />
+          </div>
+          <h4 class="leadership-name">Deacon Name</h4>
+          <div class="leadership-role">Deacon</div>
+          <button class="leadership-more" type="button">Learn More →</button>
+        </div>
+        <div
+          class="leadership-card"
+          onclick="openLeaderModal('motherDirector')"
+        >
+          <div class="leadership-photo">
+            <img src="images/women guild.jpg" alt="Mother Director" loading="lazy" decoding="async" />
+          </div>
+          <h4 class="leadership-name">Mother Director Name</h4>
+          <div class="leadership-role">Mother Director</div>
+          <button class="leadership-more" type="button">Learn More →</button>
+        </div>
+        <div
+          class="leadership-card"
+          onclick="openLeaderModal('treasurer')"
+        >
+          <div class="leadership-photo">
+            <img src="images/giving.jpg" alt="Treasurer" loading="lazy" decoding="async" />
+          </div>
+          <h4 class="leadership-name">Treasurer Name</h4>
+          <div class="leadership-role">Treasurer</div>
+          <button class="leadership-more" type="button">Learn More →</button>
+        </div>
+        <div
+          class="leadership-card"
+          onclick="openLeaderModal('youthLeader')"
+        >
+          <div class="leadership-photo">
+            <img src="images/youth.jpg" alt="Youth Leader" loading="lazy" decoding="async" />
+          </div>
+          <h4 class="leadership-name">Youth Leader Name</h4>
+          <div class="leadership-role">Youth Leader</div>
+          <button class="leadership-more" type="button">Learn More →</button>
+        </div>
+      </div>
+
+      <!-- LEADER DETAIL MODAL -->
+      <div class="leader-modal-overlay" id="leaderModalOverlay">
+        <div class="leader-modal-card">
+          <button
+            class="qr-modal-close"
+            id="leaderModalClose"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+          <div class="leader-modal-photo">
+            <img id="leaderModalImg" src="" alt="" />
+          </div>
+          <div class="leader-modal-role" id="leaderModalRole"></div>
+          <h3 class="leader-modal-name" id="leaderModalName"></h3>
+          <p class="leader-modal-bio" id="leaderModalBio"></p>
         </div>
       </div>
     </section>
@@ -853,7 +928,7 @@
           opportunities.
         </p>
       </div>
-      <ul class="updates-list">
+      <ul class="updates-list" id="updatesList">
         <li class="update-card reveal d2" data-expire="2026-08-31">
           <div class="update-card-top">
             <span class="update-tag facilities">Facilities</span>
@@ -904,6 +979,11 @@
           <a href="#register" class="update-card-link">Register for the event</a>
         </li>
       </ul>
+      <div class="updates-toggle-row" id="pastEventsRow" hidden>
+        <button type="button" class="btn-ghost" id="pastEventsToggle">
+          View Past Events
+        </button>
+      </div>
     </section>
 
     <!-- GALLERY -->

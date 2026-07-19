@@ -427,6 +427,16 @@ nav.scrolled .nav-toggle.open span {
 .btn-ghost:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+.btn-watch-live {
+  background: rgba(220, 38, 38, 0.16);
+  border-color: rgba(248, 113, 113, 0.55);
+  color: #fca5a5;
+}
+.btn-watch-live:hover {
+  background: rgba(220, 38, 38, 0.28);
+  border-color: rgba(248, 113, 113, 0.75);
+  color: #fecaca;
+}
 .hero-note {
   margin-top: 16px;
   font-size: 12px;
@@ -723,6 +733,17 @@ nav.scrolled .nav-toggle.open span {
     ),
     linear-gradient(180deg, #fff9ec 0%, #fdf1d4 100%);
 }
+.about .section-title {
+  color: #0f1e3d;
+}
+.about .section-title em {
+  color: var(--gold-dark);
+}
+.about .section-body,
+.about .section-eyebrow + p,
+.about > .section > p {
+  color: #3a4155;
+}
 .about-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -777,30 +798,6 @@ nav.scrolled .nav-toggle.open span {
   opacity: 0.75;
   margin-top: 4px;
 }
-.about-badge {
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  background: var(--blue);
-  border-radius: 14px;
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 8px 32px rgba(26, 75, 156, 0.3);
-}
-.about-badge-icon {
-  font-size: 22px;
-}
-.about-badge-text {
-  font-size: 12px;
-  font-weight: 700;
-  color: white;
-}
-.about-badge-sub {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.5);
-}
 .about-text {
   padding-left: 12px;
 }
@@ -843,7 +840,7 @@ nav.scrolled .nav-toggle.open span {
 /* CORE VALUES */
 .values {
   background:
-    linear-gradient(180deg, rgba(7, 24, 51, 0.78), rgba(7, 24, 51, 0.88)),
+    linear-gradient(180deg, rgba(34, 0, 91, 0.78), rgba(34, 0, 91, 0.88)),
     url("images/coe values background.jpg") center/cover no-repeat;
   position: relative;
   overflow: hidden;
@@ -1018,7 +1015,7 @@ nav.scrolled .nav-toggle.open span {
 /* SCHOOL HIGHLIGHT */
 .school-highlight {
   padding: 80px 5%;
-  background: linear-gradient(135deg, var(--surface-strong) 0%, rgba(26,75,156,0.08) 100%);
+  background: #22005b;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
@@ -1195,7 +1192,7 @@ nav.scrolled .nav-toggle.open span {
       rgba(37, 88, 184, 0.26),
       transparent 30%
     ),
-    linear-gradient(180deg, var(--blue-dark) 0%, var(--blue-dark) 100%);
+    linear-gradient(180deg, #22005b 0%, #22005b 100%);
   overflow: hidden;
   position: relative;
 }
@@ -1656,7 +1653,7 @@ nav.scrolled .nav-toggle.open span {
   grid-column: 1 / -1;
   width: 100%;
   margin-top: 60px;
-  background: var(--blue-dark);
+  background: #22005b;
   border-radius: 24px;
   overflow: hidden;
   position: relative;
@@ -1708,7 +1705,29 @@ nav.scrolled .nav-toggle.open span {
   color: rgba(255, 255, 255, 0.62);
   line-height: 1.9;
   max-width: 440px;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
+}
+.pastor-verse {
+  margin: 4px 0 28px;
+  padding: 4px 0 4px 20px;
+  border-left: 2px solid var(--gold);
+  max-width: 440px;
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.82);
+}
+.pastor-verse-ref {
+  display: block;
+  margin-top: 8px;
+  font-family: inherit;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--gold);
 }
 .pastor-tags {
   display: flex;
@@ -1722,6 +1741,140 @@ nav.scrolled .nav-toggle.open span {
   color: rgba(255, 255, 255, 0.6);
   font-size: 11px;
   font-weight: 600;
+}
+.leadership-grid {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+}
+.leadership-card {
+  background: #22005b;
+  border-radius: 18px;
+  padding: 32px 20px;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(4, 9, 26, 0.18);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.leadership-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(4, 9, 26, 0.28);
+}
+.leadership-photo {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(212, 160, 23, 0.45);
+  box-shadow: 0 8px 24px rgba(4, 9, 26, 0.35);
+}
+.leadership-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.leadership-name {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.leadership-role {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+.leadership-card {
+  cursor: pointer;
+}
+.leadership-more {
+  margin-top: 14px;
+  background: none;
+  border: none;
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 0;
+}
+.leadership-more:hover {
+  text-decoration: underline;
+}
+.leader-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.72);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.leader-modal-overlay.open {
+  display: flex;
+}
+.leader-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--surface-strong);
+  border-radius: 24px;
+  padding: 40px 32px;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+.leader-modal-photo {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(212, 160, 23, 0.45);
+}
+.leader-modal-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.leader-modal-role {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.leader-modal-name {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.leader-modal-bio {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+@media (max-width: 520px) {
+  .leadership-photo {
+    width: 160px;
+    height: 160px;
+  }
 }
 .ministries-cta {
   margin-top: 30px;
@@ -1812,7 +1965,7 @@ nav.scrolled .nav-toggle.open span {
   border-radius: 28px;
   border: 1px solid var(--border);
   box-shadow: 0 28px 70px rgba(15, 21, 36, 0.12);
-  background: var(--blue-dark);
+  background: #22005b;
 }
 .project-feature img {
   position: absolute;
@@ -1981,13 +2134,13 @@ nav.scrolled .nav-toggle.open span {
   margin-top: 26px;
   padding: 26px 30px;
   border-radius: 20px;
-  background: var(--blue-dark);
+  background: #22005b;
   color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  box-shadow: 0 22px 58px rgba(15, 47, 107, 0.18);
+  box-shadow: 0 22px 58px rgba(34, 0, 91, 0.28);
 }
 .projects-cta p {
   max-width: 620px;
@@ -2290,7 +2443,7 @@ nav.scrolled .nav-toggle.open span {
 .map-overlay-box {
   margin-top: 16px;
   padding: 20px 24px;
-  background: var(--blue-dark);
+  background: #22005b;
   color: white;
   display: flex;
   align-items: center;
@@ -2324,7 +2477,7 @@ nav.scrolled .nav-toggle.open span {
 
 /* UPDATES */
 .updates {
-  background: var(--surface-strong);
+  background: #22005b;
 }
 .updates .section-body {
   max-width: 620px;
@@ -2354,6 +2507,26 @@ nav.scrolled .nav-toggle.open span {
   transform: translateY(-4px);
   border-color: rgba(245, 196, 0, 0.35);
   box-shadow: 0 24px 52px rgba(4, 9, 26, 0.22);
+}
+.update-card.is-past {
+  display: none;
+  opacity: 0.7;
+}
+.updates-list.show-past .update-card.is-past {
+  display: flex;
+}
+.update-card.is-past .update-tag {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+}
+.updates-toggle-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+.updates-toggle-row .btn-ghost {
+  padding: 12px 24px;
+  font-size: 13px;
 }
 .update-card-top {
   display: flex;
@@ -2438,6 +2611,9 @@ nav.scrolled .nav-toggle.open span {
 }
 
 /* GALLERY */
+.gallery {
+  background: #22005b;
+}
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -2544,7 +2720,7 @@ nav.scrolled .nav-toggle.open span {
 
 /* REGISTRATION */
 .registration {
-  background: var(--blue-dark);
+  background: #22005b;
   position: relative;
   overflow: hidden;
   padding: 56px 5%;
