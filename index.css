@@ -2483,152 +2483,10 @@ nav.scrolled .nav-toggle.open span {
   max-width: 620px;
   margin-top: -4px;
 }
-.updates-list {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 24px;
-  margin-top: 40px;
-}
-.update-card {
-  display: flex;
-  flex-direction: column;
-  order: 0;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 26px 24px;
-  transition:
-    transform 0.25s,
-    border-color 0.25s,
-    box-shadow 0.25s;
-  box-shadow: 0 16px 40px rgba(4, 9, 26, 0.16);
-}
-.update-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(245, 196, 0, 0.35);
-  box-shadow: 0 24px 52px rgba(4, 9, 26, 0.22);
-}
-.update-card.is-past {
-  display: none;
-  opacity: 0.7;
-  order: 99;
-}
-.updates-list.show-past .update-card.is-past {
-  display: flex;
-  animation: pastCardPop 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-@keyframes pastCardPop {
-  from {
-    opacity: 0;
-    transform: translateY(-24px);
-  }
-  to {
-    opacity: 0.7;
-    transform: translateY(0);
-  }
-}
-.update-card.is-past .update-tag {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--muted);
-}
-.updates-toggle-row {
-  display: flex;
-  justify-content: center;
-  margin-top: 32px;
-}
-.updates-toggle-row .btn-ghost {
-  padding: 12px 24px;
-  font-size: 13px;
-}
-.update-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.update-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  background: rgba(212, 160, 23, 0.14);
-  color: var(--gold-light);
-  white-space: nowrap;
-}
-.update-tag.community {
-  background: rgba(37, 211, 102, 0.14);
-  color: #6ee7a0;
-}
-.update-tag.event {
-  background: rgba(37, 88, 184, 0.2);
-  color: #8fb4ff;
-}
-.update-date {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--muted);
-  white-space: nowrap;
-}
-.update-date-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--gold);
-  flex-shrink: 0;
-}
-.update-card h3 {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 10px;
-  line-height: 1.15;
-}
-.update-card p {
-  font-size: 13.5px;
-  color: var(--muted);
-  line-height: 1.75;
-  flex: 1;
-}
-.update-card-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 18px;
-  color: var(--gold-light);
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  transition: gap 0.2s ease;
-}
-.update-card-link::after {
-  content: "→";
-  transition: transform 0.2s ease;
-}
-.update-card-link:hover::after {
-  transform: translateX(4px);
-}
-
 /* CHURCH CALENDAR */
 .updates-calendar-heading {
-  margin-top: 64px;
+  margin-top: 8px;
   margin-bottom: 28px;
-  padding-top: 48px;
-  border-top: 1px solid var(--border);
 }
 .updates-calendar-heading h3 {
   font-family: "Cormorant Garamond", serif;
@@ -2808,6 +2666,32 @@ nav.scrolled .nav-toggle.open span {
   color: var(--muted);
   font-size: 14px;
   padding: 20px 0;
+}
+.updates-toggle-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 44px;
+}
+.updates-toggle-row .btn-ghost {
+  padding: 12px 24px;
+  font-size: 13px;
+}
+.events-by-month-past {
+  margin-top: 32px;
+  opacity: 0.85;
+}
+@keyframes pastEventsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 0.85;
+    transform: translateY(0);
+  }
+}
+.events-by-month-past:not([hidden]) {
+  animation: pastEventsFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 /* GALLERY */
 .gallery {

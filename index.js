@@ -849,50 +849,32 @@ function closeLeaderModal() {
 
   setTimeout(updateIndicator, 120);
 })();
-// ── AUTO-EXPIRE OUTDATED UPDATES ───────────────────────────────
-// Give any .update-card a data-expire="YYYY-MM-DD" attribute and it
-// hides automatically once that date has passed. A "View Past Events"
-// button appears whenever there's at least one hidden card, letting
-// visitors reveal them again instead of losing them for good.
+// ── EVENTS & UPDATES ────────────────────────────────────────────
+// Add or edit entries in CHURCH_ITEMS below to control what shows up.
+// date must be "YYYY-MM-DD" — for announcements, use the target/expiry
+// date, since that's what moves it from "Upcoming" to "Past" once it's
+// gone. type is "event" (has a time/location) or "announcement"
+// (ongoing project, no fixed time/location). category drives the
+// filter pills and card badge; give an item an image (e.g.
+// "images/kesha-night.jpg") to show a real poster instead of the
+// placeholder icon.
 (function () {
   try {
-    const cards = document.querySelectorAll(".update-card[data-expire]");
-    if (!cards.length) return;
-    const today = new Date();
-    let pastCount = 0;
-    cards.forEach((card) => {
-      const expiry = new Date(card.dataset.expire + "T23:59:59");
-      if (!isNaN(expiry) && today > expiry) {
-        card.classList.add("is-past");
-        pastCount++;
-      }
-    });
-
-    const row = document.getElementById("pastEventsRow");
-    const toggle = document.getElementById("pastEventsToggle");
-    const list = document.getElementById("updatesList");
-    if (!pastCount || !row || !toggle || !list) return;
-
-    row.hidden = false;
-    toggle.addEventListener("click", () => {
-      const showing = list.classList.toggle("show-past");
-      toggle.textContent = showing ? "Hide Past Events" : "View Past Events";
-    });
-  } catch (err) {
-    console.error("Past events toggle error:", err);
-  }
-})();
-
-// ── CHURCH EVENTS ────────────────────────────────────────────────
-// Add or edit entries in CALENDAR_EVENTS below to control what shows up
-// in the filtered events list. date must be "YYYY-MM-DD". category
-// drives the filter pills and card badge; give an event an image
-// (e.g. "images/kesha-night.jpg") to show a real poster instead of
-// the placeholder icon.
-(function () {
-  try {
-    const CALENDAR_EVENTS = [
+    const CHURCH_ITEMS = [
       {
+        type: "announcement",
+        date: "2026-08-31",
+        title: "Sanctuary Improvement — Phase II",
+        category: "Facilities",
+        time: "",
+        location: "Main Sanctuary",
+        description:
+          "Work continues on new seating, upgraded stage lighting, and improved sound insulation in the main sanctuary. Phase II is on track for completion by end of August, thanks to the generosity of our congregation.",
+        link: "#giving",
+        linkText: "Support this project",
+      },
+      {
+        type: "event",
         date: "2026-06-20",
         title: "Kesha Night",
         category: "Prayer & Worship",
@@ -900,10 +882,13 @@ function closeLeaderModal() {
         location: "Umoja P.A.G Church",
         description:
           "A powerful night of prayer, worship, and seeking God's presence together as a church family.",
+        link: "#contact",
+        linkText: "Ask a question",
       },
       {
         // TODO: confirm the exact Youth Camp date with the church office —
         // currently a placeholder within the announced "August 2026" window.
+        type: "event",
         date: "2026-08-15",
         title: "Youth Camp & Family Fun Day",
         category: "Youth",
@@ -913,17 +898,6 @@ function closeLeaderModal() {
           "Annual Youth Camp followed by a Family Fun Day open to the whole congregation — games, music, and a shared meal to close out the summer season. Spots are limited, so register early.",
         link: "#register",
         linkText: "Register for the event",
-      },
-      {
-        date: "2026-08-31",
-        title: "Sanctuary Improvement — Phase II Target",
-        category: "Facilities",
-        time: "",
-        location: "Main Sanctuary",
-        description:
-          "Target completion date for new seating, upgraded stage lighting, and improved sound insulation in the main sanctuary.",
-        link: "#giving",
-        linkText: "Support this project",
       },
     ];
 
@@ -939,102 +913,137 @@ function closeLeaderModal() {
       '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.8"/></svg>';
 
     const pad = (n) => String(n).padStart(2, "0");
+    const todayStr = (() => {
+      const t = new Date();
+      return `${t.getFullYear()}-${pad(t.getMonth() + 1)}-${pad(t.getDate())}`;
+    })();
 
-    // ── Filter pills + month-grouped event cards ──
-    (function initEventsList() {
-      const pillsWrap = document.getElementById("eventsFilterPills");
-      const monthWrap = document.getElementById("eventsByMonth");
-      if (!pillsWrap || !monthWrap) return;
+    function buildCard(ev) {
+      const [y, m, d] = ev.date.split("-").map(Number);
+      const dateLabel = `${MONTH_NAMES[m - 1]} ${d}, ${y}`;
+      const media = ev.image
+        ? `<img src="${ev.image}" alt="${ev.title}" loading="lazy" />`
+        : ICON_CAL.replace('width="13" height="13"', 'width="40" height="40"');
+      return `
+        <div class="event-card">
+          <div class="event-card-media">
+            <span class="event-card-badge">${ev.category}</span>
+            ${media}
+          </div>
+          <div class="event-card-body">
+            <h4>${ev.title}</h4>
+            <div class="event-card-meta">
+              <span class="event-card-meta-item">${ICON_CAL} ${dateLabel}</span>
+              ${ev.time ? `<span class="event-card-meta-item">${ICON_CLOCK} ${ev.time}</span>` : ""}
+              ${ev.location ? `<span class="event-card-meta-item">${ICON_PIN} ${ev.location}</span>` : ""}
+            </div>
+            ${ev.link ? `<a href="${ev.link}" class="event-card-link">${ev.linkText || "Learn more"}</a>` : ""}
+          </div>
+        </div>`;
+    }
 
-      const categories = [
-        "All",
-        ...Array.from(new Set(CALENDAR_EVENTS.map((ev) => ev.category))),
-      ];
-      let activeCategory = "All";
+    function renderGroups(list, container, emptyMessage) {
+      if (!container) return;
+      if (!list.length) {
+        container.innerHTML = `<p class="events-empty-state">${emptyMessage}</p>`;
+        return;
+      }
+      const groups = new Map();
+      list.forEach((ev) => {
+        const [y, m] = ev.date.split("-").map(Number);
+        const key = `${y}-${pad(m)}`;
+        if (!groups.has(key)) groups.set(key, { y, m, events: [] });
+        groups.get(key).events.push(ev);
+      });
 
-      function renderPills() {
-        pillsWrap.innerHTML = categories
-          .map(
-            (cat) => `
+      container.innerHTML = Array.from(groups.values())
+        .map(
+          ({ y, m, events }) => `
+          <div class="events-month-group">
+            <div class="events-month-group-header">
+              <h4>${MONTH_NAMES[m - 1]} ${y}</h4>
+              <div class="events-month-rule"></div>
+              <span class="events-month-count">${events.length} Item${events.length > 1 ? "s" : ""}</span>
+            </div>
+            <div class="events-grid">${events.map(buildCard).join("")}</div>
+          </div>`,
+        )
+        .join("");
+    }
+
+    const pillsWrap = document.getElementById("eventsFilterPills");
+    const upcomingWrap = document.getElementById("eventsByMonth");
+    const pastWrap = document.getElementById("pastEventsByMonth");
+    const pastRow = document.getElementById("pastEventsRow");
+    const pastToggle = document.getElementById("pastEventsToggle");
+    if (!pillsWrap || !upcomingWrap) return;
+
+    const categories = [
+      "All",
+      ...Array.from(new Set(CHURCH_ITEMS.map((ev) => ev.category))),
+    ];
+    let activeCategory = "All";
+
+    function renderPills() {
+      pillsWrap.innerHTML = categories
+        .map(
+          (cat) => `
             <button type="button" class="filter-pill${cat === activeCategory ? " is-active" : ""}" data-category="${cat}">
               ${cat.toUpperCase()}
             </button>`,
-          )
-          .join("");
-      }
+        )
+        .join("");
+    }
 
-      function renderList() {
-        const filtered = CALENDAR_EVENTS.filter(
-          (ev) => activeCategory === "All" || ev.category === activeCategory,
-        ).sort((a, b) => a.date.localeCompare(b.date));
+    function render() {
+      const inCategory = CHURCH_ITEMS.filter(
+        (ev) => activeCategory === "All" || ev.category === activeCategory,
+      );
+      const upcoming = inCategory
+        .filter((ev) => ev.date >= todayStr)
+        .sort((a, b) => a.date.localeCompare(b.date));
+      const past = inCategory
+        .filter((ev) => ev.date < todayStr)
+        .sort((a, b) => b.date.localeCompare(a.date));
 
-        if (!filtered.length) {
-          monthWrap.innerHTML =
-            '<p class="events-empty-state">No events in this category yet.</p>';
-          return;
+      renderGroups(
+        upcoming,
+        upcomingWrap,
+        "Nothing upcoming in this category right now.",
+      );
+
+      if (pastRow && pastWrap && pastToggle) {
+        if (past.length) {
+          pastRow.hidden = false;
+          renderGroups(past, pastWrap, "No past events in this category.");
+        } else {
+          pastRow.hidden = true;
+          pastWrap.hidden = true;
+          pastWrap.innerHTML = "";
+          pastToggle.textContent = "View Past Events";
         }
-
-        const groups = new Map();
-        filtered.forEach((ev) => {
-          const [y, m] = ev.date.split("-").map(Number);
-          const key = `${y}-${pad(m)}`;
-          if (!groups.has(key)) groups.set(key, { y, m, events: [] });
-          groups.get(key).events.push(ev);
-        });
-
-        monthWrap.innerHTML = Array.from(groups.values())
-          .map(({ y, m, events }) => {
-            const cards = events
-              .map((ev) => {
-                const [, , d] = ev.date.split("-").map(Number);
-                const dateLabel = `${MONTH_NAMES[m - 1]} ${d}, ${y}`;
-                const media = ev.image
-                  ? `<img src="${ev.image}" alt="${ev.title}" loading="lazy" />`
-                  : ICON_CAL.replace('width="13" height="13"', 'width="40" height="40"');
-                return `
-                  <div class="event-card">
-                    <div class="event-card-media">
-                      <span class="event-card-badge">${ev.category}</span>
-                      ${media}
-                    </div>
-                    <div class="event-card-body">
-                      <h4>${ev.title}</h4>
-                      <div class="event-card-meta">
-                        <span class="event-card-meta-item">${ICON_CAL} ${dateLabel}</span>
-                        ${ev.time ? `<span class="event-card-meta-item">${ICON_CLOCK} ${ev.time}</span>` : ""}
-                        ${ev.location ? `<span class="event-card-meta-item">${ICON_PIN} ${ev.location}</span>` : ""}
-                      </div>
-                      ${ev.link ? `<a href="${ev.link}" class="event-card-link">${ev.linkText || "Learn more"}</a>` : ""}
-                    </div>
-                  </div>`;
-              })
-              .join("");
-            return `
-              <div class="events-month-group">
-                <div class="events-month-group-header">
-                  <h4>${MONTH_NAMES[m - 1]} ${y}</h4>
-                  <div class="events-month-rule"></div>
-                  <span class="events-month-count">${events.length} Event${events.length > 1 ? "s" : ""}</span>
-                </div>
-                <div class="events-grid">${cards}</div>
-              </div>`;
-          })
-          .join("");
       }
+    }
 
-      pillsWrap.addEventListener("click", (e) => {
-        const btn = e.target.closest(".filter-pill");
-        if (!btn) return;
-        activeCategory = btn.dataset.category;
-        renderPills();
-        renderList();
-      });
-
+    pillsWrap.addEventListener("click", (e) => {
+      const btn = e.target.closest(".filter-pill");
+      if (!btn) return;
+      activeCategory = btn.dataset.category;
       renderPills();
-      renderList();
-    })();
+      render();
+    });
 
+    if (pastToggle && pastWrap) {
+      pastToggle.addEventListener("click", () => {
+        const showing = pastWrap.hidden;
+        pastWrap.hidden = !showing;
+        pastToggle.textContent = showing ? "Hide Past Events" : "View Past Events";
+      });
+    }
+
+    renderPills();
+    render();
   } catch (err) {
-    console.error("Calendar render error:", err);
+    console.error("Events render error:", err);
   }
 })();
