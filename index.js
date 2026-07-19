@@ -592,6 +592,37 @@ function resetForm() {
 document.getElementById("regFor")?.addEventListener("change", updateCellGroupVisibility);
 window.addEventListener("load", updateCellGroupVisibility);
 
+// ── 2026 THEME POSTER POPUP ──────────────────────────────────
+(function () {
+  try {
+    const btn = document.getElementById("themePopupBtn");
+    const overlay = document.getElementById("themePopupOverlay");
+    const closeBtn = document.getElementById("themePopupClose");
+    if (!btn || !overlay || !closeBtn) return;
+
+    function openPopup() {
+      overlay.classList.add("open");
+      closeBtn.focus();
+    }
+    function closePopup() {
+      overlay.classList.remove("open");
+      btn.focus();
+    }
+
+    btn.addEventListener("click", openPopup);
+    closeBtn.addEventListener("click", closePopup);
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closePopup();
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && overlay.classList.contains("open"))
+        closePopup();
+    });
+  } catch (err) {
+    console.error("Theme popup failed to initialize:", err);
+  }
+})();
+
 // ── GALLERY LIGHTBOX ───────────────────────────────────────
 (function () {
   const imgs = Array.from(document.querySelectorAll("#gallery img"));
