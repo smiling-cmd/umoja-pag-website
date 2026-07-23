@@ -99,6 +99,67 @@ if (!window.IntersectionObserver) {
   document.querySelectorAll(".reveal").forEach((el) => ro.observe(el));
 }
 
+// ── HERO CAROUSEL ────────────────────────────────────────────
+(function () {
+  const bgs = Array.from(document.querySelectorAll(".hero-bg"));
+  const slides = Array.from(document.querySelectorAll(".hero-left-slide"));
+  const dots = Array.from(document.querySelectorAll(".hero-dot"));
+  const prevBtn = document.getElementById("heroPrev");
+  const nextBtn = document.getElementById("heroNext");
+  if (!slides.length) return;
+
+  const total = slides.length;
+  let current = 0;
+  let timer = null;
+  const AUTO_MS = 6500;
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  );
+
+  function show(index) {
+    current = (index + total) % total;
+    bgs.forEach((el) => el.classList.toggle("active", Number(el.dataset.slide) === current));
+    slides.forEach((el) => el.classList.toggle("active", Number(el.dataset.slide) === current));
+    dots.forEach((el, i) => el.classList.toggle("active", i === current));
+  }
+
+  function startAuto() {
+    if (prefersReducedMotion.matches) return;
+    stopAuto();
+    timer = setInterval(() => show(current + 1), AUTO_MS);
+  }
+  function stopAuto() {
+    if (timer) clearInterval(timer);
+    timer = null;
+  }
+  function restartAuto() {
+    stopAuto();
+    startAuto();
+  }
+
+  dots.forEach((dot) => {
+    dot.addEventListener("click", () => {
+      show(Number(dot.dataset.slide));
+      restartAuto();
+    });
+  });
+  prevBtn?.addEventListener("click", () => {
+    show(current - 1);
+    restartAuto();
+  });
+  nextBtn?.addEventListener("click", () => {
+    show(current + 1);
+    restartAuto();
+  });
+
+  const heroEl = document.getElementById("home");
+  heroEl?.addEventListener("mouseenter", stopAuto);
+  heroEl?.addEventListener("mouseleave", startAuto);
+
+  show(0);
+  startAuto();
+})();
+
 // ── DIRECTIONS LINK ───────────────────────────────────────────
 const directionsCard = document.getElementById("directionsCard");
 const heroDirectionsLink = document.getElementById("heroDirectionsLink");
@@ -442,19 +503,8 @@ function isValidKenyanPhone(phone) {
   return /^\+254(7|1)\d{8}$/.test(normalizeKenyanPhoneClient(phone));
 }
 
-function updateCellGroupVisibility() {
-  const regFor = document.getElementById("regFor").value.trim();
-  const group = document.getElementById("cellGroupGroup");
-  const cellSelect = document.getElementById("cellGroup");
-  const show = regFor === "Cell Group";
-  group.style.display = show ? "block" : "none";
-  cellSelect.required = show;
-  if (!show) cellSelect.selectedIndex = 0;
-}
-
 function getRegistrationPayload() {
   const regFor = document.getElementById("regFor").value.trim();
-  const cellGroup = document.getElementById("cellGroup").value.trim();
   return {
     firstName: document.getElementById("firstName").value.trim(),
     lastName: document.getElementById("lastName").value.trim(),
@@ -463,7 +513,6 @@ function getRegistrationPayload() {
     ageGroup: document.getElementById("ageGroup").value.trim(),
     area: document.getElementById("area").value.trim(),
     regFor,
-    cellGroup: regFor === "Cell Group" ? cellGroup : "",
     notes: document.getElementById("notes").value.trim(),
   };
 }
@@ -521,16 +570,6 @@ async function submitForm() {
     handleInvalidEmail();
     return;
   }
-  if (document.getElementById("regFor").value.trim() === "Cell Group") {
-    const cellGroup = document.getElementById("cellGroup");
-    if (!cellGroup.value.trim()) {
-      cellGroup.style.borderColor = "#EF4444";
-      cellGroup.focus();
-      err.textContent = "Please select which cell group you are joining.";
-      err.style.display = "block";
-      return;
-    }
-  }
   if (!isValidKenyanPhone(document.getElementById("phone").value.trim())) {
     err.textContent = "Please enter a valid Kenyan phone number (e.g. 0712345678).";
     err.style.display = "block";
@@ -548,7 +587,7 @@ async function submitForm() {
     const data = await res.json();
     if (res.ok && data.success) {
       showRegistrationSuccess(
-        "Thank you for registering. Our team will be in touch shortly. God bless you!",
+        "Thank you for signing up. Our team will be in touch with details ahead of the event. God bless you!",
       );
     } else {
       const message = Array.isArray(data.errors) && data.errors.length
@@ -558,7 +597,7 @@ async function submitForm() {
     }
   } catch (e) {
     saveRegistrationDraft(payload);
-    const isDuplicate = /already registered|one ministry|one cell group|new member registration/i.test(String(e.message || ""));
+    const isDuplicate = /already registered/i.test(String(e.message || ""));
     if (isDuplicate) {
       err.textContent = e.message;
     } else {
@@ -576,102 +615,265 @@ function resetForm() {
   ["firstName", "lastName", "phone", "email", "area", "notes"].forEach((id) => {
     document.getElementById(id).value = "";
   });
-  ["ageGroup", "regFor", "cellGroup"].forEach((id) => {
+  ["ageGroup", "regFor"].forEach((id) => {
     document.getElementById(id).selectedIndex = 0;
   });
-  updateCellGroupVisibility();
   document.getElementById("formError").style.display = "none";
   document.getElementById("formSuccess").style.display = "none";
   document.getElementById("formContent").style.display = "block";
   const successText = document.getElementById("formSuccessText");
   if (successText)
     successText.textContent =
-      "Thank you for registering. Our team will be in touch shortly. God bless you!";
+      "Thank you for signing up. Our team will be in touch with details ahead of the event. God bless you!";
 }
 
-document.getElementById("regFor")?.addEventListener("change", updateCellGroupVisibility);
-window.addEventListener("load", updateCellGroupVisibility);
 
-// ── 2026 THEME POSTER POPUP ──────────────────────────────────
-(function () {
-  try {
-    const btn = document.getElementById("themePopupBtn");
-    const overlay = document.getElementById("themePopupOverlay");
-    const closeBtn = document.getElementById("themePopupClose");
-    if (!btn || !overlay || !closeBtn) return;
+// ── LEAVE A MESSAGE (CONTACT) FORM ─────────────────────────────
+const CONTACT_MESSAGE_ENDPOINT = "/api/contact-message";
 
-    function openPopup() {
-      overlay.classList.add("open");
-      closeBtn.focus();
-    }
-    function closePopup() {
-      overlay.classList.remove("open");
-      btn.focus();
-    }
+async function submitContactMessage() {
+  const btn = document.getElementById("messageSubmitBtn");
+  const err = document.getElementById("messageFormError");
+  const nameEl = document.getElementById("msgName");
+  const emailEl = document.getElementById("msgEmail");
+  const subjectEl = document.getElementById("msgSubject");
+  const messageEl = document.getElementById("msgMessage");
+  err.style.display = "none";
 
-    btn.addEventListener("click", openPopup);
-    closeBtn.addEventListener("click", closePopup);
-    overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) closePopup();
-    });
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && overlay.classList.contains("open"))
-        closePopup();
-    });
-  } catch (err) {
-    console.error("Theme popup failed to initialize:", err);
+  if (
+    !nameEl.value.trim() ||
+    !emailEl.value.trim() ||
+    !subjectEl.value.trim() ||
+    !messageEl.value.trim()
+  ) {
+    err.textContent = "Please fill in all required fields.";
+    err.style.display = "block";
+    return;
   }
-})();
+  if (!isValidEmail(emailEl.value.trim())) {
+    err.textContent = "Please enter a valid email address.";
+    err.style.display = "block";
+    emailEl.focus();
+    return;
+  }
+
+  const payload = {
+    name: nameEl.value.trim(),
+    email: emailEl.value.trim(),
+    subject: subjectEl.value.trim(),
+    message: messageEl.value.trim(),
+    honeypot: document.getElementById("msgCompany").value,
+  };
+
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+  try {
+    const res = await fetch(CONTACT_MESSAGE_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!(res.ok && data.success)) {
+      throw new Error(data.message || "Submission failed.");
+    }
+  } catch (e) {
+    try {
+      const key = "umoja_contact_message_drafts";
+      const drafts = JSON.parse(localStorage.getItem(key) || "[]");
+      drafts.push({ ...payload, createdAt: new Date().toISOString() });
+      localStorage.setItem(key, JSON.stringify(drafts));
+    } catch {
+      // localStorage unavailable
+    }
+    console.error("Contact message submission error:", e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Send Message →";
+    document.getElementById("messageFormContent").style.display = "none";
+    document.getElementById("messageFormSuccess").style.display = "block";
+  }
+}
+
+function resetContactMessageForm() {
+  document.getElementById("msgName").value = "";
+  document.getElementById("msgEmail").value = "";
+  document.getElementById("msgSubject").value = "";
+  document.getElementById("msgMessage").value = "";
+  document.getElementById("messageFormError").style.display = "none";
+  document.getElementById("messageFormSuccess").style.display = "none";
+  document.getElementById("messageFormContent").style.display = "block";
+}
+
+// ── PRAYER REQUEST FORM ────────────────────────────────────────
+const PRAYER_ENDPOINT = "/api/prayer-request";
+
+async function submitPrayerRequest() {
+  const btn = document.getElementById("prayerSubmitBtn");
+  const err = document.getElementById("prayerFormError");
+  const nameEl = document.getElementById("prayerName");
+  const reqEl = document.getElementById("prayerRequest");
+  err.style.display = "none";
+
+  if (!nameEl.value.trim() || !reqEl.value.trim()) {
+    err.textContent = "Please fill in your name and prayer request.";
+    err.style.display = "block";
+    (nameEl.value.trim() ? reqEl : nameEl).focus();
+    return;
+  }
+
+  const payload = {
+    name: nameEl.value.trim(),
+    request: reqEl.value.trim(),
+    honeypot: document.getElementById("prayerCompany").value,
+  };
+
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+  try {
+    const res = await fetch(PRAYER_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!(res.ok && data.success)) {
+      throw new Error(data.message || "Submission failed.");
+    }
+  } catch (e) {
+    try {
+      const key = "umoja_prayer_drafts";
+      const drafts = JSON.parse(localStorage.getItem(key) || "[]");
+      drafts.push({ ...payload, createdAt: new Date().toISOString() });
+      localStorage.setItem(key, JSON.stringify(drafts));
+    } catch {
+      // localStorage unavailable
+    }
+    console.error("Prayer request submission error:", e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Send Prayer Request →";
+    document.getElementById("prayerFormContent").style.display = "none";
+    document.getElementById("prayerFormSuccess").style.display = "block";
+  }
+}
+
+function resetPrayerForm() {
+  document.getElementById("prayerName").value = "";
+  document.getElementById("prayerRequest").value = "";
+  document.getElementById("prayerFormError").style.display = "none";
+  document.getElementById("prayerFormSuccess").style.display = "none";
+  document.getElementById("prayerFormContent").style.display = "block";
+}
+
+// ── PASTORAL CARE REQUEST FORM ─────────────────────────────────
+const PASTORAL_CARE_ENDPOINT = "/api/pastoral-care";
+
+async function submitPastoralCare() {
+  const btn = document.getElementById("careSubmitBtn");
+  const err = document.getElementById("careFormError");
+  const nameEl = document.getElementById("careName");
+  const emailEl = document.getElementById("careEmail");
+  const reqEl = document.getElementById("careRequest");
+  err.style.display = "none";
+
+  if (!nameEl.value.trim() || !emailEl.value.trim() || !reqEl.value.trim()) {
+    err.textContent = "Please fill in your name, email, and request.";
+    err.style.display = "block";
+    return;
+  }
+  if (!isValidEmail(emailEl.value.trim())) {
+    err.textContent = "Please enter a valid email address.";
+    err.style.display = "block";
+    emailEl.focus();
+    return;
+  }
+
+  const payload = {
+    name: nameEl.value.trim(),
+    email: emailEl.value.trim(),
+    request: reqEl.value.trim(),
+    honeypot: document.getElementById("careCompany").value,
+  };
+
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+  try {
+    const res = await fetch(PASTORAL_CARE_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!(res.ok && data.success)) {
+      throw new Error(data.message || "Submission failed.");
+    }
+  } catch (e) {
+    try {
+      const key = "umoja_pastoral_care_drafts";
+      const drafts = JSON.parse(localStorage.getItem(key) || "[]");
+      drafts.push({ ...payload, createdAt: new Date().toISOString() });
+      localStorage.setItem(key, JSON.stringify(drafts));
+    } catch {
+      // localStorage unavailable
+    }
+    console.error("Pastoral care submission error:", e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Send Request →";
+    document.getElementById("careFormContent").style.display = "none";
+    document.getElementById("careFormSuccess").style.display = "block";
+  }
+}
+
+function resetCareForm() {
+  document.getElementById("careName").value = "";
+  document.getElementById("careEmail").value = "";
+  document.getElementById("careRequest").value = "";
+  document.getElementById("careFormError").style.display = "none";
+  document.getElementById("careFormSuccess").style.display = "none";
+  document.getElementById("careFormContent").style.display = "block";
+}
 
 // ── LEADERSHIP DETAIL MODAL ────────────────────────────────
 const LEADER_INFO = {
   secretary: {
-    name: "Secretary Name",
     role: "Secretary",
     photo: "images/secretary.jpg",
     bio: [
       "Coordinates church records, correspondence, and communication between leadership and the congregation, keeping the ministry organized and every member in the loop.",
-      "Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
     ],
     tags: ["Administration", "Communication", "Church Records"],
   },
   deacon: {
-    name: "Deacon Name",
     role: "Deacon",
     photo: "images/deacon.jpg",
     bio: [
       "Serves the church through practical support, care for members, and assisting in worship and church operations, helping every service and gathering run smoothly.",
-      "Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
     ],
     tags: ["Pastoral Support", "Worship", "Operations"],
   },
   motherDirector: {
-    name: "Mother Director Name",
     role: "Mother Director",
     photo: "images/women director.jpg",
     bio: [
       "Leads and mentors the Women's Guild, guiding fellowship, prayer, and outreach among the church's women, and nurturing a strong sense of sisterhood in Christ.",
-      "Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
     ],
     tags: ["Women's Guild", "Mentorship", "Outreach"],
   },
   treasurer: {
-    name: "Treasurer Name",
     role: "Treasurer",
     photo: "images/Treasurer.jpg",
     bio: [
       "Oversees church finances, giving, and stewardship with transparency and faithfulness, ensuring every offering is accounted for and put to good use.",
-      "Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
     ],
     tags: ["Stewardship", "Finance", "Transparency"],
   },
   youthLeader: {
-    name: "Youth Leader Name",
     role: "Youth Leader",
     photo: "images/youth leader.jpg",
     bio: [
       "Guides and disciples the church's youth, building a strong foundation of faith for the next generation through mentorship, fellowship, and hands-on ministry.",
-      "Add this leader's full bio here \u2014 background, years of service, and heart for ministry.",
     ],
     tags: ["Youth Ministry", "Discipleship", "Mentorship"],
   },
@@ -710,61 +912,6 @@ function closeLeaderModal() {
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && overlay.classList.contains("open"))
       closeLeaderModal();
-  });
-})();
-
-// ── GALLERY LIGHTBOX ───────────────────────────────────────
-(function () {
-  const imgs = Array.from(document.querySelectorAll("#gallery img"));
-  if (!imgs.length) return;
-
-  const lb = document.createElement("div");
-  lb.className = "lightbox hidden";
-  lb.innerHTML = `
-    <button class="close" aria-label="Close">✕</button>
-    <button class="nav prev" aria-label="Previous">❮</button>
-    <img src="" alt="" />
-    <button class="nav next" aria-label="Next">❯</button>
-  `;
-  document.body.appendChild(lb);
-
-  const lbImg = lb.querySelector("img");
-  const btnClose = lb.querySelector(".close");
-  const btnPrev = lb.querySelector(".prev");
-  const btnNext = lb.querySelector(".next");
-
-  let current = 0;
-
-  function show(index) {
-    current = (index + imgs.length) % imgs.length;
-    const el = imgs[current];
-    lbImg.src = el.src;
-    lbImg.alt = el.alt || "Gallery image";
-    lb.classList.remove("hidden");
-    document.body.style.overflow = "hidden";
-    btnClose.focus();
-  }
-
-  function hide() {
-    lb.classList.add("hidden");
-    document.body.style.overflow = "";
-  }
-
-  imgs.forEach((img, i) => {
-    img.addEventListener("click", () => show(i));
-  });
-
-  btnClose.addEventListener("click", hide);
-  btnPrev.addEventListener("click", () => show(current - 1));
-  btnNext.addEventListener("click", () => show(current + 1));
-  lb.addEventListener("click", (e) => {
-    if (e.target === lb) hide();
-  });
-  window.addEventListener("keydown", (e) => {
-    if (lb.classList.contains("hidden")) return;
-    if (e.key === "Escape") hide();
-    if (e.key === "ArrowLeft") show(current - 1);
-    if (e.key === "ArrowRight") show(current + 1);
   });
 })();
 
@@ -888,18 +1035,6 @@ function closeLeaderModal() {
   try {
     const CHURCH_ITEMS = [
       {
-        type: "announcement",
-        date: "2026-08-31",
-        title: "Sanctuary Improvement — Phase II",
-        category: "Facilities",
-        time: "",
-        location: "Main Sanctuary",
-        description:
-          "Work continues on new seating, upgraded stage lighting, and improved sound insulation in the main sanctuary. Phase II is on track for completion by end of August, thanks to the generosity of our congregation. Phase III — parking and landscaping — is already being planned for early next year.",
-        link: "#giving",
-        linkText: "Support this project",
-      },
-      {
         type: "event",
         date: "2026-06-20",
         title: "Kesha Night",
@@ -910,6 +1045,36 @@ function closeLeaderModal() {
           "A powerful night of prayer, worship, and seeking God's presence together as a church family — open to the whole congregation, no registration needed. Come expectant for a fresh encounter with God through praise, intercession, and the Word.",
         link: "#contact",
         linkText: "Ask a question",
+      },
+      {
+        type: "event",
+        date: "2026-05-11",
+        title: "Women's Fellowship Week",
+        category: "Women's Fellowship",
+        time: "5:00 PM Daily",
+        location: "Umoja P.A.G Church",
+        description:
+          "A week of dedicated fellowship, teaching, and prayer for the women of the church — daily evening sessions built around encouragement, testimony, and sisterhood in faith.",
+      },
+      {
+        type: "event",
+        date: "2026-04-13",
+        title: "Men's Fellowship Week",
+        category: "Men's Fellowship",
+        time: "6:00 PM Daily",
+        location: "Umoja P.A.G Church",
+        description:
+          "A week of teaching and fellowship for the men of the church, focused on discipleship, accountability, and leading well at home and in the community.",
+      },
+      {
+        type: "event",
+        date: "2026-03-09",
+        title: "Evangelism Week",
+        category: "Evangelism & Outreach",
+        time: "All Day",
+        location: "Umoja & Surrounding Estates",
+        description:
+          "A week of door-to-door outreach, street evangelism, and community service across Umoja and neighbouring estates, closing with a combined outreach service inviting new visitors to church.",
       },
       {
         // TODO: confirm the exact Youth Camp date with the church office —
@@ -948,7 +1113,7 @@ function closeLeaderModal() {
       const [y, m, d] = ev.date.split("-").map(Number);
       const dateLabel = `${MONTH_NAMES[m - 1]} ${d}, ${y}`;
       const media = ev.image
-        ? `<img src="${ev.image}" alt="${ev.title}" loading="lazy" />`
+        ? `<img src="${ev.image}" alt="${ev.title}" />`
         : ICON_CAL.replace('width="13" height="13"', 'width="40" height="40"');
       return `
         <div class="event-card">

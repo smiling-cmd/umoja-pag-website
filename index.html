@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="theme-color" content="#3e6fe0" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Umoja P.A.G Church</title>
     <meta
@@ -80,12 +81,11 @@
         <li><a href="#home" class="active" aria-current="page">Home</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#ministries">Ministries</a></li>
-        <li><a href="#projects">Projects</a></li>
         <li><a href="#giving">Giving</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li><a href="#care">Prayer &amp; Care</a></li>
         <li><a href="#updates">Events</a></li>
-        <li><a href="#gallery">Gallery</a></li>
-        <li><a href="#register">Register</a></li>
+        <li><a href="#join">How to Join</a></li>
       </ul>
       <div class="nav-right">
         <a
@@ -104,7 +104,7 @@
         >
           <img src="images/facebook.jpg" alt="Facebook" />
         </a>
-        <a class="nav-cta" href="#register">Join Us</a>
+        <a class="nav-cta" href="#join">Join Us</a>
         <button
           class="nav-toggle"
           id="navToggle"
@@ -122,58 +122,84 @@
 
     <!-- HERO -->
     <section class="hero" id="home">
-      <img
-        class="hero-bg"
-        src="images/homepage.jpg"
-        alt="Umoja P.A.G Church worship"
-        loading="eager"
-        decoding="async"
-      />
-      <div class="hero-overlay-1"></div>
-      <div class="hero-overlay-2"></div>
+      <div class="hero-theme-badge" aria-label="2026 Theme">
+        <span class="hero-theme-badge-label">2026 Theme</span>
+        <span class="hero-theme-badge-title">Mastering Your Time With God</span>
+        <span class="hero-theme-badge-verse">Genesis 32:24</span>
+      </div>
       <div class="hero-content">
         <div class="hero-left">
-          <div class="hero-eyebrow">
-            <div class="hero-eyebrow-dot"></div>
-            Every Sunday
-          </div>
-          <h1 class="hero-title">Where Faith<br />Comes <em>Alive</em></h1>
-          <p class="hero-desc">
-            Welcome to Umoja Pentecostal Assemblies of God Church — a vibrant,
-            Spirit-filled community dedicated to worship, growth, and serving
-            one another in love.
-          </p>
-          <div class="hero-btns">
-            <a class="btn-primary" href="#contact" id="heroDirectionsLink"
-              >Join Us This Sunday →</a
-            >
-            <a
-              class="btn-ghost btn-watch-live"
-              href="http://www.youtube.com/@umojapagchurch3626"
-              target="_blank"
-              rel="noopener"
-              >▶ Watch Live</a
-            >
-          </div>
-          <p class="hero-note">
-            
-             Recorded services available anytime on Youtube
-          </p>
-          <button
-            type="button"
-            class="hero-theme-badge"
-            id="themePopupBtn"
-            aria-label="View the full 2026 theme poster"
-          >
-            <div>
-              <div class="hero-theme-badge-label"> Our  Theme of the year 2026 </div>
-              <div class="hero-theme-badge-title">
-                Mastering Your Time With God
-                <span class="hero-theme-badge-verse">— Genesis 32:24</span>
-              </div>
+          <div class="hero-left-slide active" data-slide="0">
+            <div class="hero-eyebrow">
+              <div class="hero-eyebrow-dot"></div>
+              Every Sunday
             </div>
-            <span class="hero-theme-badge-expand">⤢</span>
-          </button>
+            <h1 class="hero-title">Where Faith<br />Comes <em>Alive</em></h1>
+          </div>
+          <div class="hero-left-slide" data-slide="1">
+            <p class="hero-desc">
+              Welcome to Umoja Pentecostal Assemblies of God Church — a vibrant,
+              Spirit-filled community dedicated to worship, growth, and serving
+              one another in love.
+            </p>
+            <div class="hero-btns">
+              <a class="btn-primary" href="#contact" id="heroDirectionsLink"
+                >Join Us This Sunday →</a
+              >
+              <a
+                class="btn-ghost btn-watch-live"
+                href="http://www.youtube.com/@umojapagchurch3626"
+                target="_blank"
+                rel="noopener"
+                ><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="vertical-align:-1px;margin-right:6px" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Watch Live</a
+              >
+            </div>
+          </div>
+          <div class="hero-left-slide" data-slide="2">
+            <div class="hero-eyebrow">
+              <div class="hero-eyebrow-dot"></div>
+              Community
+            </div>
+            <h1 class="hero-title">Find Your<br /><em>Family</em> Here</h1>
+          </div>
+          <div class="hero-left-slide" data-slide="3">
+            <p class="hero-desc">
+              Cell groups meet in neighbourhoods across Umoja every week —
+              smaller circles where you're known by name, prayed for, and
+              never walking through life alone.
+            </p>
+            <div class="hero-btns">
+              <a class="btn-primary" href="#cell-groups"
+                >Explore Cell Groups →</a
+              >
+              <a class="btn-ghost" href="#ministries">See All Ministries</a>
+            </div>
+          </div>
+          <div class="hero-left-slide" data-slide="4">
+            <div class="hero-eyebrow">
+              <div class="hero-eyebrow-dot"></div>
+              Next Generation
+            </div>
+            <h1 class="hero-title">Raising Up<br />a <em>Generation</em></h1>
+          </div>
+          <div class="hero-left-slide" data-slide="5">
+            <p class="hero-desc">
+              From Sunday school to Youth Week, we're investing in the faith
+              of every child and teen who walks through our doors.
+            </p>
+            <div class="hero-btns">
+              <a class="btn-primary" href="#register"
+                >Register for Youth Camp →</a
+              >
+              <a
+                class="btn-ghost"
+                href="ministries.html#youth"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Youth Ministry</a
+              >
+            </div>
+          </div>
         </div>
         <div class="hero-right">
           <div class="hero-service-card">
@@ -199,28 +225,23 @@
           </div>
         </div>
       </div>
+      <div class="hero-carousel-nav">
+        <button type="button" class="hero-arrow hero-arrow-prev" id="heroPrev" aria-label="Previous slide">‹</button>
+        <div class="hero-dots" id="heroDots">
+          <button type="button" class="hero-dot active" data-slide="0" aria-label="Show slide 1"></button>
+          <button type="button" class="hero-dot" data-slide="1" aria-label="Show slide 2"></button>
+          <button type="button" class="hero-dot" data-slide="2" aria-label="Show slide 3"></button>
+          <button type="button" class="hero-dot" data-slide="3" aria-label="Show slide 4"></button>
+          <button type="button" class="hero-dot" data-slide="4" aria-label="Show slide 5"></button>
+          <button type="button" class="hero-dot" data-slide="5" aria-label="Show slide 6"></button>
+        </div>
+        <button type="button" class="hero-arrow hero-arrow-next" id="heroNext" aria-label="Next slide">›</button>
+      </div>
       <div class="hero-scroll">
         <span>Scroll</span>
         <div class="hero-scroll-line"></div>
       </div>
     </section>
-
-    <div class="theme-popup-overlay" id="themePopupOverlay">
-      <div class="theme-popup-card">
-        <button
-          type="button"
-          class="theme-popup-close"
-          id="themePopupClose"
-          aria-label="Close"
-        >
-          ✕
-        </button>
-        <img
-          src="images/theme of the year.jpeg"
-          alt="Umoja P.A.G Church 2026 Theme: Mastering Your Time With God — Genesis 32:24"
-        />
-      </div>
-    </div>
 
 
     <!-- ABOUT -->
@@ -231,7 +252,7 @@
             <img
               src="images/Church.jpg"
               alt="Umoja P.A.G Church building"
-              loading="lazy"
+             
               decoding="async"
             />
           </div>
@@ -275,14 +296,14 @@
               Love in Action
             </div>
           </div>
-          <a class="btn-primary btn-inline reveal d4" href="#register"
+          <a class="btn-primary btn-inline reveal d4" href="#join"
             >Get Connected →</a
           >
         </div>
       </div>
       <div class="pastor-feature pastor-feature-about reveal d2">
         <div class="pastor-media">
-          <img src="images/pastor.jpg" alt="Pastor John Juma" loading="lazy" decoding="async" />
+          <img src="images/pastor.jpg" alt="Pastor John Juma" decoding="async" />
           <div class="pastor-media-overlay"></div>
         </div>
         <div class="pastor-body">
@@ -306,7 +327,7 @@
           onclick="openLeaderModal('secretary')"
         >
           <div class="leadership-photo">
-            <img src="images/secretary.jpg" alt="Secretary" loading="lazy" decoding="async" style="--photo-pos: 50% 20%" />
+            <img src="images/secretary.jpg" alt="Secretary" decoding="async" style="--photo-pos: 50% 20%" />
           </div>
           <h4 class="leadership-name">Mr.Sam Kavai </h4>
           <div class="leadership-role">Secretary</div>
@@ -317,7 +338,7 @@
           onclick="openLeaderModal('deacon')"
         >
           <div class="leadership-photo">
-            <img src="images/deacon.jpg" alt="Deacon" loading="lazy" decoding="async" style="--photo-pos: 50% 20%" />
+            <img src="images/deacon.jpg" alt="Deacon" decoding="async" style="--photo-pos: 50% 20%" />
           </div>
           <h4 class="leadership-name">Mr. Paul Mosira</h4>
           <div class="leadership-role">Deacon</div>
@@ -328,7 +349,7 @@
           onclick="openLeaderModal('motherDirector')"
         >
           <div class="leadership-photo">
-            <img src="images/women director.jpg" alt="Mother Director" loading="lazy" decoding="async" style="--photo-pos: 50% 20%" />
+            <img src="images/women director.jpg" alt="Mother Director" decoding="async" style="--photo-pos: 50% 20%" />
           </div>
           <h4 class="leadership-name">lady Linet Lukiri</h4>
           <div class="leadership-role">Mother Director</div>
@@ -339,7 +360,7 @@
           onclick="openLeaderModal('treasurer')"
         >
           <div class="leadership-photo">
-            <img src="images/Treasurer.jpg" alt="Treasurer" loading="lazy" decoding="async" style="--photo-pos: 50% 20%" />
+            <img src="images/Treasurer.jpg" alt="Treasurer" decoding="async" style="--photo-pos: 50% 20%" />
           </div>
           <h4 class="leadership-name">Mr. Paul Mwangi</h4>
           <div class="leadership-role">Treasurer</div>
@@ -350,7 +371,7 @@
           onclick="openLeaderModal('youthLeader')"
         >
           <div class="leadership-photo">
-            <img src="images/youth leader.jpg" alt="Youth Leader" loading="lazy" decoding="async" style="--photo-pos: 50% 20%" />
+            <img src="images/youth leader.jpg" alt="Youth Leader" decoding="async" style="--photo-pos: 50% 20%" />
           </div>
           <h4 class="leadership-name">Ms.Florence Atino</h4>
           <div class="leadership-role">Youth Leader</div>
@@ -366,7 +387,7 @@
             id="leaderModalClose"
             aria-label="Close"
           >
-            ✕
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
           </button>
           <div class="leader-modal-photo">
             <img id="leaderModalImg" src="" alt="" style="--photo-pos: 50% 15%" />
@@ -421,11 +442,11 @@
       <div class="school-highlight-inner">
         <div class="school-highlight-media reveal">
           <div class="school-photo-top">
-            <img src="images/school bus.jpeg" alt="Umoja P.A.G School bus" loading="lazy" />
+            <img src="images/school bus.jpeg" alt="Umoja P.A.G School bus" />
             <div class="school-highlight-badge">Est. 2011</div>
           </div>
           <div class="school-photo-bottom">
-            <img src="images/church school.jpeg" alt="Umoja P.A.G Church School dedication plaque" loading="lazy" />
+            <img src="images/church school.jpeg" alt="Umoja P.A.G Church School dedication plaque" />
           </div>
         </div>
         <div class="school-highlight-content reveal d1">
@@ -482,7 +503,7 @@
         <div class="ministry-grid">
           <article class="ministry-card wide reveal" id="cell-groups">
             <div class="ministry-card-media">
-              <img class="img-cp-40" src="images/Church.jpg" alt="Cell Groups ministry in Umoja neighbourhoods" loading="lazy" decoding="async" />
+              <img class="img-cp-40" src="images/Church.jpg" alt="Cell Groups ministry in Umoja neighbourhoods" decoding="async" />
               <div class="ministry-card-chip">Neighbourhood Fellowship</div>
             </div>
             <div class="ministry-card-body">
@@ -501,14 +522,7 @@
             </div>
           </article>
           <article class="ministry-card reveal">
-            <div class="ministry-card-media">
-              <img
-                class="img-cp-42"
-                src="images/worship team.jpg"
-                alt="Worship team ministering at Umoja P.A.G Church"
-                loading="lazy"
-                decoding="async"
-              />
+            <div class="ministry-card-media no-photo">
               <div class="ministry-card-chip">Music Ministry</div>
             </div>
             <div class="ministry-card-body">
@@ -523,14 +537,7 @@
             </div>
           </article>
           <article class="ministry-card reveal d1">
-            <div class="ministry-card-media">
-              <img
-                class="img-cp-42"
-                src="images/choir.jpg"
-                alt="Choir ministry at Umoja P.A.G Church"
-                loading="lazy"
-                decoding="async"
-              />
+            <div class="ministry-card-media no-photo">
               <div class="ministry-card-chip">Music Ministry</div>
             </div>
             <div class="ministry-card-body">
@@ -544,14 +551,7 @@
             </div>
           </article>
           <article class="ministry-card reveal d2">
-            <div class="ministry-card-media">
-              <img
-                class="img-cp-42"
-                src="images/media team.jpeg"
-                alt="Media Team serving during worship at Umoja P.A.G Church"
-                loading="lazy"
-                decoding="async"
-              />
+            <div class="ministry-card-media no-photo">
               <div class="ministry-card-chip">Production</div>
             </div>
             <div class="ministry-card-body">
@@ -565,14 +565,7 @@
             </div>
           </article>
           <article class="ministry-card reveal d3">
-            <div class="ministry-card-media">
-              <img
-                class="img-cp-42"
-                src="images/sunday schoool.jpg"
-                alt="Sunday School welcome display"
-                loading="lazy"
-                decoding="async"
-              />
+            <div class="ministry-card-media no-photo">
               <div class="ministry-card-chip">Children</div>
             </div>
             <div class="ministry-card-body">
@@ -592,14 +585,7 @@
             </div>
           </article>
           <article class="ministry-card reveal">
-            <div class="ministry-card-media">
-              <img
-                class="img-cp-28"
-                src="images/women guild.jpg"
-                alt="Women's Fellowship at Umoja P.A.G Church"
-                loading="lazy"
-                decoding="async"
-              />
+            <div class="ministry-card-media no-photo">
               <div class="ministry-card-chip">Fellowship</div>
             </div>
             <div class="ministry-card-body">
@@ -613,14 +599,7 @@
             </div>
           </article>
           <article class="ministry-card reveal d1">
-            <div class="ministry-card-media">
-              <img
-                class="img-cp-42"
-                src="images/men Guild.jpg"
-                alt="Men's Fellowship ministry at Umoja P.A.G Church"
-                loading="lazy"
-                decoding="async"
-              />
+            <div class="ministry-card-media no-photo">
               <div class="ministry-card-chip">Leadership</div>
             </div>
             <div class="ministry-card-body">
@@ -634,14 +613,7 @@
             </div>
           </article>
           <article class="ministry-card reveal d2">
-            <div class="ministry-card-media">
-              <img
-                class="img-cp-52"
-                src="images/youthh.jpeg"
-                alt="Youth ministry encouragement poster"
-                loading="lazy"
-                decoding="async"
-              />
+            <div class="ministry-card-media no-photo">
               <div class="ministry-card-chip">Next Generation</div>
             </div>
             <div class="ministry-card-body">
@@ -667,126 +639,9 @@
             interest and our team will help you connect in the right place.
           </div>
         </div>
-        <a class="btn-primary" href="#register">Get Connected</a>
+        <a class="btn-primary" href="#join">Get Connected</a>
       </div>
     </section>
-
-    <!-- PROJECTS -->
-    <section class="section projects" id="projects">
-      <div class="projects-header">
-        <div>
-          <div class="section-eyebrow reveal">Completed Work</div>
-          <h2 class="section-title reveal d1">Church <em>Projects</em></h2>
-        </div>
-        <p class="section-body reveal d2">
-          These projects are helping Umoja P.A.G Church serve people with
-          better facilities, safer housing, and stronger community presence —
-          some already complete, others still under way.
-        </p>
-      </div>
-      <div class="projects-layout">
-        <article class="project-feature reveal">
-          <img
-            src="images/hall completed project.jpeg"
-            alt="Hall completion project at 80 percent"
-            loading="lazy"
-            decoding="async"
-          />
-          <div class="project-feature-content">
-            <div class="project-feature-label">Featured Project</div>
-            <h3>Hall Completion Project</h3>
-            <p>
-              The church hall is now about 80% complete, on its way to becoming
-              a spacious and modern venue for services, fellowships, and
-              community gatherings.
-            </p>
-            <a class="project-feature-link" href="projects.html#hall-completion" target="_blank" rel="noopener noreferrer">Learn more</a>
-          </div>
-        </article>
-        <div>
-          <div class="projects-grid">
-            <article class="project-card reveal d1">
-              <img class="project-card-img" src="images/media team.jpeg" alt="New TV screens and upgraded camera project" loading="lazy" />
-              <div class="project-card-body">
-                <div>
-                  <div class="project-status ongoing">Ongoing</div>
-                  <h3>New TV Screens &amp; Upgraded Camera</h3>
-                  <p>
-                    Installing new display screens and upgrading the camera
-                    equipment to improve worship experience and live streaming.
-                  </p>
-                </div>
-                <div class="project-progress">
-                  <div class="project-progress-top">
-                    <span>Progress</span><span>In Progress</span>
-                  </div>
-                  <div class="project-progress-track">
-                    <div class="project-progress-fill fill-100" style="width:55%"></div>
-                  </div>
-                </div>
-                <a class="project-card-link" href="projects.html#tv-screens" target="_blank" rel="noopener noreferrer">Learn more</a>
-              </div>
-            </article>
-            <article class="project-card reveal d2">
-              <img class="project-card-img" src="images/hall completed project.jpeg" alt="Hall completion project at 80 percent" loading="lazy" />
-              <div class="project-card-body">
-                <div>
-                  <div class="project-status ongoing">Ongoing</div>
-                  <h3>Hall Completion Project</h3>
-                  <p>
-                    The church hall is about 80% complete — soon to be a
-                    modern, spacious venue for services, fellowships, and
-                    community gatherings.
-                  </p>
-                </div>
-                <div class="project-progress">
-                  <div class="project-progress-top">
-                    <span>Progress</span><span>80%</span>
-                  </div>
-                  <div class="project-progress-track">
-                    <div class="project-progress-fill fill-100" style="width:80%"></div>
-                  </div>
-                </div>
-                <a class="project-card-link" href="projects.html#hall-completion" target="_blank" rel="noopener noreferrer">Learn more</a>
-              </div>
-            </article>
-            <article class="project-card reveal d3">
-              <img class="project-card-img" src="images/gate and cabros project.jpeg" alt="Gate and cabros project" loading="lazy" />
-              <div class="project-card-body">
-                <div>
-                  <div class="project-status">Completed</div>
-                  <h3>Gate &amp; Cabros Project</h3>
-                  <p>
-                    Completed the gate, fence, and cabros paving to improve
-                    access, safety, and the church's welcome.
-                  </p>
-                </div>
-                <div class="project-progress">
-                  <div class="project-progress-top">
-                    <span>Progress</span><span>100%</span>
-                  </div>
-                  <div class="project-progress-track">
-                    <div class="project-progress-fill fill-100"></div>
-                  </div>
-                </div>
-                <a class="project-card-link" href="projects.html#gate-cabros" target="_blank" rel="noopener noreferrer">Learn more</a>
-              </div>
-            </article>
-          </div>
-          <div class="projects-cta reveal d2">
-            <p>
-              Project giving helps turn ministry vision into useful spaces,
-              better tools, and care that reaches real people.
-            </p>
-            <a class="btn-primary" href="#giving">Support Projects</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- UPDATES moved further down to match nav order -->
-
-    <!-- GALLERY removed here and moved to page bottom so it's the final section -->
 
     <!-- GIVING -->
     <section class="section giving" id="giving">
@@ -799,7 +654,7 @@
           <img
             src="images/offering.jpg"
             alt="Offering"
-            loading="lazy"
+           
             decoding="async"
           />
           <div class="giving-media-overlay"></div>
@@ -857,14 +712,14 @@
           </p>
           <div class="contact-details">
             <div class="contact-item reveal">
-              <div class="contact-icon">📍</div>
+              <div class="contact-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M21 10c0 6-9 13-9 13s-9-7-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
               <div>
                 <div class="contact-item-label">Location</div>
                 <div class="contact-item-value">Umoja Innercore, Nairobi, Kenya</div>
               </div>
             </div>
             <div class="contact-item reveal d1">
-              <div class="contact-icon">🕐</div>
+              <div class="contact-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
               <div>
                 <div class="contact-item-label">Service Times</div>
                 <div class="contact-item-value">
@@ -873,14 +728,14 @@
               </div>
             </div>
             <div class="contact-item reveal d2">
-              <div class="contact-icon">📞</div>
+              <div class="contact-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M15.05 12.94a1 1 0 0 0-1.2.18l-1.4 1.4a11.4 11.4 0 0 1-4.97-4.97l1.4-1.4a1 1 0 0 0 .18-1.2L7.6 3.5a1 1 0 0 0-1.15-.5l-2.65.7A1 1 0 0 0 3 4.65 17 17 0 0 0 19.35 21a1 1 0 0 0 .95-.8l.7-2.65a1 1 0 0 0-.5-1.15Z"/></svg></div>
               <div>
                 <div class="contact-item-label">Phone</div>
                 <div class="contact-item-value">0796752298</div>
               </div>
             </div>
             <div class="contact-item reveal d3">
-              <div class="contact-icon">✉️</div>
+              <div class="contact-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>
               <div>
                 <div class="contact-item-label">Email</div>
                 <div class="contact-item-value">
@@ -900,7 +755,7 @@
               height="100%"
               style="border:0;"
               allowfullscreen
-              loading="lazy"
+             
               
               title="Map to Umoja P.A.G Church"
             ></iframe>
@@ -916,6 +771,188 @@
           </div>
         </div>
       </div>
+
+      <div class="contact-message-card care-card reveal d3">
+        <h3>Leave a Message</h3>
+        <p class="care-card-note">
+          Have a question, a testimony to share, or want to follow up on
+          something specific? Send us a message directly.
+        </p>
+        <div id="messageFormContent">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="msgName">Your Name *</label>
+              <input type="text" id="msgName" placeholder="e.g. Grace Achieng" />
+            </div>
+            <div class="form-group">
+              <label for="msgEmail">Your Email *</label>
+              <input
+                type="email"
+                id="msgEmail"
+                autocomplete="email"
+                placeholder="your@email.com"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="msgSubject">Subject *</label>
+            <input type="text" id="msgSubject" placeholder="e.g. Visiting this Sunday" />
+          </div>
+          <div class="form-group">
+            <label for="msgMessage">Your Message *</label>
+            <textarea
+              id="msgMessage"
+              placeholder="How can we help?"
+            ></textarea>
+          </div>
+          <div class="hp-field" aria-hidden="true">
+            <label for="msgCompany">Leave this field blank</label>
+            <input type="text" id="msgCompany" tabindex="-1" autocomplete="off" />
+          </div>
+          <div class="form-error" id="messageFormError"></div>
+          <button
+            class="form-submit-btn"
+            type="button"
+            id="messageSubmitBtn"
+            onclick="submitContactMessage()"
+          >
+            Send Message →
+          </button>
+        </div>
+        <div class="form-success" id="messageFormSuccess">
+          <h3>Message Sent</h3>
+          <p>Thank you for reaching out. We'll get back to you soon.</p>
+          <br />
+          <button
+            class="form-submit-btn center-small"
+            type="button"
+            onclick="resetContactMessageForm()"
+          >
+            Send Another Message
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRAYER & PASTORAL CARE -->
+    <section class="section care" id="care">
+      <div class="section-heading-row">
+        <div class="section-eyebrow reveal">We're Here For You</div>
+        <h2 class="section-title reveal d1">Prayer &amp; <em>Pastoral Care</em></h2>
+        <p class="section-body reveal d2">
+          Whatever you're carrying, you don't have to carry it alone. Share a
+          prayer request or reach out for pastoral care, and our team will
+          follow up with you personally.
+        </p>
+      </div>
+      <div class="care-grid">
+        <div class="care-card reveal">
+          <h3>Prayer Request</h3>
+          <p class="care-card-note">
+            Send us your prayer request — it will be held in confidence by our
+            prayer team.
+          </p>
+          <div id="prayerFormContent">
+            <div class="form-group">
+              <label for="prayerName">Your Name *</label>
+              <input type="text" id="prayerName" placeholder="e.g. Jane Wanjiru" />
+            </div>
+            <div class="form-group">
+              <label for="prayerRequest">Your Prayer Request *</label>
+              <textarea
+                id="prayerRequest"
+                placeholder="Share what's on your heart..."
+              ></textarea>
+            </div>
+            <div class="hp-field" aria-hidden="true">
+              <label for="prayerCompany">Leave this field blank</label>
+              <input type="text" id="prayerCompany" tabindex="-1" autocomplete="off" />
+            </div>
+            <div class="form-error" id="prayerFormError"></div>
+            <button
+              class="form-submit-btn"
+              type="button"
+              id="prayerSubmitBtn"
+              onclick="submitPrayerRequest()"
+            >
+              Send Prayer Request →
+            </button>
+          </div>
+          <div class="form-success" id="prayerFormSuccess">
+            <h3>Received</h3>
+            <p>
+              Thank you for trusting us with this. Our prayer team is
+              standing with you.
+            </p>
+            <br />
+            <button
+              class="form-submit-btn center-small"
+              type="button"
+              onclick="resetPrayerForm()"
+            >
+              Send Another Request
+            </button>
+          </div>
+        </div>
+
+        <div class="care-card reveal d1">
+          <h3>Pastoral Care Request</h3>
+          <p class="care-card-note">
+            Need to speak with a pastor — counsel, a hospital or home visit,
+            or a personal matter? Let us know and we'll reach out.
+          </p>
+          <div id="careFormContent">
+            <div class="form-group">
+              <label for="careName">Your Name *</label>
+              <input type="text" id="careName" placeholder="e.g. John Otieno" />
+            </div>
+            <div class="form-group">
+              <label for="careEmail">Your Email *</label>
+              <input
+                type="email"
+                id="careEmail"
+                autocomplete="email"
+                placeholder="your@email.com"
+              />
+            </div>
+            <div class="form-group">
+              <label for="careRequest">Your Pastoral Care Request *</label>
+              <textarea
+                id="careRequest"
+                placeholder="Tell us how we can support you..."
+              ></textarea>
+            </div>
+            <div class="hp-field" aria-hidden="true">
+              <label for="careCompany">Leave this field blank</label>
+              <input type="text" id="careCompany" tabindex="-1" autocomplete="off" />
+            </div>
+            <div class="form-error" id="careFormError"></div>
+            <button
+              class="form-submit-btn"
+              type="button"
+              id="careSubmitBtn"
+              onclick="submitPastoralCare()"
+            >
+              Send Request →
+            </button>
+          </div>
+          <div class="form-success" id="careFormSuccess">
+            <h3>Received</h3>
+            <p>
+              Thank you for reaching out. A member of our pastoral team will
+              contact you soon.
+            </p>
+            <br />
+            <button
+              class="form-submit-btn center-small"
+              type="button"
+              onclick="resetCareForm()"
+            >
+              Send Another Request
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- EVENTS & UPDATES -->
@@ -925,8 +962,7 @@
         <h2 class="section-title reveal d1">Events <em>&amp; Updates</em></h2>
         <p class="section-body reveal d2">
           Stay in the loop with what's happening around Umoja P.A.G Church —
-          from building projects to upcoming events and volunteer
-          opportunities.
+          upcoming events, services, and volunteer opportunities.
         </p>
       </div>
 
@@ -947,46 +983,18 @@
         </button>
       </div>
       <div class="events-by-month events-by-month-past" id="pastEventsByMonth" hidden></div>
-    </section>
 
-    <!-- GALLERY -->
-    <section class="section gallery" id="gallery">
-      <div class="section-heading-row">
-        <div class="section-eyebrow reveal">Moments</div>
-        <h2 class="section-title reveal d1">Photo <em>Gallery</em></h2>
-      </div>
-      <div class="gallery-grid reveal d2">
-        <figure>
-          <img src="images/choir.jpg" alt="Choir ministering at Umoja P.A.G Church" loading="lazy" />
-        </figure>
-        <figure>
-          <img src="images/worship team.jpg" alt="Worship team leading Sunday service" loading="lazy" />
-        </figure>
-        <figure>
-          <img src="images/youthh.jpeg" alt="Youth ministry at Umoja P.A.G Church" loading="lazy" />
-        </figure>
-        <figure>
-          <img src="images/men Guild.jpg" alt="Men's Fellowship at Umoja P.A.G Church" loading="lazy" />
-        </figure>
-        <figure>
-          <img src="images/women guild.jpg" alt="Women's Fellowship at Umoja P.A.G Church" loading="lazy" />
-        </figure>
-        <figure>
-          <img src="images/media team.jpeg" alt="Media team serving at Umoja P.A.G Church" loading="lazy" />
-        </figure>
-      </div>
-    </section>
-
-    <!-- REGISTRATION -->
-    <section class="section registration" id="register">
+      <div class="updates-register-divider" id="register"></div>
       <div class="reg-inner">
         <div class="form-header-row">
-          <div class="section-eyebrow reveal">Join Our Family</div>
+          <div class="section-eyebrow reveal">Sign Up</div>
           <h2 class="section-title light reveal d1">
-            Register as a New Member<br />or for <em>Church Activities</em>
+            Register for an <em>Upcoming Event</em>
           </h2>
           <p class="section-body light reveal d2">
-            Fill in the form below to register.
+            Seeing something above you'd like to join — Youth Camp, a
+            special event? Fill in the form right here to reserve your
+            spot, no need to go anywhere else.
           </p>
           <button
             type="button"
@@ -1068,30 +1076,11 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="regFor">Registering For *</label
+              <label for="regFor">Which Event? *</label
               ><select id="regFor">
-                <option value="" disabled selected>Select purpose...</option>
-                <option>New Member Registration</option>
-                <option>Worship Team</option>
-                <option>Choir</option>
-                <option>Media Team</option>
-                <option>Sunday School (Junior)</option>
-                <option>Sunday School (Senior)</option>
-                <option>Sunday School (Teens)</option>
-                <option>Cell Group</option>
-                <option>General Church Activity</option>
-              </select>
-            </div>
-            <div class="form-group" id="cellGroupGroup" style="display:none">
-              <label for="cellGroup">Which Cell Group? *</label
-              ><select id="cellGroup">
-                <option value="" disabled selected>Select your neighbourhood...</option>
-                <option>Jericho</option>
-                <option>Nazareth</option>
-                <option>Bethlehem</option>
-                <option>Judah</option>
-                <option>Galilee</option>
-                <option>Jerusalem</option>
+                <option value="" disabled selected>Select an event...</option>
+                <option>Youth Camp &amp; Family Fun Day</option>
+                <option>Other Special Event</option>
               </select>
             </div>
             <div class="form-group">
@@ -1111,11 +1100,6 @@
                 autocomplete="off"
               />
             </div>
-            <p class="form-privacy-note">
-              We only use these details to contact you about the ministry or
-              activity you've registered for — we never sell or share your
-              information with third parties.
-            </p>
             <button
               class="form-submit-btn"
               type="button"
@@ -1128,10 +1112,10 @@
           </div>
           <div class="form-success" id="formSuccess">
           
-            <h3>Welcome to the Family!</h3>
+            <h3>You're Registered!</h3>
             <p id="formSuccessText">
-              Thank you for registering. Our team will be in touch shortly. God
-              bless you!
+              Thank you for signing up. Our team will be in touch with
+              details ahead of the event. God bless you!
             </p>
             <br />
             <button
@@ -1139,7 +1123,7 @@
               type="button"
               onclick="resetForm()"
             >
-              Register Another
+              Register for Another Event
             </button>
           </div>
         </div>
@@ -1153,9 +1137,9 @@
             id="qrModalClose"
             aria-label="Close QR code"
           >
-            ✕
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
           </button>
-          <div class="qr-eyebrow">✦ Umoja P.A.G Church</div>
+          <div class="qr-eyebrow">Umoja P.A.G Church</div>
           <div class="qr-title">Scan to Register</div>
           <div
             class="qr-frame"
@@ -1166,7 +1150,7 @@
           >
             <div class="qr-box" id="qrCanvas"></div>
           </div>
-          <p class="qr-tap-hint">⤢ Tap the code to enlarge</p>
+          <p class="qr-tap-hint">Tap the code to enlarge</p>
           <div id="qrHint">
             <a
               href="#"
@@ -1179,7 +1163,7 @@
           </div>
           <div class="qr-btns">
             <button class="qr-btn qr-print" onclick="printQR()">
-              🖨 Print QR Code
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" style="vertical-align:-2px;margin-right:6px"><path d="M6 9V2h12v7"/><path d="M6 18H4a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print QR Code
             </button>
           </div>
         </div>
@@ -1192,7 +1176,7 @@
           id="qrExpandClose"
           aria-label="Close expanded QR code"
         >
-          ✕
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
         </button>
         <div class="qr-expand-frame">
           <div class="qr-expand-box" id="qrExpandBox"></div>
@@ -1200,6 +1184,59 @@
         <p class="qr-expand-caption">Umoja P.A.G Church — Scan to Register</p>
       </div>
     </section>
+
+    <!-- HOW TO JOIN -->
+    <section class="section registration" id="join">
+      <div class="reg-inner">
+        <div class="form-header-row">
+          <div class="section-eyebrow reveal">Join Our Family</div>
+          <h2 class="section-title light reveal d1">
+            Become a Member<br />or Join a <em>Ministry</em>
+          </h2>
+          <p class="section-body light reveal d2">
+            New member registration and ministry sign-ups are handled
+            directly by our church office — we'd love to speak with you
+            personally rather than through a web form.
+          </p>
+        </div>
+        <div class="join-contact-grid reveal">
+          <div class="contact-item">
+            <div class="contact-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M15.05 12.94a1 1 0 0 0-1.2.18l-1.4 1.4a11.4 11.4 0 0 1-4.97-4.97l1.4-1.4a1 1 0 0 0 .18-1.2L7.6 3.5a1 1 0 0 0-1.15-.5l-2.65.7A1 1 0 0 0 3 4.65 17 17 0 0 0 19.35 21a1 1 0 0 0 .95-.8l.7-2.65a1 1 0 0 0-.5-1.15Z"/></svg></div>
+            <div>
+              <div class="contact-item-label">Call or WhatsApp</div>
+              <div class="contact-item-value">
+                <a href="tel:+254796752298">0796 752 298</a>
+              </div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>
+            <div>
+              <div class="contact-item-label">Email the Office</div>
+              <div class="contact-item-value">
+                <a href="mailto:info@umojapagchurch.org">info@umojapagchurch.org</a>
+              </div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+            <div>
+              <div class="contact-item-label">Visit in Person</div>
+              <div class="contact-item-value">
+                Sunday: 8:15 AM · 10:15 AM · Youth 12:30 PM
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="join-note reveal d2">
+          Let us know your name and what you'd like to join — a new
+          membership, a ministry, or a cell group — and our team will guide
+          you through the next steps.
+        </p>
+        <a class="btn-primary btn-inline reveal d3" href="#contact">Find Us &amp; Get Directions →</a>
+      </div>
+    </section>
+
 
     <!-- FOOTER -->
     <footer>
@@ -1213,14 +1250,14 @@
         <div class="footer-col">
           <h4>Navigate</h4>
           <a href="index.html">Home</a><a href="#about">About Us</a
-          ><a href="#cell-groups">Cell Groups</a><a href="#ministries">Ministries</a><a href="#projects">Projects</a
+          ><a href="#cell-groups">Cell Groups</a><a href="#ministries">Ministries</a
           ><a href="#giving">Giving</a><a href="#contact">Contact</a
-          ><a href="#updates">Events</a><a href="#gallery">Gallery</a><a href="#register">Register</a>
+          ><a href="#updates">Events</a><a href="#join">How to Join</a>
         </div>
         <div class="footer-col">
           <h4>Services</h4>
           <a href="#home">Sunday 8:15 AM</a><a href="#home">Sunday 10:15 AM</a
-          ><a href="#home">Youth 12:30 PM</a><a href="#gallery">Gallery</a>
+          ><a href="#home">Youth 12:30 PM</a>
         </div>
         <div class="footer-col">
           <h4>Connect</h4>
