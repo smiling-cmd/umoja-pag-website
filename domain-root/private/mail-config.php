@@ -28,9 +28,13 @@ return [
     ],
 
     'allowed_origins' => [
-        'https://umojapagchurch.org',
-        'https://www.umojapagchurch.org',
-        'http://127.0.0.1:8080',
-        
-    ],
-];
+    'https://umojapagchurch.org',
+    'https://www.umojapagchurch.org',
+
+    // GitHub Pages client preview
+    'https://smiling-cmd.github.io',
+
+    // Local testing
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+],
