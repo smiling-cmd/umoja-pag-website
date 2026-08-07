@@ -5574,364 +5574,199 @@ body.home-page {
   overflow-x: hidden;
 }
 
-
-/*
- * Force the hero to touch the exact left/right edges
- * of the browser viewport.
- */
-body.home-page .editorial-hero {
-  position: relative;
-
-  width: 100vw !important;
-  max-width: none !important;
-
-  margin-left:
-    calc(50% - 50vw) !important;
-
-  margin-right:
-    calc(50% - 50vw) !important;
-
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-
-  min-height: 100vh !important;
-  min-height: 100svh !important;
-
-  /*
-   * Keep content nicely positioned without
-   * making the panel too large at 100% zoom.
-   */
-  padding:
-    112px
-    5vw
-    42px !important;
-
-  display: flex !important;
-
-  align-items:
-    center !important;
-
-  overflow: hidden !important;
-
-  background:
-    #17243d !important;
-}
+/* =========================================================
+   FINAL HERO SCALE — MATCH THE SECOND SCREENSHOT
+   Paste at the VERY BOTTOM of index.css
+========================================================= */
 
 
 /* =========================================================
-   HERO BACKGROUND — TRUE FULL BLEED
+   HERO
 ========================================================= */
 
-body.home-page
-.hero-background-slideshow {
-  position: absolute !important;
+body.home-page .editorial-hero {
+  width: 100vw !important;
+  min-height: 100vh !important;
+  min-height: 100svh !important;
 
+  margin: 0 !important;
+
+  padding:
+    105px
+    3vw
+    34px !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  overflow: hidden !important;
+}
+
+
+/* Full background with no white border */
+
+body.home-page .hero-background-slideshow,
+body.home-page .hero-background-slide {
   inset: 0 !important;
 
   width: 100% !important;
   height: 100% !important;
 
   margin: 0 !important;
-  padding: 0 !important;
 
-  z-index: 0;
-
-  overflow: hidden;
-
-  background:
-    #17243d;
-}
-
-
-body.home-page
-.hero-background-slide {
-  position: absolute;
-
-  /*
-   * No artificial inset/gap.
-   */
-  inset: 0 !important;
-
-  width: 100% !important;
-  height: 100% !important;
-
-  background-size:
-    cover !important;
-
-  background-repeat:
-    no-repeat !important;
-
-  background-position:
-    center center;
-
-  opacity: 0;
-
-  transform:
-    scale(1.035);
-
-  transition:
-    opacity
-      2.2s
-      cubic-bezier(
-        0.22,
-        1,
-        0.36,
-        1
-      ),
-
-    transform
-      10s
-      linear;
-}
-
-
-body.home-page
-.hero-background-slide.is-active {
-  opacity: 1;
-
-  transform:
-    scale(1);
+  border: 0 !important;
+  border-radius: 0 !important;
 }
 
 
 /* =========================================================
-   HERO OVERLAY
-   Keep text readable without whitening the entire photograph
+   SMALLER TEXT PANEL
 ========================================================= */
 
-body.home-page
-.editorial-hero::before {
-  content: "";
-
-  position: absolute;
-
-  inset: 0;
-
-  z-index: 1;
-
-  pointer-events: none;
-
-  background:
-    linear-gradient(
-      90deg,
-
-      rgba(
-        12,
-        22,
-        34,
-        0.26
-      )
-      0%,
-
-      rgba(
-        255,
-        255,
-        255,
-        0.15
-      )
-      22%,
-
-      rgba(
-        255,
-        255,
-        255,
-        0.05
-      )
-      48%,
-
-      rgba(
-        7,
-        20,
-        40,
-        0.06
-      )
-      72%,
-
-      rgba(
-        5,
-        14,
-        30,
-        0.18
-      )
-      100%
-    ) !important;
-}
-
-
-body.home-page
-.editorial-hero::after {
-  display:
-    none !important;
-}
-
-
-/* =========================================================
-   SMALLER HERO CONTENT CARD
-   This is the main change for 100% browser zoom.
-========================================================= */
-
-body.home-page
-.editorial-hero-copy {
-  position:
-    relative;
-
-  z-index:
-    5;
-
-  /*
-   * Around 38% of desktop width instead of the
-   * oversized panel you currently have.
-   */
+body.home-page .editorial-hero-copy {
   width:
     min(
-      38vw,
-      560px
+      33.5vw,
+      525px
     ) !important;
 
   max-width:
-    560px !important;
+    525px !important;
 
   padding:
-    clamp(
-      26px,
-      2.3vw,
-      36px
-    ) !important;
+    27px
+    30px !important;
 
-  border:
-    1px solid
-    rgba(
-      255,
-      255,
-      255,
-      0.48
-    ) !important;
+  margin-left:
+    0 !important;
 
   border-radius:
-    28px !important;
+    24px !important;
 
   background:
     rgba(
-      250,
-      244,
-      235,
-      0.88
+      252,
+      245,
+      234,
+      0.91
     ) !important;
 
-  -webkit-backdrop-filter:
-    blur(16px);
-
-  backdrop-filter:
-    blur(16px);
-
   box-shadow:
-    0 24px 66px
+    0 22px 58px
     rgba(
       10,
       25,
       50,
-      0.18
-    );
+      0.16
+    ) !important;
 }
 
 
 /* =========================================================
-   REDUCE HERO TYPOGRAPHY AT 100% ZOOM
+   THEME PILL
 ========================================================= */
 
-body.home-page
-.editorial-hero h1 {
-  margin:
-    0
-    0
-    20px !important;
-
-  font-size:
-    clamp(
-      3.4rem,
-      5vw,
-      5.4rem
-    ) !important;
-
-  line-height:
-    0.88 !important;
-
-  letter-spacing:
-    -0.04em;
-}
-
-
-body.home-page
-.editorial-hero-lead {
-  max-width:
-    500px;
-
+body.home-page .editorial-theme {
   margin-bottom:
-    26px !important;
-
-  font-size:
-    clamp(
-      0.92rem,
-      1vw,
-      1.02rem
-    ) !important;
-
-  line-height:
-    1.75 !important;
-}
-
-
-/* Theme pill */
-
-body.home-page
-.editorial-theme {
-  margin-bottom:
-    20px !important;
+    17px !important;
 
   padding:
-    7px
-    12px !important;
+    6px
+    10px !important;
 
   gap:
-    7px
-    10px;
+    6px
+    8px !important;
 
   font-size:
-    10px !important;
+    8px !important;
 }
 
 
-body.home-page
-.editorial-theme strong {
+body.home-page .editorial-theme strong {
   font-size:
-    9px !important;
+    8px !important;
 }
 
 
-/* Small gold kicker */
+/* =========================================================
+   SMALL KICKER
+========================================================= */
 
 body.home-page
 .editorial-hero
 .home-kicker {
+  margin-bottom:
+    7px !important;
+
   font-size:
-    9px !important;
+    8px !important;
 
   letter-spacing:
-    2px !important;
+    1.8px !important;
 }
 
 
 /* =========================================================
-   HERO BUTTONS
+   MAIN HEADING
+========================================================= */
+
+body.home-page
+.editorial-hero h1 {
+  max-width:
+    470px !important;
+
+  margin:
+    0
+    0
+    16px !important;
+
+  font-size:
+    clamp(
+      3.15rem,
+      4.25vw,
+      4.55rem
+    ) !important;
+
+  line-height:
+    0.87 !important;
+
+  letter-spacing:
+    -0.045em !important;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+body.home-page
+.editorial-hero-lead {
+  max-width:
+    450px !important;
+
+  margin-bottom:
+    21px !important;
+
+  font-size:
+    13px !important;
+
+  line-height:
+    1.7 !important;
+}
+
+
+/* =========================================================
+   BUTTONS
 ========================================================= */
 
 body.home-page
 .editorial-hero-actions {
-  margin-bottom:
-    28px !important;
-
   gap:
-    10px !important;
+    8px !important;
+
+  margin-bottom:
+    24px !important;
 }
 
 
@@ -5942,12 +5777,15 @@ body.home-page
 body.home-page
 .editorial-hero-actions
 .btn-light-outline {
+  min-height:
+    38px !important;
+
   padding:
-    12px
-    22px !important;
+    10px
+    19px !important;
 
   font-size:
-    12px !important;
+    10px !important;
 }
 
 
@@ -5957,20 +5795,17 @@ body.home-page
 
 body.home-page
 .editorial-service-row {
-  margin-top:
-    0;
-
   width:
-    100%;
+    100% !important;
 }
 
 
 body.home-page
 .editorial-service {
   padding:
-    14px
-    12px
-    14px
+    11px
+    8px
+    11px
     0 !important;
 }
 
@@ -5979,71 +5814,442 @@ body.home-page
 .editorial-service +
 .editorial-service {
   padding-left:
-    14px !important;
+    12px !important;
 }
 
 
 body.home-page
 .editorial-service span {
+  margin-bottom:
+    4px !important;
+
   font-size:
-    8px !important;
+    7px !important;
 
   letter-spacing:
-    1.5px;
+    1.3px !important;
 }
 
 
 body.home-page
 .editorial-service strong {
   font-size:
-    clamp(
-      1rem,
-      1.35vw,
-      1.2rem
-    ) !important;
+    16px !important;
 }
 
 
 /* =========================================================
-   SLIDE DOTS
+   HERO DOTS
 ========================================================= */
 
 body.home-page
 .hero-background-controls {
   margin-top:
-    15px !important;
+    10px !important;
+}
+
+
+body.home-page
+.hero-background-dots {
+  gap:
+    5px !important;
 }
 
 
 body.home-page
 .hero-background-dot {
   width:
-    7px;
+    6px !important;
 
   height:
-    7px;
+    6px !important;
 }
 
 
 body.home-page
 .hero-background-dot.is-active {
   width:
-    24px;
+    21px !important;
 }
 
 
 /* =========================================================
-   NAVBAR — MATCH THE SMALLER SECOND SCREENSHOT
+   NAVBAR — FLOATING LIKE SECOND SCREENSHOT
 ========================================================= */
 
-body.home-page
+body.home-page.hero-navbar-mode
 #navbar,
 
 body.home-page.hero-navbar-mode
-#navbar {
+#navbar.navbar-on-hero {
   position:
     fixed !important;
 
+  top:
+    16px !important;
+
+  left:
+    50% !important;
+
+  right:
+    auto !important;
+
   /*
-   * Width is intentionally about 82% of the viewport.
-   * This gives
+   * Your desired screenshot is roughly 84–85%
+   * of the screen width.
+   */
+  width:
+    min(
+      84vw,
+      1390px
+    ) !important;
+
+  max-width:
+    1390px !important;
+
+  height:
+    61px !important;
+
+  padding:
+    0
+    24px !important;
+
+  transform:
+    translateX(-50%) !important;
+
+  border-radius:
+    18px !important;
+
+  opacity:
+    1 !important;
+
+  visibility:
+    visible !important;
+
+  background:
+    rgba(
+      250,
+      246,
+      240,
+      0.90
+    ) !important;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.6
+    ) !important;
+
+  box-shadow:
+    0 12px 38px
+    rgba(
+      15,
+      30,
+      55,
+      0.14
+    ) !important;
+
+  -webkit-backdrop-filter:
+    blur(18px);
+
+  backdrop-filter:
+    blur(18px);
+
+  z-index:
+    3000 !important;
+}
+
+
+/* Logo */
+
+body.home-page
+#navbar
+.nav-logo {
+  gap:
+    9px !important;
+}
+
+
+body.home-page
+#navbar
+.nav-logo img {
+  width:
+    40px !important;
+
+  height:
+    40px !important;
+}
+
+
+body.home-page
+#navbar
+.nav-logo-name {
+  font-size:
+    13px !important;
+}
+
+
+/* Navigation links */
+
+body.home-page
+#navbar
+.nav-links {
+  gap:
+    clamp(
+      14px,
+      1.8vw,
+      27px
+    ) !important;
+}
+
+
+body.home-page
+#navbar
+.nav-links a {
+  font-size:
+    10px !important;
+
+  letter-spacing:
+    0.2px !important;
+}
+
+
+/* Right side */
+
+body.home-page
+#navbar
+.nav-right {
+  gap:
+    10px !important;
+}
+
+
+body.home-page
+#navbar
+.nav-social-link {
+  width:
+    30px !important;
+
+  height:
+    30px !important;
+
+  min-width:
+    30px !important;
+
+  min-height:
+    30px !important;
+}
+
+
+body.home-page
+#navbar
+.nav-cta {
+  padding:
+    8px
+    18px !important;
+
+  font-size:
+    10px !important;
+}
+
+
+/* =========================================================
+   NAVBAR AFTER HERO
+========================================================= */
+
+body.home-page.hero-navbar-mode
+#navbar.navbar-after-hero {
+  top:
+    0 !important;
+
+  left:
+    0 !important;
+
+  right:
+    0 !important;
+
+  width:
+    100% !important;
+
+  max-width:
+    none !important;
+
+  height:
+    66px !important;
+
+  padding:
+    0
+    4% !important;
+
+  transform:
+    none !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.97
+    ) !important;
+}
+
+
+/* =========================================================
+   REMOVE ANY OLD HERO IMAGE COLLAGE
+========================================================= */
+
+body.home-page
+.editorial-hero-visual {
+  display:
+    none !important;
+}
+
+
+/* =========================================================
+   1366–1700PX DESKTOPS
+   This is the range shown in your screenshots.
+========================================================= */
+
+@media
+(min-width: 1201px)
+and
+(max-width: 1700px) {
+
+  body.home-page
+  .editorial-hero-copy {
+    width:
+      min(
+        34vw,
+        520px
+      ) !important;
+
+    max-width:
+      520px !important;
+  }
+
+
+  body.home-page
+  .editorial-hero h1 {
+    font-size:
+      clamp(
+        3.1rem,
+        4vw,
+        4.3rem
+      ) !important;
+  }
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media
+(max-width: 1000px) {
+
+  body.home-page
+  .editorial-hero {
+    align-items:
+      flex-end !important;
+
+    padding:
+      90px
+      22px
+      30px !important;
+  }
+
+
+  body.home-page
+  .editorial-hero-copy {
+    width:
+      min(
+        560px,
+        88vw
+      ) !important;
+
+    max-width:
+      560px !important;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media
+(max-width: 640px) {
+
+  body.home-page
+  .editorial-hero {
+    padding:
+      82px
+      13px
+      22px !important;
+  }
+
+
+  body.home-page
+  .editorial-hero-copy {
+    width:
+      100% !important;
+
+    max-width:
+      100% !important;
+
+    padding:
+      21px
+      17px !important;
+  }
+
+
+  body.home-page
+  .editorial-hero h1 {
+    font-size:
+      clamp(
+        2.9rem,
+        13vw,
+        4.1rem
+      ) !important;
+  }
+
+
+  body.home-page.hero-navbar-mode
+  #navbar,
+
+  body.home-page.hero-navbar-mode
+  #navbar.navbar-on-hero {
+    top:
+      9px !important;
+
+    left:
+      10px !important;
+
+    right:
+      10px !important;
+
+    width:
+      calc(
+        100% - 20px
+      ) !important;
+
+    height:
+      58px !important;
+
+    transform:
+      none !important;
+
+    padding:
+      0
+      13px !important;
+  }
+
+}
