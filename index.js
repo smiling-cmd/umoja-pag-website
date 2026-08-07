@@ -1,409 +1,488 @@
+// =========================================================
+// QR CODE — EVENT REGISTRATION
+// =========================================================
+
 (() => {
   "use strict";
 
-  const $ = (selector, context = document) => context.querySelector(selector);
-  const $$ = (selector, context = document) =>
-    Array.from(context.querySelectorAll(selector));
+  const toggle =
+    document.getElementById("qrToggleBtn");
 
-  const reduceMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
-  );
+  const overlay =
+    document.getElementById("qrModalOverlay");
 
-  // =========================================================
-  // SHARED HELPERS
-  // =========================================================
+  const closeButton =
+    document.getElementById("qrModalClose");
 
-  function getFocusable(container) {
-    if (!container) return [];
+  const canvas =
+    document.getElementById("qrCanvas");
 
-    return $$(
-      'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      container,
-    ).filter((el) => !el.hidden && el.getClientRects().length > 0);
+  const hint =
+    document.getElementById("qrHint");
+
+  const expandButton =
+    document.getElementById("qrExpandBtn");
+
+  const expandOverlay =
+    document.getElementById("qrExpandOverlay");
+
+  const expandClose =
+    document.getElementById("qrExpandClose");
+
+  const expandBox =
+    document.getElementById("qrExpandBox");
+
+  const printButton =
+    document.getElementById("qrPrintBtn");
+
+  /*
+   * The QR interface only exists on events.html.
+   * On all other pages simply stop here.
+   */
+  if (
+    !toggle ||
+    !overlay ||
+    !canvas
+  ) {
+    return;
   }
 
-  function setBusy(button, busy, busyLabel) {
-    if (!button) return;
+  // ---------------------------------------------------------
+  // SETTINGS
+  // ---------------------------------------------------------
 
-    if (!button.dataset.defaultLabel) {
-      button.dataset.defaultLabel = button.textContent.trim();
-    }
+  const PUBLIC_SITE =
+    "https://umojapagchurch.org";
 
-    button.disabled = busy;
-    button.setAttribute("aria-busy", String(busy));
+  /*
+   * Primary and backup CDN.
+   * If one CDN is blocked/unavailable, the second is tried.
+   */
+  const QR_SOURCES = [
+    "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js",
+    "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js",
+  ];
 
-    button.textContent = busy
-      ? busyLabel
-      : button.dataset.defaultLabel;
-  }
+  let libraryPromise = null;
 
-  function safeMessage(value, fallback) {
-    const text =
-      typeof value === "string"
-        ? value.trim()
-        : "";
+  let lastFocusedElement = null;
 
-    return text && text.length <= 240
-      ? text
-      : fallback;
-  }
+  // ---------------------------------------------------------
+  // REGISTRATION URL
+  // ---------------------------------------------------------
 
-  // =========================================================
-  // NAVBAR
-  // =========================================================
+  function getRegistrationUrl() {
+    /*
+     * When using Laragon:
+     *
+     * http://localhost/Umoja/events.html
+     *
+     * the QR will point to the local URL.
+     *
+     * When deployed:
+     *
+     * https://umojapagchurch.org/events.html
+     *
+     * it will point to the live registration page.
+     */
 
-  const navbar = $("#navbar");
-  const navToggle = $("#navToggle");
-  const navLinks = $("#navLinks");
-  const navOverlay = $("#navOverlay");
+    try {
+      const currentUrl =
+        new URL(window.location.href);
 
-  const mobileNavQuery =
-    window.matchMedia("(max-width: 1200px)");
+      if (
+        currentUrl.protocol === "http:" ||
+        currentUrl.protocol === "https:"
+      ) {
+        /*
+         * Make sure the QR always opens the registration
+         * section rather than the current scroll position.
+         */
+        currentUrl.hash = "register";
 
-  let navReturnFocus = null;
-
-  function updateNavbarAppearance() {
-    if (!navbar) return;
-
-    navbar.classList.toggle(
-      "scrolled",
-      window.scrollY > 20 ||
-        !document.body.classList.contains("home-page"),
-    );
-  }
-
-  function setMobileNavAccessibility(isOpen) {
-    if (!navLinks) return;
-
-    if (mobileNavQuery.matches) {
-      navLinks.setAttribute(
-        "aria-hidden",
-        String(!isOpen),
+        return currentUrl.href;
+      }
+    } catch (error) {
+      console.warn(
+        "Could not build current registration URL:",
+        error,
       );
-    } else {
-      navLinks.removeAttribute("aria-hidden");
     }
 
-    navOverlay?.setAttribute(
-      "aria-hidden",
-      String(!isOpen),
-    );
+    /*
+     * Fallback used when opening events.html directly
+     * as a file instead of through Laragon.
+     */
+    return `${PUBLIC_SITE}/events.html#register`;
   }
 
-  function openMobileNav() {
-    if (
-      !navToggle ||
-      !navLinks ||
-      !navOverlay ||
-      !mobileNavQuery.matches
-    ) {
-      return;
-    }
+  // ---------------------------------------------------------
+  // LOAD QR LIBRARY
+  // ---------------------------------------------------------
 
-    navReturnFocus = document.activeElement;
+  function loadScript(source) {
+    return new Promise(
+      (resolve, reject) => {
+        /*
+         * Avoid adding the same script twice.
+         */
+        const existing =
+          Array.from(
+            document.scripts,
+          ).find(
+            (script) =>
+              script.src === source,
+          );
 
-    navToggle.classList.add("open");
-    navLinks.classList.add("open");
-    navOverlay.classList.add("open");
-
-    document.body.classList.add("nav-open");
-
-    navToggle.setAttribute(
-      "aria-expanded",
-      "true",
-    );
-
-    navToggle.setAttribute(
-      "aria-label",
-      "Close menu",
-    );
-
-    setMobileNavAccessibility(true);
-
-    const firstLink = $("a", navLinks);
-
-    firstLink?.focus();
-  }
-
-  function closeMobileNav({
-    restoreFocus = false,
-  } = {}) {
-    if (
-      !navToggle ||
-      !navLinks ||
-      !navOverlay
-    ) {
-      return;
-    }
-
-    navToggle.classList.remove("open");
-    navLinks.classList.remove("open");
-    navOverlay.classList.remove("open");
-
-    document.body.classList.remove("nav-open");
-
-    navToggle.setAttribute(
-      "aria-expanded",
-      "false",
-    );
-
-    navToggle.setAttribute(
-      "aria-label",
-      "Open menu",
-    );
-
-    setMobileNavAccessibility(false);
-
-    if (
-      restoreFocus &&
-      navReturnFocus instanceof HTMLElement
-    ) {
-      navReturnFocus.focus();
-    }
-  }
-
-  function toggleMobileNav() {
-    if (!navLinks) return;
-
-    if (navLinks.classList.contains("open")) {
-      closeMobileNav({
-        restoreFocus: true,
-      });
-    } else {
-      openMobileNav();
-    }
-  }
-
-  updateNavbarAppearance();
-  setMobileNavAccessibility(false);
-
-  window.addEventListener(
-    "scroll",
-    updateNavbarAppearance,
-    { passive: true },
-  );
-
-  navToggle?.addEventListener(
-    "click",
-    toggleMobileNav,
-  );
-
-  navOverlay?.addEventListener(
-    "click",
-    () =>
-      closeMobileNav({
-        restoreFocus: true,
-      }),
-  );
-
-  navLinks?.addEventListener(
-    "click",
-    (event) => {
-      if (event.target.closest("a")) {
-        closeMobileNav();
-      }
-    },
-  );
-
-  mobileNavQuery.addEventListener(
-    "change",
-    () => closeMobileNav(),
-  );
-
-  document.addEventListener(
-    "keydown",
-    (event) => {
-      if (
-        event.key === "Escape" &&
-        navLinks?.classList.contains("open")
-      ) {
-        event.preventDefault();
-
-        closeMobileNav({
-          restoreFocus: true,
-        });
-
-        return;
-      }
-
-      if (
-        event.key !== "Tab" ||
-        !navLinks?.classList.contains("open")
-      ) {
-        return;
-      }
-
-      const focusable =
-        getFocusable(navLinks);
-
-      if (!focusable.length) return;
-
-      const first = focusable[0];
-
-      const last =
-        focusable[
-          focusable.length - 1
-        ];
-
-      if (
-        event.shiftKey &&
-        document.activeElement === first
-      ) {
-        event.preventDefault();
-        last.focus();
-      } else if (
-        !event.shiftKey &&
-        document.activeElement === last
-      ) {
-        event.preventDefault();
-        first.focus();
-      }
-    },
-  );
-
-  // =========================================================
-  // NAV INDICATOR
-  // =========================================================
-
-  if (navLinks) {
-    const activeLink =
-      $(".nav-links a.active");
-
-    if (activeLink) {
-      const indicator =
-        document.createElement("span");
-
-      indicator.className =
-        "nav-indicator";
-
-      indicator.setAttribute(
-        "aria-hidden",
-        "true",
-      );
-
-      navLinks.append(indicator);
-
-      function positionIndicator() {
         if (
-          mobileNavQuery.matches
+          existing &&
+          window.QRCode
         ) {
-          indicator.style.opacity = "0";
+          resolve(window.QRCode);
+
           return;
         }
 
-        const active =
-          $(".nav-links a.active");
+        const script =
+          existing ||
+          document.createElement(
+            "script",
+          );
 
-        if (!active) {
-          indicator.style.opacity = "0";
+        if (!existing) {
+          script.src = source;
+
+          script.async = true;
+
+          script.crossOrigin =
+            "anonymous";
+
+          script.referrerPolicy =
+            "no-referrer";
+
+          document.head.appendChild(
+            script,
+          );
+        }
+
+        const finish = () => {
+          if (window.QRCode) {
+            resolve(window.QRCode);
+          } else {
+            reject(
+              new Error(
+                "The QR library loaded but QRCode was unavailable.",
+              ),
+            );
+          }
+        };
+
+        /*
+         * If an existing script has already loaded,
+         * QRCode may already be ready.
+         */
+        if (window.QRCode) {
+          finish();
+
           return;
         }
 
-        const linkRect =
-          active.getBoundingClientRect();
-
-        const navRect =
-          navLinks.getBoundingClientRect();
-
-        const width = Math.max(
-          20,
-          linkRect.width * 0.5,
+        script.addEventListener(
+          "load",
+          finish,
+          {
+            once: true,
+          },
         );
 
-        const x =
-          linkRect.left -
-          navRect.left +
-          (linkRect.width - width) / 2;
-
-        indicator.style.width =
-          `${width}px`;
-
-        indicator.style.transform =
-          `translateX(${x}px)`;
-
-        indicator.style.opacity =
-          "1";
-      }
-
-      positionIndicator();
-
-      window.addEventListener(
-        "resize",
-        positionIndicator,
-      );
-
-      window.addEventListener(
-        "load",
-        positionIndicator,
-      );
-    }
-  }
-
-  // =========================================================
-  // GENERAL SCROLL REVEAL
-  // =========================================================
-
-  const revealItems = $$(".reveal");
-
-  if (
-    reduceMotion.matches ||
-    !("IntersectionObserver" in window)
-  ) {
-    revealItems.forEach((element) => {
-      element.classList.add("visible");
-    });
-  } else {
-    const revealObserver =
-      new IntersectionObserver(
-        (entries, observer) => {
-          entries.forEach((entry) => {
-            if (
-              !entry.isIntersecting
-            ) {
-              return;
-            }
-
-            entry.target.classList.add(
-              "visible",
+        script.addEventListener(
+          "error",
+          () => {
+            reject(
+              new Error(
+                `Could not load ${source}`,
+              ),
             );
-
-            observer.unobserve(
-              entry.target,
-            );
-          });
-        },
-        {
-          threshold: 0.08,
-          rootMargin:
-            "0px 0px -36px 0px",
-        },
-      );
-
-    revealItems.forEach(
-      (element) => {
-        revealObserver.observe(
-          element,
+          },
+          {
+            once: true,
+          },
         );
       },
     );
   }
 
-  // =========================================================
-  // ACCESSIBLE MODAL MANAGER
-  // =========================================================
+  async function loadQRCodeLibrary() {
+    if (window.QRCode) {
+      return window.QRCode;
+    }
 
-  const modalStack = [];
+    if (libraryPromise) {
+      return libraryPromise;
+    }
 
-  function openModal(
-    overlay,
-    trigger = document.activeElement,
+    libraryPromise =
+      (async () => {
+        let lastError = null;
+
+        for (
+          const source of
+          QR_SOURCES
+        ) {
+          try {
+            const library =
+              await loadScript(
+                source,
+              );
+
+            if (library) {
+              return library;
+            }
+          } catch (error) {
+            console.warn(
+              "QR source failed:",
+              source,
+              error,
+            );
+
+            lastError = error;
+          }
+        }
+
+        throw (
+          lastError ||
+          new Error(
+            "QR library could not be loaded.",
+          )
+        );
+      })();
+
+    /*
+     * If every CDN fails, reset the Promise so another
+     * click can retry rather than remaining permanently
+     * rejected.
+     */
+    libraryPromise.catch(
+      () => {
+        libraryPromise = null;
+      },
+    );
+
+    return libraryPromise;
+  }
+
+  // ---------------------------------------------------------
+  // CREATE QR
+  // ---------------------------------------------------------
+
+  function createFallback(
+    target,
   ) {
-    if (!overlay) return;
+    target.replaceChildren();
 
-    const dialog =
-      overlay.matches('[role="dialog"]')
-        ? overlay
-        : $('[role="dialog"]', overlay);
+    const message =
+      document.createElement("p");
+
+    message.textContent =
+      "QR generation is unavailable.";
+
+    const link =
+      document.createElement("a");
+
+    link.href =
+      getRegistrationUrl();
+
+    link.textContent =
+      "Open registration form →";
+
+    link.className =
+      "qr-fallback-link";
+
+    link.style.display =
+      "inline-block";
+
+    link.style.marginTop =
+      "10px";
+
+    target.append(
+      message,
+      link,
+    );
+  }
+
+  async function renderQR(
+    target,
+    size,
+  ) {
+    if (!target) return;
+
+    target.replaceChildren();
+
+    const loading =
+      document.createElement("div");
+
+    loading.textContent =
+      "Generating QR code…";
+
+    loading.style.padding =
+      "20px";
+
+    loading.style.textAlign =
+      "center";
+
+    target.appendChild(
+      loading,
+    );
+
+    try {
+      const QRCode =
+        await loadQRCodeLibrary();
+
+      target.replaceChildren();
+
+      new QRCode(
+        target,
+        {
+          text:
+            getRegistrationUrl(),
+
+          width: size,
+
+          height: size,
+
+          colorDark:
+            "#072f6f",
+
+          colorLight:
+            "#ffffff",
+
+          correctLevel:
+            QRCode.CorrectLevel.H,
+        },
+      );
+
+      if (hint) {
+        hint.textContent =
+          "Scan this code to open the event registration form.";
+      }
+
+      /*
+       * qrcode.js sometimes creates an IMG and sometimes
+       * a CANVAS depending on the browser.
+       */
+      const generated =
+        target.querySelector(
+          "img, canvas",
+        );
+
+      if (generated) {
+        generated.style.display =
+          "block";
+
+        generated.style.margin =
+          "0 auto";
+
+        generated.style.maxWidth =
+          "100%";
+      }
+    } catch (error) {
+      console.error(
+        "QR generation failed:",
+        error,
+      );
+
+      createFallback(
+        target,
+      );
+
+      if (hint) {
+        hint.textContent =
+          "The QR code could not be generated. Use the registration link instead.";
+      }
+    }
+  }
+
+  // ---------------------------------------------------------
+  // MODAL HELPERS
+  // ---------------------------------------------------------
+
+  function openOverlay(
+    element,
+    focusTarget,
+  ) {
+    if (!element) return;
+
+    lastFocusedElement =
+      document.activeElement;
+
+    element.hidden = false;
+
+    element.setAttribute(
+      "aria-hidden",
+      "false",
+    );
+
+    element.classList.add(
+      "open",
+    );
+
+    document.body.classList.add(
+      "modal-open",
+    );
+
+    requestAnimationFrame(
+      () => {
+        focusTarget?.focus();
+      },
+    );
+  }
+
+  function closeOverlay(
+    element,
+    restoreFocus = true,
+  ) {
+    if (!element) return;
+
+    element.classList.remove(
+      "open",
+    );
+
+    element.setAttribute(
+      "aria-hidden",
+      "true",
+    );
+
+    element.hidden = true;
+
+    if (
+      !overlay.classList.contains(
+        "open",
+      ) &&
+      !expandOverlay?.classList.contains(
+        "open",
+      )
+    ) {
+      document.body.classList.remove(
+        "modal-open",
+      );
+    }
+
+    if (
+      restoreFocus &&
+      lastFocusedElement instanceof
+        HTMLElement
+    ) {
+      lastFocusedElement.focus();
+    }
+  }
+
+  // ---------------------------------------------------------
+  // OPEN MAIN QR
+  // ---------------------------------------------------------
+
+  async function openQRModal() {
+    lastFocusedElement =
+      toggle;
 
     overlay.hidden = false;
 
@@ -412,2090 +491,486 @@
       "false",
     );
 
-    overlay.classList.add("open");
+    overlay.classList.add(
+      "open",
+    );
 
     document.body.classList.add(
       "modal-open",
     );
 
-    modalStack.push({
-      overlay,
-      trigger,
-    });
+    closeButton?.focus();
 
-    const preferred = $(
-      "[data-autofocus], .qr-modal-close",
-      dialog || overlay,
+    await renderQR(
+      canvas,
+      200,
     );
-
-    (
-      preferred ||
-      dialog ||
-      overlay
-    ).focus();
   }
 
-  function closeModal(
-    overlay,
-    { restoreFocus = true } = {},
-  ) {
-    if (!overlay) return;
+  toggle.addEventListener(
+    "click",
+    openQRModal,
+  );
 
-    const index =
-      modalStack.findLastIndex(
-        (item) =>
-          item.overlay === overlay,
+  // ---------------------------------------------------------
+  // CLOSE MAIN QR
+  // ---------------------------------------------------------
+
+  closeButton?.addEventListener(
+    "click",
+    () => {
+      closeOverlay(
+        overlay,
+        false,
       );
 
-    const record =
-      index >= 0
-        ? modalStack.splice(
-            index,
-            1,
-          )[0]
-        : null;
+      toggle.focus();
+    },
+  );
 
-    overlay.classList.remove("open");
+  overlay.addEventListener(
+    "click",
+    (event) => {
+      if (
+        event.target === overlay
+      ) {
+        closeOverlay(
+          overlay,
+          false,
+        );
 
-    overlay.setAttribute(
-      "aria-hidden",
-      "true",
-    );
+        toggle.focus();
+      }
+    },
+  );
 
-    overlay.hidden = true;
+  // ---------------------------------------------------------
+  // EXPAND QR
+  // ---------------------------------------------------------
 
-    if (!modalStack.length) {
-      document.body.classList.remove(
-        "modal-open",
-      );
-    }
-
+  async function openExpandedQR() {
     if (
-      restoreFocus &&
-      record?.trigger instanceof HTMLElement
+      !expandOverlay ||
+      !expandBox
     ) {
-      record.trigger.focus();
+      return;
     }
+
+    lastFocusedElement =
+      expandButton;
+
+    expandOverlay.hidden =
+      false;
+
+    expandOverlay.setAttribute(
+      "aria-hidden",
+      "false",
+    );
+
+    expandOverlay.classList.add(
+      "open",
+    );
+
+    document.body.classList.add(
+      "modal-open",
+    );
+
+    expandClose?.focus();
+
+    await renderQR(
+      expandBox,
+      340,
+    );
   }
+
+  expandButton?.addEventListener(
+    "click",
+    openExpandedQR,
+  );
+
+  expandButton?.addEventListener(
+    "keydown",
+    (event) => {
+      if (
+        event.key === "Enter" ||
+        event.key === " "
+      ) {
+        event.preventDefault();
+
+        openExpandedQR();
+      }
+    },
+  );
+
+  expandClose?.addEventListener(
+    "click",
+    () => {
+      closeOverlay(
+        expandOverlay,
+        false,
+      );
+
+      expandButton?.focus();
+    },
+  );
+
+  expandOverlay?.addEventListener(
+    "click",
+    (event) => {
+      if (
+        event.target ===
+        expandOverlay
+      ) {
+        closeOverlay(
+          expandOverlay,
+          false,
+        );
+
+        expandButton?.focus();
+      }
+    },
+  );
+
+  // ---------------------------------------------------------
+  // ESCAPE KEY
+  // ---------------------------------------------------------
 
   document.addEventListener(
     "keydown",
     (event) => {
-      const current =
-        modalStack[
-          modalStack.length - 1
-        ];
-
-      if (!current) return;
-
-      const dialog =
-        current.overlay.matches(
-          '[role="dialog"]',
-        )
-          ? current.overlay
-          : $(
-              '[role="dialog"]',
-              current.overlay,
-            );
-
-      if (event.key === "Escape") {
-        event.preventDefault();
-
-        closeModal(
-          current.overlay,
-        );
-
+      if (
+        event.key !==
+        "Escape"
+      ) {
         return;
       }
-
-      if (event.key !== "Tab") {
-        return;
-      }
-
-      const focusable =
-        getFocusable(
-          dialog ||
-            current.overlay,
-        );
-
-      if (!focusable.length) {
-        event.preventDefault();
-
-        (
-          dialog ||
-          current.overlay
-        ).focus();
-
-        return;
-      }
-
-      const first = focusable[0];
-
-      const last =
-        focusable[
-          focusable.length - 1
-        ];
 
       if (
-        event.shiftKey &&
-        document.activeElement === first
+        expandOverlay
+          ?.classList
+          .contains("open")
       ) {
         event.preventDefault();
-        last.focus();
-      } else if (
-        !event.shiftKey &&
-        document.activeElement === last
+
+        closeOverlay(
+          expandOverlay,
+          false,
+        );
+
+        expandButton?.focus();
+
+        return;
+      }
+
+      if (
+        overlay.classList.contains(
+          "open",
+        )
       ) {
         event.preventDefault();
-        first.focus();
+
+        closeOverlay(
+          overlay,
+          false,
+        );
+
+        toggle.focus();
       }
     },
   );
 
-  // =========================================================
-  // LEADERSHIP MODALS
-  // =========================================================
+  // ---------------------------------------------------------
+  // PRINT QR
+  // ---------------------------------------------------------
 
-  const LEADER_INFO = {
-    secretary: {
-      name: "Mr. Sam Kavai",
-      role: "Secretary",
-      photo:
-        "images/secretary.jpg",
-      bio: [
-        "Coordinates church records, correspondence, and communication between leadership and the congregation, helping the ministry remain organised and keeping members informed.",
-      ],
-      tags: [
-        "Administration",
-        "Communication",
-        "Church Records",
-      ],
-    },
-
-    deacon: {
-      name: "Mr. Paul Mosira",
-      role: "Deacon",
-      photo:
-        "images/deacon.jpg",
-      bio: [
-        "Serves the church through practical support, care for members, and assistance with worship and church operations.",
-      ],
-      tags: [
-        "Pastoral Support",
-        "Worship",
-        "Operations",
-      ],
-    },
-
-    motherDirector: {
-      name:
-        "Lady Linet Lukiri",
-      role:
-        "Mother Director",
-      photo:
-        "images/women director.jpg",
-      bio: [
-        "Leads and mentors the women’s fellowship, guiding prayer, discipleship, outreach, and mutual support among the church’s women.",
-      ],
-      tags: [
-        "Women’s Fellowship",
-        "Mentorship",
-        "Outreach",
-      ],
-    },
-
-    treasurer: {
-      name: "Mr. Paul Mwangi",
-      role: "Treasurer",
-      photo:
-        "images/Treasurer.jpg",
-      bio: [
-        "Supports faithful stewardship by overseeing church finances, giving records, and financial accountability.",
-      ],
-      tags: [
-        "Stewardship",
-        "Finance",
-        "Accountability",
-      ],
-    },
-
-    youthLeader: {
-      name:
-        "Ms. Florence Atino",
-      role: "Youth Leader",
-      photo:
-        "images/youth leader.jpg",
-      bio: [
-        "Guides and disciples the church’s young people through worship, mentorship, fellowship, and practical ministry opportunities.",
-      ],
-      tags: [
-        "Youth Ministry",
-        "Discipleship",
-        "Mentorship",
-      ],
-    },
-  };
-
-  (() => {
-    const overlay =
-      $("#leaderModalOverlay");
-
-    const close =
-      $("#leaderModalClose");
-
-    const image =
-      $("#leaderModalImg");
-
-    const role =
-      $("#leaderModalRole");
-
-    const name =
-      $("#leaderModalName");
-
-    const bio =
-      $("#leaderModalBio");
-
-    const tags =
-      $("#leaderModalTags");
-
-    if (!overlay) return;
-
-    $$(".leadership-more[data-leader]")
-      .forEach((button) => {
-        button.addEventListener(
-          "click",
-          () => {
-            const info =
-              LEADER_INFO[
-                button.dataset
-                  .leader
-              ];
-
-            if (!info) return;
-
-            if (image) {
-              image.src =
-                info.photo;
-
-              image.alt =
-                info.name;
-            }
-
-            if (role) {
-              role.textContent =
-                info.role;
-            }
-
-            if (name) {
-              name.textContent =
-                info.name;
-            }
-
-            if (bio) {
-              bio.replaceChildren(
-                ...info.bio.map(
-                  (text) => {
-                    const p =
-                      document.createElement(
-                        "p",
-                      );
-
-                    p.textContent =
-                      text;
-
-                    return p;
-                  },
-                ),
-              );
-            }
-
-            if (tags) {
-              tags.replaceChildren(
-                ...info.tags.map(
-                  (text) => {
-                    const tag =
-                      document.createElement(
-                        "span",
-                      );
-
-                    tag.className =
-                      "pastor-tag";
-
-                    tag.textContent =
-                      text;
-
-                    return tag;
-                  },
-                ),
-              );
-            }
-
-            openModal(
-              overlay,
-              button,
-            );
-          },
-        );
-      });
-
-    close?.addEventListener(
-      "click",
-      () =>
-        closeModal(overlay),
-    );
-
-    overlay.addEventListener(
-      "click",
-      (event) => {
-        if (
-          event.target === overlay
-        ) {
-          closeModal(overlay);
-        }
-      },
-    );
-  })();
-
-  // =========================================================
-  // CLICK-TO-LOAD GOOGLE MAP
-  // =========================================================
-
-  (() => {
-    const frame =
-      $("#mapFrame");
-
-    const button =
-      $("#loadMapBtn");
-
-    if (!frame || !button) {
-      return;
-    }
-
-    const mapURL =
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d120.59!2d36.8938387!3d-1.2849086!2m3!1f0!2f0!3f0!2m3!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f138dc6b5156b%3A0x4a4bc064c62c9fb0!2sUmoja%20P.%20A.%20G%20School!5e0!3m2!1sen!2ske!4v1719500000000!5m2!1sen!2ske";
-
-    button.addEventListener(
-      "click",
-      () => {
-        setBusy(
-          button,
-          true,
-          "Loading map...",
-        );
-
-        const iframe =
-          document.createElement(
-            "iframe",
-          );
-
-        iframe.src = mapURL;
-
-        iframe.title =
-          "Map to Umoja P.A.G Church";
-
-        iframe.loading =
-          "lazy";
-
-        iframe.referrerPolicy =
-          "no-referrer-when-downgrade";
-
-        iframe.allowFullscreen =
-          true;
-
-        iframe.addEventListener(
-          "load",
-          () => {
-            frame.classList.add(
-              "map-loaded",
-            );
-          },
-          { once: true },
-        );
-
-        frame.replaceChildren(
-          iframe,
-        );
-      },
-    );
-  })();
-
-  // =========================================================
-  // FORM API
-  // =========================================================
-
-  class SubmissionError extends Error {
-    constructor(message) {
-      super(message);
-      this.name =
-        "SubmissionError";
-    }
-  }
-
-  async function postJson(
-    endpoint,
-    payload,
-  ) {
+  async function getQRImage() {
+    /*
+     * Make sure a QR exists before printing.
+     */
     if (
-      window.location.protocol ===
-      "file:"
+      !canvas.querySelector(
+        "canvas, img",
+      )
     ) {
-      throw new SubmissionError(
-        "Forms cannot be submitted from a file preview. Open the website through Laragon or the live website.",
+      await renderQR(
+        canvas,
+        300,
       );
     }
 
-    const controller =
-      new AbortController();
-
-    const timeout =
-      window.setTimeout(
-        () =>
-          controller.abort(),
-        15000,
+    const qrCanvas =
+      canvas.querySelector(
+        "canvas",
       );
 
-    let response;
-
-    try {
-      response = await fetch(
-        endpoint,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-
-            Accept:
-              "application/json",
-          },
-
-          body: JSON.stringify(
-            payload,
-          ),
-
-          signal:
-            controller.signal,
-
-          credentials:
-            "same-origin",
-        },
-      );
-    } catch (error) {
-      if (
-        error?.name ===
-        "AbortError"
-      ) {
-        throw new SubmissionError(
-          "The request timed out. Please try again.",
-        );
-      }
-
-      throw new SubmissionError(
-        "The request could not be sent. Please check your internet connection and try again.",
-      );
-    } finally {
-      window.clearTimeout(
-        timeout,
-      );
-    }
-
-    const raw =
-      await response.text();
-
-    let data = {};
-
-    if (raw) {
+    if (qrCanvas) {
       try {
-        data =
-          JSON.parse(raw);
-      } catch (_) {
-        throw new SubmissionError(
-          "The server returned an unexpected response.",
+        return qrCanvas.toDataURL(
+          "image/png",
+        );
+      } catch (error) {
+        console.warn(
+          "Could not read QR canvas:",
+          error,
         );
       }
     }
 
-    if (
-      !response.ok ||
-      data.success !== true
-    ) {
-      throw new SubmissionError(
-        safeMessage(
-          data.message,
-          "The server did not confirm the submission. Please try again.",
-        ),
-      );
-    }
-
-    return data;
-  }
-
-  function normalizeKenyanPhone(
-    value,
-  ) {
-    const cleaned =
-      value.replace(
-        /[\s().-]+/g,
-        "",
+    const qrImage =
+      canvas.querySelector(
+        "img",
       );
 
-    if (
-      /^0(7|1)\d{8}$/.test(
-        cleaned,
-      )
-    ) {
-      return (
-        "+254" +
-        cleaned.slice(1)
-      );
+    if (qrImage?.src) {
+      return qrImage.src;
     }
 
-    if (
-      /^254(7|1)\d{8}$/.test(
-        cleaned,
-      )
-    ) {
-      return `+${cleaned}`;
-    }
-
-    return cleaned;
+    return null;
   }
 
-  function isValidKenyanPhone(
-    value,
-  ) {
-    return /^\+254(7|1)\d{8}$/.test(
-      normalizeKenyanPhone(
-        value,
-      ),
-    );
-  }
+  printButton?.addEventListener(
+    "click",
+    async () => {
+      const imageSource =
+        await getQRImage();
 
-  function formObject(form) {
-    const result = {};
-
-    new FormData(form).forEach(
-      (value, key) => {
-        result[key] =
-          typeof value ===
-          "string"
-            ? value.trim()
-            : value;
-      },
-    );
-
-    return result;
-  }
-
-  function clearFormError(
-    form,
-    errorBox,
-  ) {
-    errorBox?.classList.remove(
-      "is-visible",
-    );
-
-    if (errorBox) {
-      errorBox.textContent =
-        "";
-    }
-
-    form?.removeAttribute(
-      "aria-invalid",
-    );
-
-    $$(
-      '[aria-invalid="true"]',
-      form || document,
-    ).forEach((element) => {
-      element.removeAttribute(
-        "aria-invalid",
-      );
-    });
-  }
-
-  function showFormError(
-    form,
-    errorBox,
-    message,
-    field = null,
-  ) {
-    if (!errorBox) return;
-
-    errorBox.textContent =
-      message;
-
-    errorBox.classList.add(
-      "is-visible",
-    );
-
-    form?.setAttribute(
-      "aria-invalid",
-      "true",
-    );
-
-    if (field) {
-      field.setAttribute(
-        "aria-invalid",
-        "true",
-      );
-
-      field.focus();
-    } else {
-      errorBox.focus();
-    }
-  }
-
-  function bindApiForm({
-    formId,
-    buttonId,
-    errorId,
-    successId,
-    resetId,
-    endpoint,
-    busyLabel,
-    makePayload,
-    validate,
-    successTextId,
-  }) {
-    const form =
-      $(`#${formId}`);
-
-    const button =
-      $(`#${buttonId}`);
-
-    const errorBox =
-      $(`#${errorId}`);
-
-    const successBox =
-      $(`#${successId}`);
-
-    const resetButton =
-      $(`#${resetId}`);
-
-    if (
-      !form ||
-      !button ||
-      !successBox
-    ) {
-      return;
-    }
-
-    form.addEventListener(
-      "input",
-      (event) => {
-        clearFormError(
-          form,
-          errorBox,
+      if (!imageSource) {
+        window.alert(
+          "The QR code is not ready. Please try again.",
         );
 
-        event.target
-          ?.removeAttribute?.(
-            "aria-invalid",
-          );
-      },
-    );
-
-    form.addEventListener(
-      "change",
-      () =>
-        clearFormError(
-          form,
-          errorBox,
-        ),
-    );
-
-    form.addEventListener(
-      "submit",
-      async (event) => {
-        event.preventDefault();
-
-        clearFormError(
-          form,
-          errorBox,
-        );
-
-        if (
-          !form.checkValidity()
-        ) {
-          const invalid =
-            $(":invalid", form);
-
-          invalid?.setAttribute(
-            "aria-invalid",
-            "true",
-          );
-
-          form.reportValidity();
-
-          invalid?.focus();
-
-          return;
-        }
-
-        const values =
-          formObject(form);
-
-        const validationError =
-          validate?.(
-            values,
-            form,
-          );
-
-        if (
-          validationError
-        ) {
-          showFormError(
-            form,
-            errorBox,
-            validationError.message,
-            validationError.field,
-          );
-
-          return;
-        }
-
-        // Honeypot spam field.
-        if (
-          values.company ||
-          values.companyWebsite
-        ) {
-          return;
-        }
-
-        setBusy(
-          button,
-          true,
-          busyLabel,
-        );
-
-        form.setAttribute(
-          "aria-busy",
-          "true",
-        );
-
-        try {
-          const payload =
-            makePayload(values);
-
-          const data =
-            await postJson(
-              endpoint,
-              payload,
-            );
-
-          if (
-            successTextId &&
-            data.message
-          ) {
-            const text =
-              $(
-                `#${successTextId}`,
-              );
-
-            if (text) {
-              text.textContent =
-                safeMessage(
-                  data.message,
-                  text.textContent,
-                );
-            }
-          }
-
-          form.hidden = true;
-
-          successBox.classList.add(
-            "is-visible",
-          );
-
-          successBox.focus();
-        } catch (error) {
-          console.error(
-            `${formId} submission error:`,
-            error,
-          );
-
-          showFormError(
-            form,
-            errorBox,
-            error instanceof
-              SubmissionError
-              ? error.message
-              : "The request was not sent. Please try again.",
-          );
-        } finally {
-          form.removeAttribute(
-            "aria-busy",
-          );
-
-          setBusy(
-            button,
-            false,
-            busyLabel,
-          );
-        }
-      },
-    );
-
-    resetButton?.addEventListener(
-      "click",
-      () => {
-        form.reset();
-
-        clearFormError(
-          form,
-          errorBox,
-        );
-
-        successBox.classList.remove(
-          "is-visible",
-        );
-
-        form.hidden = false;
-
-        $(
-          "input:not([type=hidden]), select, textarea",
-          form,
-        )?.focus();
-      },
-    );
-  }
-
-  // =========================================================
-  // EVENT REGISTRATION
-  // =========================================================
-
-  bindApiForm({
-    formId:
-      "registrationForm",
-
-    buttonId:
-      "submitBtn",
-
-    errorId:
-      "formError",
-
-    successId:
-      "formSuccess",
-
-    resetId:
-      "registrationResetBtn",
-
-    endpoint:
-      "/api/register",
-
-    busyLabel:
-      "Sending registration…",
-
-    successTextId:
-      "formSuccessText",
-
-    validate(values) {
-      const phone =
-        $("#phone");
-
-      const email =
-        $("#email");
-
-      if (
-        !isValidKenyanPhone(
-          values.phone || "",
-        )
-      ) {
-        return {
-          message:
-            "Enter a valid Kenyan phone number, such as 0712345678 or +254712345678.",
-
-          field: phone,
-        };
+        return;
       }
 
-      if (
-        values.email &&
-        email &&
-        !email.validity.valid
-      ) {
-        return {
-          message:
-            "Enter a valid email address or leave the email field blank.",
-
-          field: email,
-        };
-      }
-
-      return null;
-    },
-
-    makePayload(values) {
-      return {
-        firstName:
-          values.firstName,
-
-        lastName:
-          values.lastName,
-
-        phone:
-          normalizeKenyanPhone(
-            values.phone,
-          ),
-
-        email:
-          values.email || "",
-
-        ageGroup:
-          values.ageGroup || "",
-
-        area:
-          values.area || "",
-
-        regFor:
-          values.regFor,
-
-        notes:
-          values.notes || "",
-
-        consent: true,
-
-        guardianConsent: true,
-
-        honeypot:
-          values.companyWebsite ||
-          "",
-      };
-    },
-  });
-
-  // =========================================================
-  // CONTACT MESSAGE
-  // =========================================================
-
-  bindApiForm({
-    formId:
-      "messageForm",
-
-    buttonId:
-      "messageSubmitBtn",
-
-    errorId:
-      "messageFormError",
-
-    successId:
-      "messageFormSuccess",
-
-    resetId:
-      "messageResetBtn",
-
-    endpoint:
-      "/api/contact-message",
-
-    busyLabel:
-      "Sending message…",
-
-    makePayload(values) {
-      return {
-        name:
-          values.name,
-
-        email:
-          values.email,
-
-        subject:
-          values.subject,
-
-        message:
-          values.message,
-
-        consent: true,
-
-        honeypot:
-          values.company || "",
-      };
-    },
-  });
-
-  // =========================================================
-  // PRAYER REQUEST
-  // =========================================================
-
-  bindApiForm({
-    formId:
-      "prayerForm",
-
-    buttonId:
-      "prayerSubmitBtn",
-
-    errorId:
-      "prayerFormError",
-
-    successId:
-      "prayerFormSuccess",
-
-    resetId:
-      "prayerResetBtn",
-
-    endpoint:
-      "/api/prayer-request",
-
-    busyLabel:
-      "Sending prayer request…",
-
-    makePayload(values) {
-      return {
-        name:
-          values.name,
-
-        request:
-          values.request,
-
-        consent: true,
-
-        honeypot:
-          values.company || "",
-      };
-    },
-  });
-
-  // =========================================================
-  // PASTORAL CARE
-  // =========================================================
-
-  bindApiForm({
-    formId:
-      "pastoralCareForm",
-
-    buttonId:
-      "careSubmitBtn",
-
-    errorId:
-      "careFormError",
-
-    successId:
-      "careFormSuccess",
-
-    resetId:
-      "careResetBtn",
-
-    endpoint:
-      "/api/pastoral-care",
-
-    busyLabel:
-      "Sending request…",
-
-    makePayload(values) {
-      return {
-        name:
-          values.name,
-
-        email:
-          values.email,
-
-        request:
-          values.request,
-
-        consent: true,
-
-        honeypot:
-          values.company || "",
-      };
-    },
-  });
-
-  // =========================================================
-  // EVENTS
-  // =========================================================
-
-  (() => {
-    const filterWrap =
-      $("#eventsFilterPills");
-
-    const upcomingWrap =
-      $("#eventsByMonth");
-
-    const pastWrap =
-      $("#pastEventsByMonth");
-
-    const pastRow =
-      $("#pastEventsRow");
-
-    const pastToggle =
-      $("#pastEventsToggle");
-
-    if (
-      !filterWrap ||
-      !upcomingWrap
-    ) {
-      return;
-    }
-
-    const items = [
-      {
-        date:
-          "2026-06-20",
-
-        title:
-          "Kesha Night",
-
-        category:
-          "Prayer & Worship",
-
-        time:
-          "7:00 PM",
-
-        location:
-          "Umoja P.A.G Church",
-
-        description:
-          "A night of prayer, worship, intercession, and teaching for the whole congregation. No registration is required.",
-
-        link:
-          "connect.html#contact",
-
-        linkText:
-          "Ask a question",
-      },
-
-      {
-        date:
-          "2026-05-11",
-
-        title:
-          "Women’s Fellowship Week",
-
-        category:
-          "Women’s Fellowship",
-
-        time:
-          "5:00 PM daily",
-
-        location:
-          "Umoja P.A.G Church",
-
-        description:
-          "A week of fellowship, teaching, testimony, and prayer for the women of the church.",
-      },
-
-      {
-        date:
-          "2026-04-13",
-
-        title:
-          "Men’s Fellowship Week",
-
-        category:
-          "Men’s Fellowship",
-
-        time:
-          "6:00 PM daily",
-
-        location:
-          "Umoja P.A.G Church",
-
-        description:
-          "A week of teaching and fellowship focused on discipleship, accountability, family, and community leadership.",
-      },
-
-      {
-        date:
-          "2026-03-09",
-
-        title:
-          "Evangelism Week",
-
-        category:
-          "Evangelism & Outreach",
-
-        time:
-          "All day",
-
-        location:
-          "Umoja and surrounding estates",
-
-        description:
-          "A week of outreach and community service across Umoja and neighbouring estates.",
-      },
-
-      {
-        date: null,
-
-        sortDate:
-          "2026-08-31",
-
-        dateLabel:
-          "August 2026 — exact date to be confirmed",
-
-        dateTbd: true,
-
-        title:
-          "Youth Camp & Family Fun Day",
-
-        category:
-          "Youth",
-
-        time:
-          "All day",
-
-        location:
-          "Umoja P.A.G Church",
-
-        description:
-          "Youth camp activities followed by a family fun day with games, music, team challenges, and a shared meal. Registration is open while the final date is confirmed.",
-
-        link:
-          "#register",
-
-        linkText:
-          "Register interest",
-      },
-    ];
-
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const pad = (value) =>
-      String(value).padStart(
-        2,
-        "0",
-      );
-
-    const today =
-      new Date();
-
-    const todayString =
-      `${today.getFullYear()}-${pad(
-        today.getMonth() + 1,
-      )}-${pad(
-        today.getDate(),
-      )}`;
-
-    function escapeHtml(
-      value,
-    ) {
-      return String(
-        value ?? "",
-      )
-        .replaceAll(
-          "&",
-          "&amp;",
-        )
-        .replaceAll(
-          "<",
-          "&lt;",
-        )
-        .replaceAll(
-          ">",
-          "&gt;",
-        )
-        .replaceAll(
-          '"',
-          "&quot;",
-        )
-        .replaceAll(
-          "'",
-          "&#039;",
+      const iframe =
+        document.createElement(
+          "iframe",
         );
-    }
 
-    const iconCalendar =
-      `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/>
-        <path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>`;
-
-    const iconClock =
-      `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
-        <path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>`;
-
-    const iconPin =
-      `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.8"/>
-        <circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.8"/>
-      </svg>`;
-
-    function itemSortDate(
-      item,
-    ) {
-      return (
-        item.date ||
-        item.sortDate
+      iframe.setAttribute(
+        "title",
+        "Print registration QR code",
       );
-    }
 
-    function isUpcoming(
-      item,
-    ) {
-      return (
-        itemSortDate(item) >=
-        todayString
+      iframe.style.position =
+        "fixed";
+
+      iframe.style.right =
+        "0";
+
+      iframe.style.bottom =
+        "0";
+
+      iframe.style.width =
+        "1px";
+
+      iframe.style.height =
+        "1px";
+
+      iframe.style.opacity =
+        "0";
+
+      iframe.style.pointerEvents =
+        "none";
+
+      iframe.style.border =
+        "0";
+
+      document.body.appendChild(
+        iframe,
       );
-    }
 
-    function dateText(
-      item,
-    ) {
-      if (
-        item.dateLabel
-      ) {
-        return item.dateLabel;
+      const printDocument =
+        iframe.contentDocument ||
+        iframe.contentWindow
+          ?.document;
+
+      if (!printDocument) {
+        iframe.remove();
+
+        window.alert(
+          "Printing is unavailable in this browser.",
+        );
+
+        return;
       }
 
-      const [
-        year,
-        month,
-        day,
-      ] =
-        item.date
-          .split("-")
-          .map(Number);
+      printDocument.open();
 
-      return (
-        monthNames[
-          month - 1
-        ] +
-        " " +
-        day +
-        ", " +
-        year
-      );
-    }
+      printDocument.write(`
+        <!doctype html>
 
-    function eventCard(
-      item,
-    ) {
-      return `
-        <article class="event-card">
-          <div class="event-card-media">
+        <html lang="en">
 
-            <span class="event-card-badge">
-              ${escapeHtml(
-                item.category,
-              )}
-            </span>
+          <head>
 
-            ${
-              item.dateTbd
-                ? `<span class="event-card-date-status">Date TBC</span>`
-                : ""
-            }
+            <meta charset="utf-8">
 
-            ${iconCalendar.replace(
-              'width="13" height="13"',
-              'width="40" height="40"',
-            )}
+            <title>
+              Umoja P.A.G Church — Event Registration
+            </title>
 
-          </div>
+            <style>
 
-          <div class="event-card-body">
-
-            <h4>
-              ${escapeHtml(
-                item.title,
-              )}
-            </h4>
-
-            <div class="event-card-meta">
-
-              <span class="event-card-meta-item">
-                ${iconCalendar}
-                ${escapeHtml(
-                  dateText(item),
-                )}
-              </span>
-
-              ${
-                item.time
-                  ? `
-                    <span class="event-card-meta-item">
-                      ${iconClock}
-                      ${escapeHtml(
-                        item.time,
-                      )}
-                    </span>
-                  `
-                  : ""
+              * {
+                box-sizing: border-box;
               }
 
-              ${
-                item.location
-                  ? `
-                    <span class="event-card-meta-item">
-                      ${iconPin}
-                      ${escapeHtml(
-                        item.location,
-                      )}
-                    </span>
-                  `
-                  : ""
+              body {
+                margin: 0;
+                padding: 50px;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                color: #17243d;
+                background: #ffffff;
               }
+
+              .sheet {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 40px;
+                border: 2px solid #d1a326;
+                border-radius: 20px;
+              }
+
+              h1 {
+                margin: 0 0 8px;
+                color: #072f6f;
+                font-size: 32px;
+              }
+
+              .subtitle {
+                margin: 0 0 28px;
+                color: #9b7414;
+                font-size: 18px;
+                font-weight: 700;
+              }
+
+              img {
+                display: block;
+                width: 300px;
+                height: 300px;
+                margin: 24px auto;
+              }
+
+              p {
+                line-height: 1.6;
+              }
+
+              .url {
+                margin-top: 20px;
+                color: #647087;
+                font-size: 11px;
+                word-break: break-all;
+              }
+
+              @media print {
+
+                body {
+                  padding: 20px;
+                }
+
+                .sheet {
+                  border: none;
+                }
+
+              }
+
+            </style>
+
+          </head>
+
+          <body>
+
+            <div class="sheet">
+
+              <h1>
+                Umoja P.A.G Church
+              </h1>
+
+              <div class="subtitle">
+                Scan to Register
+              </div>
+
+              <img
+                src="${imageSource}"
+                alt="Event registration QR code"
+              >
+
+              <p>
+                Scan this QR code with your phone camera
+                to open the event registration form.
+              </p>
+
+              <div class="url">
+                ${getRegistrationUrl()}
+              </div>
 
             </div>
 
-            ${
-              item.description
-                ? `
-                  <p class="event-card-desc">
-                    ${escapeHtml(
-                      item.description,
-                    )}
-                  </p>
-                `
-                : ""
-            }
+          </body>
 
-            ${
-              item.link
-                ? `
-                  <a
-                    href="${escapeHtml(
-                      item.link,
-                    )}"
-                    class="event-card-link"
-                  >
-                    ${escapeHtml(
-                      item.linkText ||
-                        "Learn more",
-                    )}
-                  </a>
-                `
-                : ""
-            }
+        </html>
+      `);
 
-          </div>
-        </article>
-      `;
-    }
+      printDocument.close();
 
-    function renderGroups(
-      list,
-      container,
-      emptyMessage,
-    ) {
-      if (!list.length) {
-        container.innerHTML =
-          `<p class="events-empty-state">${escapeHtml(
-            emptyMessage,
-          )}</p>`;
-
-        return;
-      }
-
-      const groups =
-        new Map();
-
-      list.forEach(
-        (item) => {
-          const [
-            year,
-            month,
-          ] =
-            itemSortDate(
-              item,
-            )
-              .split("-")
-              .map(Number);
-
-          const key =
-            `${year}-${pad(
-              month,
-            )}`;
-
-          if (
-            !groups.has(key)
-          ) {
-            groups.set(key, {
-              year,
-              month,
-              events: [],
-            });
-          }
-
-          groups
-            .get(key)
-            .events.push(
-              item,
-            );
-        },
-      );
-
-      container.innerHTML =
-        Array.from(
-          groups.values(),
-        )
-          .map(
-            ({
-              year,
-              month,
-              events,
-            }) => `
-              <section
-                class="events-month-group"
-                aria-labelledby="events-${year}-${month}"
-              >
-
-                <div class="events-month-group-header">
-
-                  <h4 id="events-${year}-${month}">
-                    ${monthNames[
-                      month - 1
-                    ]} ${year}
-                  </h4>
-
-                  <span
-                    class="events-month-rule"
-                    aria-hidden="true"
-                  ></span>
-
-                  <span class="events-month-count">
-                    ${events.length}
-                    ${
-                      events.length ===
-                      1
-                        ? "item"
-                        : "items"
-                    }
-                  </span>
-
-                </div>
-
-                <div class="events-grid">
-                  ${events
-                    .map(
-                      eventCard,
-                    )
-                    .join("")}
-                </div>
-
-              </section>
-            `,
-          )
-          .join("");
-    }
-
-    const categories = [
-      "All",
-      ...new Set(
-        items.map(
-          (item) =>
-            item.category,
-        ),
-      ),
-    ];
-
-    let activeCategory =
-      "All";
-
-    function renderFilters() {
-      filterWrap.innerHTML =
-        categories
-          .map(
-            (category) => {
-              const active =
-                category ===
-                activeCategory;
-
-              return `
-                <button
-                  type="button"
-                  class="filter-pill ${
-                    active
-                      ? "is-active"
-                      : ""
-                  }"
-                  data-category="${escapeHtml(
-                    category,
-                  )}"
-                  aria-pressed="${active}"
-                >
-                  ${escapeHtml(
-                    category.toUpperCase(),
-                  )}
-                </button>
-              `;
-            },
-          )
-          .join("");
-    }
-
-    function renderEvents() {
-      const selected =
-        items.filter(
-          (item) =>
-            activeCategory ===
-              "All" ||
-            item.category ===
-              activeCategory,
-        );
-
-      const upcoming =
-        selected
-          .filter(
-            isUpcoming,
-          )
-          .sort(
-            (a, b) =>
-              itemSortDate(
-                a,
-              ).localeCompare(
-                itemSortDate(
-                  b,
-                ),
-              ),
-          );
-
-      const past =
-        selected
-          .filter(
-            (item) =>
-              !isUpcoming(
-                item,
-              ),
-          )
-          .sort(
-            (a, b) =>
-              itemSortDate(
-                b,
-              ).localeCompare(
-                itemSortDate(
-                  a,
-                ),
-              ),
-          );
-
-      renderGroups(
-        upcoming,
-        upcomingWrap,
-        "Nothing upcoming in this category right now.",
-      );
-
-      if (
-        pastWrap &&
-        pastRow &&
-        pastToggle
-      ) {
-        if (past.length) {
-          pastRow.hidden =
-            false;
-
-          renderGroups(
-            past,
-            pastWrap,
-            "No past events in this category.",
-          );
-        } else {
-          pastRow.hidden =
-            true;
-
-          pastWrap.hidden =
-            true;
-
-          pastWrap.replaceChildren();
-
-          pastToggle.textContent =
-            "View Past Events";
-
-          pastToggle.setAttribute(
-            "aria-expanded",
-            "false",
-          );
-        }
-      }
-    }
-
-    filterWrap.addEventListener(
-      "click",
-      (event) => {
-        const button =
-          event.target.closest(
-            ".filter-pill",
-          );
-
-        if (!button) return;
-
-        activeCategory =
-          button.dataset.category;
-
-        renderFilters();
-        renderEvents();
-      },
-    );
-
-    if (pastToggle) {
-      pastToggle.setAttribute(
-        "aria-controls",
-        "pastEventsByMonth",
-      );
-
-      pastToggle.setAttribute(
-        "aria-expanded",
-        "false",
-      );
-
-      pastToggle.addEventListener(
-        "click",
+      const printWhenReady =
         () => {
-          if (!pastWrap) {
-            return;
+          try {
+            iframe.contentWindow
+              ?.focus();
+
+            iframe.contentWindow
+              ?.print();
+          } catch (error) {
+            console.error(
+              "QR printing failed:",
+              error,
+            );
+
+            window.alert(
+              "Printing failed. Please try again.",
+            );
           }
 
-          const showing =
-            pastWrap.hidden;
-
-          pastWrap.hidden =
-            !showing;
-
-          pastToggle.textContent =
-            showing
-              ? "Hide Past Events"
-              : "View Past Events";
-
-          pastToggle.setAttribute(
-            "aria-expanded",
-            String(showing),
+          window.setTimeout(
+            () => {
+              iframe.remove();
+            },
+            1500,
           );
-        },
-      );
-    }
-
-    const eventSelect =
-      $("#regFor");
-
-    if (eventSelect) {
-      const placeholder =
-        eventSelect.options[0];
-
-      eventSelect.replaceChildren(
-        placeholder,
-      );
-
-      items
-        .filter(isUpcoming)
-        .forEach(
-          (item) => {
-            const option =
-              document.createElement(
-                "option",
-              );
-
-            option.value =
-              item.title;
-
-            option.textContent =
-              item.title;
-
-            eventSelect.append(
-              option,
-            );
-          },
-        );
-
-      const other =
-        document.createElement(
-          "option",
-        );
-
-      other.value =
-        "Other Special Event";
-
-      other.textContent =
-        "Other Special Event";
-
-      eventSelect.append(
-        other,
-      );
-    }
-
-    renderFilters();
-    renderEvents();
-  })();
-})();
-
-/* =========================================================
-   MULTIPAGE EDITORIAL IMAGE MOTION
-   Smooth image rise / pop when scrolling down or back up
-========================================================= */
-
-(() => {
-  "use strict";
-
-  const reducedMotion =
-    window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    );
-
-  /*
-   * These selectors cover the major photographs used throughout
-   * the multipage website.
-   */
-  const selectors = [
-    ".editorial-hero .hero-photo",
-    ".home-ministry-visual figure",
-    ".page-hero-media figure",
-    ".min-card > img",
-    ".about-img-main",
-    ".pastor-media",
-    ".leadership-photo",
-    ".giving-media",
-    ".map-frame",
-  ].join(",");
-
-  const targets =
-    Array.from(
-      document.querySelectorAll(
-        selectors,
-      ),
-    );
-
-  if (!targets.length) {
-    return;
-  }
-
-  /*
-   * CSS is injected here so the motion works immediately even if
-   * you have not yet added the motion block to index.css.
-   */
-  const styleId =
-    "umoja-editorial-motion";
-
-  if (
-    !document.getElementById(
-      styleId,
-    )
-  ) {
-    const style =
-      document.createElement(
-        "style",
-      );
-
-    style.id = styleId;
-
-    style.textContent = `
-      html.motion-enabled .motion-rise {
-        opacity: 0;
-        filter: blur(5px);
-        transform:
-          translate3d(0, 60px, 0)
-          scale(0.96);
-
-        transform-origin:
-          center bottom;
-
-        transition:
-          opacity 720ms ease
-            var(--motion-delay, 0ms),
-          filter 820ms ease
-            var(--motion-delay, 0ms),
-          transform 950ms
-            cubic-bezier(
-              0.18,
-              1.15,
-              0.3,
-              1
-            )
-            var(--motion-delay, 0ms);
-
-        will-change:
-          opacity,
-          transform,
-          filter;
-
-        backface-visibility:
-          hidden;
-      }
-
-      html.motion-enabled
-      .motion-rise.motion-rise-visible {
-        opacity: 1;
-        filter: blur(0);
-
-        transform:
-          translate3d(0, 0, 0)
-          scale(1);
-      }
-
-      @media (max-width: 700px) {
-        html.motion-enabled
-        .motion-rise {
-          transform:
-            translate3d(
-              0,
-              40px,
-              0
-            )
-            scale(0.975);
-
-          transition:
-            opacity 620ms ease
-              var(--motion-delay, 0ms),
-            filter 700ms ease
-              var(--motion-delay, 0ms),
-            transform 800ms
-              cubic-bezier(
-                0.18,
-                1.12,
-                0.3,
-                1
-              )
-              var(--motion-delay, 0ms);
-        }
-
-        html.motion-enabled
-        .motion-rise.motion-rise-visible {
-          transform:
-            translate3d(0, 0, 0)
-            scale(1);
-        }
-      }
-
-      @media (
-        prefers-reduced-motion:
-        reduce
-      ) {
-        html.motion-enabled
-        .motion-rise,
-        html.motion-enabled
-        .motion-rise.motion-rise-visible {
-          opacity: 1 !important;
-          filter: none !important;
-          transform: none !important;
-          transition: none !important;
-        }
-      }
-    `;
-
-    document.head.append(
-      style,
-    );
-  }
-
-  document.documentElement
-    .classList.add(
-      "motion-enabled",
-    );
-
-  targets.forEach(
-    (target, index) => {
-      target.classList.add(
-        "motion-rise",
-      );
+        };
 
       /*
-       * Small stagger prevents every photograph from entering
-       * at exactly the same millisecond.
+       * Give the QR image enough time to render
+       * inside the print document.
        */
-      target.style.setProperty(
-        "--motion-delay",
-        `${(index % 4) * 70}ms`,
+      window.setTimeout(
+        printWhenReady,
+        350,
       );
     },
   );
 
-  if (
-    reducedMotion.matches ||
-    !(
-      "IntersectionObserver" in
-      window
-    )
-  ) {
-    targets.forEach(
-      (target) => {
-        target.classList.add(
-          "motion-rise-visible",
-        );
-      },
-    );
+  // ---------------------------------------------------------
+  // INITIAL ACCESSIBILITY STATE
+  // ---------------------------------------------------------
 
-    return;
+  overlay.hidden = true;
+
+  overlay.setAttribute(
+    "aria-hidden",
+    "true",
+  );
+
+  if (expandOverlay) {
+    expandOverlay.hidden =
+      true;
+
+    expandOverlay.setAttribute(
+      "aria-hidden",
+      "true",
+    );
   }
-
-  const observer =
-    new IntersectionObserver(
-      (entries) => {
-        entries.forEach(
-          (entry) => {
-            if (
-              entry.isIntersecting
-            ) {
-              requestAnimationFrame(
-                () => {
-                  requestAnimationFrame(
-                    () => {
-                      entry.target.classList.add(
-                        "motion-rise-visible",
-                      );
-                    },
-                  );
-                },
-              );
-
-              return;
-            }
-
-            /*
-             * Reset only after the photograph has fully travelled
-             * outside the viewport. When the visitor scrolls back,
-             * the rise animation therefore plays again.
-             */
-            if (
-              entry.boundingClientRect
-                .bottom < -80 ||
-              entry.boundingClientRect
-                .top >
-                window.innerHeight +
-                  80
-            ) {
-              entry.target.classList.remove(
-                "motion-rise-visible",
-              );
-            }
-          },
-        );
-      },
-      {
-        threshold: 0.12,
-
-        rootMargin:
-          "0px 0px -7% 0px",
-      },
-    );
-
-  targets.forEach(
-    (target) => {
-      observer.observe(
-        target,
-      );
-    },
-  );
-
-  reducedMotion.addEventListener(
-    "change",
-    () => {
-      if (
-        reducedMotion.matches
-      ) {
-        targets.forEach(
-          (target) => {
-            target.classList.add(
-              "motion-rise-visible",
-            );
-          },
-        );
-
-        observer.disconnect();
-      }
-    },
-  );
 })();
