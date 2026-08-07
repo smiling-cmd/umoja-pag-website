@@ -4,12 +4,18 @@
   const $ = (selector, context = document) => context.querySelector(selector);
   const $$ = (selector, context = document) =>
     Array.from(context.querySelectorAll(selector));
+
   const reduceMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)",
   );
 
-  // ── Shared helpers ─────────────────────────────────────────────
+  // =========================================================
+  // SHARED HELPERS
+  // =========================================================
+
   function getFocusable(container) {
+    if (!container) return [];
+
     return $$(
       'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
       container,
@@ -25,20 +31,34 @@
 
     button.disabled = busy;
     button.setAttribute("aria-busy", String(busy));
-    button.textContent = busy ? busyLabel : button.dataset.defaultLabel;
+
+    button.textContent = busy
+      ? busyLabel
+      : button.dataset.defaultLabel;
   }
 
   function safeMessage(value, fallback) {
-    const text = typeof value === "string" ? value.trim() : "";
-    return text && text.length <= 240 ? text : fallback;
+    const text =
+      typeof value === "string"
+        ? value.trim()
+        : "";
+
+    return text && text.length <= 240
+      ? text
+      : fallback;
   }
 
-  // ── Navbar ─────────────────────────────────────────────────────
+  // =========================================================
+  // NAVBAR
+  // =========================================================
+
   const navbar = $("#navbar");
   const navToggle = $("#navToggle");
   const navLinks = $("#navLinks");
   const navOverlay = $("#navOverlay");
-  const mobileNavQuery = window.matchMedia("(max-width: 1200px)");
+
+  const mobileNavQuery =
+    window.matchMedia("(max-width: 1200px)");
 
   let navReturnFocus = null;
 
@@ -47,22 +67,27 @@
 
     navbar.classList.toggle(
       "scrolled",
-      window.scrollY > 24 ||
-        document.body.classList.contains("secondary-page"),
+      window.scrollY > 20 ||
+        !document.body.classList.contains("home-page"),
     );
   }
 
   function setMobileNavAccessibility(isOpen) {
     if (!navLinks) return;
 
-    navLinks.setAttribute(
-      "aria-hidden",
-      mobileNavQuery.matches && !isOpen ? "true" : "false",
-    );
-
-    if (navOverlay) {
-      navOverlay.setAttribute("aria-hidden", isOpen ? "false" : "true");
+    if (mobileNavQuery.matches) {
+      navLinks.setAttribute(
+        "aria-hidden",
+        String(!isOpen),
+      );
+    } else {
+      navLinks.removeAttribute("aria-hidden");
     }
+
+    navOverlay?.setAttribute(
+      "aria-hidden",
+      String(!isOpen),
+    );
   }
 
   function openMobileNav() {
@@ -80,30 +105,52 @@
     navToggle.classList.add("open");
     navLinks.classList.add("open");
     navOverlay.classList.add("open");
+
     document.body.classList.add("nav-open");
 
-    navToggle.setAttribute("aria-expanded", "true");
-    navToggle.setAttribute("aria-label", "Close menu");
+    navToggle.setAttribute(
+      "aria-expanded",
+      "true",
+    );
+
+    navToggle.setAttribute(
+      "aria-label",
+      "Close menu",
+    );
 
     setMobileNavAccessibility(true);
 
     const firstLink = $("a", navLinks);
 
-    if (firstLink) {
-      firstLink.focus();
-    }
+    firstLink?.focus();
   }
 
-  function closeMobileNav({ restoreFocus = false } = {}) {
-    if (!navToggle || !navLinks || !navOverlay) return;
+  function closeMobileNav({
+    restoreFocus = false,
+  } = {}) {
+    if (
+      !navToggle ||
+      !navLinks ||
+      !navOverlay
+    ) {
+      return;
+    }
 
     navToggle.classList.remove("open");
     navLinks.classList.remove("open");
     navOverlay.classList.remove("open");
+
     document.body.classList.remove("nav-open");
 
-    navToggle.setAttribute("aria-expanded", "false");
-    navToggle.setAttribute("aria-label", "Open menu");
+    navToggle.setAttribute(
+      "aria-expanded",
+      "false",
+    );
+
+    navToggle.setAttribute(
+      "aria-label",
+      "Open menu",
+    );
 
     setMobileNavAccessibility(false);
 
@@ -118,56 +165,85 @@
   function toggleMobileNav() {
     if (!navLinks) return;
 
-    navLinks.classList.contains("open")
-      ? closeMobileNav({ restoreFocus: true })
-      : openMobileNav();
+    if (navLinks.classList.contains("open")) {
+      closeMobileNav({
+        restoreFocus: true,
+      });
+    } else {
+      openMobileNav();
+    }
   }
 
   updateNavbarAppearance();
   setMobileNavAccessibility(false);
 
-  window.addEventListener("scroll", updateNavbarAppearance, {
-    passive: true,
-  });
+  window.addEventListener(
+    "scroll",
+    updateNavbarAppearance,
+    { passive: true },
+  );
 
-  if (navToggle && navLinks && navOverlay) {
-    navToggle.addEventListener("click", toggleMobileNav);
+  navToggle?.addEventListener(
+    "click",
+    toggleMobileNav,
+  );
 
-    navOverlay.addEventListener("click", () =>
-      closeMobileNav({ restoreFocus: true }),
-    );
+  navOverlay?.addEventListener(
+    "click",
+    () =>
+      closeMobileNav({
+        restoreFocus: true,
+      }),
+  );
 
-    navLinks.addEventListener("click", (event) => {
+  navLinks?.addEventListener(
+    "click",
+    (event) => {
       if (event.target.closest("a")) {
         closeMobileNav();
       }
-    });
+    },
+  );
 
-    mobileNavQuery.addEventListener("change", () =>
-      closeMobileNav(),
-    );
-  }
+  mobileNavQuery.addEventListener(
+    "change",
+    () => closeMobileNav(),
+  );
 
-  document.addEventListener("keydown", (event) => {
-    if (
-      event.key === "Escape" &&
-      navLinks?.classList.contains("open")
-    ) {
-      event.preventDefault();
-      closeMobileNav({ restoreFocus: true });
-      return;
-    }
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      if (
+        event.key === "Escape" &&
+        navLinks?.classList.contains("open")
+      ) {
+        event.preventDefault();
 
-    if (
-      event.key === "Tab" &&
-      navLinks?.classList.contains("open")
-    ) {
-      const focusable = getFocusable(navLinks);
+        closeMobileNav({
+          restoreFocus: true,
+        });
+
+        return;
+      }
+
+      if (
+        event.key !== "Tab" ||
+        !navLinks?.classList.contains("open")
+      ) {
+        return;
+      }
+
+      const focusable =
+        getFocusable(navLinks);
 
       if (!focusable.length) return;
 
       const first = focusable[0];
-      const last = focusable[focusable.length - 1];
+
+      const last =
+        focusable[
+          focusable.length - 1
+        ];
 
       if (
         event.shiftKey &&
@@ -182,510 +258,140 @@
         event.preventDefault();
         first.focus();
       }
-    }
-  });
-
-  // ── Active navigation and underline ────────────────────────────
-  const samePageLinks = document.body.classList.contains("home-page")
-    ? $$('.nav-links a[href^="#"]')
-    : [];
-
-  const samePageSections = samePageLinks
-    .map((link) =>
-      document.getElementById(
-        link.getAttribute("href").slice(1),
-      ),
-    )
-    .filter(Boolean);
-
-  const navIndicator = navLinks
-    ? document.createElement("span")
-    : null;
-
-  let navTicking = false;
-
-  if (
-    navIndicator &&
-    navLinks &&
-    samePageLinks.length
-  ) {
-    navIndicator.className = "nav-indicator";
-    navIndicator.setAttribute("aria-hidden", "true");
-    navLinks.append(navIndicator);
-  }
-
-  function updateNavIndicator() {
-    if (
-      !navIndicator ||
-      !navLinks ||
-      mobileNavQuery.matches
-    ) {
-      if (navIndicator) {
-        navIndicator.style.opacity = "0";
-      }
-
-      return;
-    }
-
-    const active = $("a.active", navLinks);
-
-    if (!active) {
-      navIndicator.style.opacity = "0";
-      return;
-    }
-
-    const linkRect = active.getBoundingClientRect();
-    const listRect = navLinks.getBoundingClientRect();
-
-    const width = Math.max(
-      20,
-      Math.round(linkRect.width * 0.52),
-    );
-
-    const x = Math.round(
-      linkRect.left -
-        listRect.left +
-        (linkRect.width - width) / 2,
-    );
-
-    navIndicator.style.width = `${width}px`;
-    navIndicator.style.transform = `translateX(${x}px)`;
-    navIndicator.style.opacity = "1";
-  }
-
-  function updateActiveNav() {
-    navTicking = false;
-
-    if (!samePageSections.length) return;
-
-    const marker =
-      window.scrollY +
-      (navbar?.offsetHeight || 80) +
-      140;
-
-    let activeSection = samePageSections[0];
-
-    samePageSections.forEach((section) => {
-      if (section.offsetTop <= marker) {
-        activeSection = section;
-      }
-    });
-
-    samePageLinks.forEach((link) => {
-      const active =
-        link.getAttribute("href") ===
-        `#${activeSection.id}`;
-
-      link.classList.toggle("active", active);
-
-      if (active) {
-        link.setAttribute("aria-current", "page");
-      } else {
-        link.removeAttribute("aria-current");
-      }
-    });
-
-    updateNavIndicator();
-  }
-
-  function requestNavUpdate() {
-    if (navTicking) return;
-
-    navTicking = true;
-    requestAnimationFrame(updateActiveNav);
-  }
-
-  updateActiveNav();
-
-  window.addEventListener("scroll", requestNavUpdate, {
-    passive: true,
-  });
-
-  window.addEventListener("resize", requestNavUpdate);
-
-  navLinks?.addEventListener("click", () =>
-    window.setTimeout(updateActiveNav, 80),
+    },
   );
 
-  // ── Reveal animations ──────────────────────────────────────────
+  // =========================================================
+  // NAV INDICATOR
+  // =========================================================
+
+  if (navLinks) {
+    const activeLink =
+      $(".nav-links a.active");
+
+    if (activeLink) {
+      const indicator =
+        document.createElement("span");
+
+      indicator.className =
+        "nav-indicator";
+
+      indicator.setAttribute(
+        "aria-hidden",
+        "true",
+      );
+
+      navLinks.append(indicator);
+
+      function positionIndicator() {
+        if (
+          mobileNavQuery.matches
+        ) {
+          indicator.style.opacity = "0";
+          return;
+        }
+
+        const active =
+          $(".nav-links a.active");
+
+        if (!active) {
+          indicator.style.opacity = "0";
+          return;
+        }
+
+        const linkRect =
+          active.getBoundingClientRect();
+
+        const navRect =
+          navLinks.getBoundingClientRect();
+
+        const width = Math.max(
+          20,
+          linkRect.width * 0.5,
+        );
+
+        const x =
+          linkRect.left -
+          navRect.left +
+          (linkRect.width - width) / 2;
+
+        indicator.style.width =
+          `${width}px`;
+
+        indicator.style.transform =
+          `translateX(${x}px)`;
+
+        indicator.style.opacity =
+          "1";
+      }
+
+      positionIndicator();
+
+      window.addEventListener(
+        "resize",
+        positionIndicator,
+      );
+
+      window.addEventListener(
+        "load",
+        positionIndicator,
+      );
+    }
+  }
+
+  // =========================================================
+  // GENERAL SCROLL REVEAL
+  // =========================================================
+
   const revealItems = $$(".reveal");
 
   if (
     reduceMotion.matches ||
     !("IntersectionObserver" in window)
   ) {
-    revealItems.forEach((item) =>
-      item.classList.add("visible"),
-    );
+    revealItems.forEach((element) => {
+      element.classList.add("visible");
+    });
   } else {
-    const revealObserver = new IntersectionObserver(
-      (entries, observer) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
+    const revealObserver =
+      new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            if (
+              !entry.isIntersecting
+            ) {
+              return;
+            }
 
-          entry.target.classList.add("visible");
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        threshold: 0.08,
-        rootMargin: "0px 0px -36px 0px",
-      },
-    );
+            entry.target.classList.add(
+              "visible",
+            );
 
-    revealItems.forEach((item) =>
-      revealObserver.observe(item),
+            observer.unobserve(
+              entry.target,
+            );
+          });
+        },
+        {
+          threshold: 0.08,
+          rootMargin:
+            "0px 0px -36px 0px",
+        },
+      );
+
+    revealItems.forEach(
+      (element) => {
+        revealObserver.observe(
+          element,
+        );
+      },
     );
   }
 
-  // ── Accessible hero carousel ───────────────────────────────────
-  (() => {
-    const hero = $("#home");
-    const slides = $$(".hero-left-slide", hero || document);
-    const dots = $$(".hero-dot", hero || document);
-    const prev = $("#heroPrev");
-    const next = $("#heroNext");
-    const pause = $("#heroPause");
-    const status = $("#heroStatus");
+  // =========================================================
+  // ACCESSIBLE MODAL MANAGER
+  // =========================================================
 
-    if (!hero || !slides.length) return;
-
-    let current = 0;
-    let timer = null;
-    let userPaused = false;
-    let pointerInside = false;
-    let focusInside = false;
-    let heroVisible = true;
-
-    const intervalMs = 7000;
-
-    function show(index, { announce = false } = {}) {
-      current =
-        (index + slides.length) %
-        slides.length;
-
-      slides.forEach((slide, i) => {
-        const active = i === current;
-
-        slide.classList.toggle("active", active);
-        slide.setAttribute(
-          "aria-hidden",
-          String(!active),
-        );
-
-        slide.toggleAttribute("inert", !active);
-      });
-
-      dots.forEach((dot, i) => {
-        const active = i === current;
-
-        dot.classList.toggle("active", active);
-
-        if (active) {
-          dot.setAttribute("aria-current", "true");
-        } else {
-          dot.removeAttribute("aria-current");
-        }
-      });
-
-      if (announce && status) {
-        status.textContent =
-          `Showing featured message ${current + 1} of ${slides.length}.`;
-      }
-    }
-
-    function stop() {
-      if (timer) {
-        window.clearInterval(timer);
-      }
-
-      timer = null;
-    }
-
-    function canAutoPlay() {
-      return (
-        !reduceMotion.matches &&
-        !userPaused &&
-        !pointerInside &&
-        !focusInside &&
-        heroVisible &&
-        !document.hidden
-      );
-    }
-
-    function start() {
-      stop();
-
-      if (canAutoPlay()) {
-        timer = window.setInterval(
-          () => show(current + 1),
-          intervalMs,
-        );
-      }
-    }
-
-    function updatePauseButton() {
-      if (!pause) return;
-
-      const label = userPaused
-        ? "Resume automatic slide rotation"
-        : "Pause automatic slide rotation";
-
-      pause.setAttribute(
-        "aria-pressed",
-        String(userPaused),
-      );
-
-      pause.setAttribute("aria-label", label);
-
-      const icon = pause.querySelector(
-        '[aria-hidden="true"]',
-      );
-
-      const text = pause.querySelector(".sr-only");
-
-      if (icon) {
-        icon.textContent = userPaused ? "▶" : "Ⅱ";
-      }
-
-      if (text) {
-        text.textContent = label;
-      }
-    }
-
-    dots.forEach((dot) => {
-      dot.addEventListener("click", () => {
-        show(Number(dot.dataset.slide), {
-          announce: true,
-        });
-
-        start();
-      });
-    });
-
-    prev?.addEventListener("click", () => {
-      show(current - 1, { announce: true });
-      start();
-    });
-
-    next?.addEventListener("click", () => {
-      show(current + 1, { announce: true });
-      start();
-    });
-
-    pause?.addEventListener("click", () => {
-      userPaused = !userPaused;
-      updatePauseButton();
-
-      userPaused ? stop() : start();
-    });
-
-    hero.addEventListener("pointerenter", () => {
-      pointerInside = true;
-      stop();
-    });
-
-    hero.addEventListener("pointerleave", () => {
-      pointerInside = false;
-      start();
-    });
-
-    hero.addEventListener("focusin", () => {
-      focusInside = true;
-      stop();
-    });
-
-    hero.addEventListener("focusout", () => {
-      window.setTimeout(() => {
-        focusInside = hero.contains(
-          document.activeElement,
-        );
-
-        start();
-      }, 0);
-    });
-
-    document.addEventListener(
-      "visibilitychange",
-      start,
-    );
-
-    reduceMotion.addEventListener("change", start);
-
-    if ("IntersectionObserver" in window) {
-      const visibilityObserver =
-        new IntersectionObserver(
-          ([entry]) => {
-            heroVisible = Boolean(
-              entry?.isIntersecting,
-            );
-
-            start();
-          },
-          { threshold: 0.15 },
-        );
-
-      visibilityObserver.observe(hero);
-    }
-
-    show(0);
-    updatePauseButton();
-    start();
-  })();
-
-  // ── Click-to-load Google Map ───────────────────────────────────
-  (() => {
-    const frame = $("#mapFrame");
-    const button = $("#loadMapBtn");
-
-    if (!frame || !button) return;
-
-    const src =
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d120.59!2d36.8938387!3d-1.2849086!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f138dc6b5156b%3A0x4a4bc064c62c9fb0!2sUmoja%20P.%20A.%20G%20School!5e0!3m2!1sen!2ske!4v1719500000000!5m2!1sen!2ske";
-
-    button.addEventListener("click", () => {
-      setBusy(button, true, "Loading map...");
-
-      const iframe =
-        document.createElement("iframe");
-
-      iframe.src = src;
-      iframe.title = "Map to Umoja P.A.G Church";
-      iframe.loading = "lazy";
-      iframe.referrerPolicy =
-        "no-referrer-when-downgrade";
-      iframe.allowFullscreen = true;
-
-      iframe.addEventListener(
-        "load",
-        () => frame.classList.add("map-loaded"),
-        { once: true },
-      );
-
-      frame.replaceChildren(iframe);
-    });
-  })();
-
-  // ── Registration helper character ──────────────────────────────
-  (() => {
-    const avatar = $("#cloudwatchAvatar");
-    const copy = $("#cloudwatchCopy");
-    const pupils = $$(".cloudwatch-pupil");
-
-    const privateFields = [
-      $("#phone"),
-      $("#email"),
-    ].filter(Boolean);
-
-    if (!avatar) return;
-
-    const defaultCopy = copy?.innerHTML || "";
-
-    let messageTimer = null;
-
-    function setClosed(value) {
-      avatar.classList.toggle(
-        "eyes-closed",
-        value,
-      );
-    }
-
-    function setFrown(value) {
-      avatar.classList.toggle("frown", value);
-    }
-
-    function setMessage(message, resetAfter = 0) {
-      if (!copy) return;
-
-      copy.textContent = message;
-      window.clearTimeout(messageTimer);
-
-      if (resetAfter) {
-        messageTimer = window.setTimeout(() => {
-          copy.innerHTML = defaultCopy;
-          setFrown(false);
-        }, resetAfter);
-      }
-    }
-
-    function nudgeInvalid(message) {
-      setClosed(false);
-      setFrown(true);
-      setMessage(message, 2600);
-
-      if (!reduceMotion.matches) {
-        avatar.classList.remove("is-shaking");
-
-        void avatar.offsetWidth;
-
-        avatar.classList.add("is-shaking");
-      }
-    }
-
-    window.addEventListener(
-      "umoja:registration-invalid",
-      (event) => {
-        nudgeInvalid(
-          event.detail?.message ||
-            "Please check the highlighted details.",
-        );
-      },
-    );
-
-    if (!reduceMotion.matches) {
-      document.addEventListener(
-        "pointermove",
-        (event) => {
-          const x =
-            (event.clientX / window.innerWidth -
-              0.5) *
-            12;
-
-          const y =
-            (event.clientY /
-              window.innerHeight -
-              0.5) *
-            6;
-
-          pupils.forEach((pupil) => {
-            pupil.style.transform =
-              `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
-          });
-        },
-        { passive: true },
-      );
-
-      window.setInterval(() => {
-        if (
-          privateFields.some(
-            (field) =>
-              document.activeElement === field,
-          )
-        ) {
-          return;
-        }
-
-        setClosed(true);
-
-        window.setTimeout(
-          () => setClosed(false),
-          180,
-        );
-      }, 3600);
-    }
-
-    privateFields.forEach((field) => {
-      field.addEventListener("focus", () =>
-        setClosed(true),
-      );
-
-      field.addEventListener("blur", () =>
-        setClosed(false),
-      );
-    });
-  })();
-
-  // ── Accessible modal manager ───────────────────────────────────
   const modalStack = [];
 
   function openModal(
@@ -694,26 +400,39 @@
   ) {
     if (!overlay) return;
 
-    const dialog = overlay.matches(
-      '[role="dialog"]',
-    )
-      ? overlay
-      : $('[role="dialog"]', overlay);
+    const dialog =
+      overlay.matches('[role="dialog"]')
+        ? overlay
+        : $('[role="dialog"]', overlay);
 
     overlay.hidden = false;
-    overlay.setAttribute("aria-hidden", "false");
+
+    overlay.setAttribute(
+      "aria-hidden",
+      "false",
+    );
+
     overlay.classList.add("open");
 
-    document.body.classList.add("modal-open");
+    document.body.classList.add(
+      "modal-open",
+    );
 
-    modalStack.push({ overlay, trigger });
+    modalStack.push({
+      overlay,
+      trigger,
+    });
 
     const preferred = $(
       "[data-autofocus], .qr-modal-close",
       dialog || overlay,
     );
 
-    (preferred || dialog || overlay).focus();
+    (
+      preferred ||
+      dialog ||
+      overlay
+    ).focus();
   }
 
   function closeModal(
@@ -722,17 +441,27 @@
   ) {
     if (!overlay) return;
 
-    const index = modalStack.findLastIndex(
-      (item) => item.overlay === overlay,
-    );
+    const index =
+      modalStack.findLastIndex(
+        (item) =>
+          item.overlay === overlay,
+      );
 
     const record =
       index >= 0
-        ? modalStack.splice(index, 1)[0]
+        ? modalStack.splice(
+            index,
+            1,
+          )[0]
         : null;
 
     overlay.classList.remove("open");
-    overlay.setAttribute("aria-hidden", "true");
+
+    overlay.setAttribute(
+      "aria-hidden",
+      "true",
+    );
+
     overlay.hidden = true;
 
     if (!modalStack.length) {
@@ -749,61 +478,90 @@
     }
   }
 
-  document.addEventListener("keydown", (event) => {
-    const top =
-      modalStack[modalStack.length - 1];
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      const current =
+        modalStack[
+          modalStack.length - 1
+        ];
 
-    if (!top) return;
+      if (!current) return;
 
-    const dialog = top.overlay.matches(
-      '[role="dialog"]',
-    )
-      ? top.overlay
-      : $('[role="dialog"]', top.overlay);
+      const dialog =
+        current.overlay.matches(
+          '[role="dialog"]',
+        )
+          ? current.overlay
+          : $(
+              '[role="dialog"]',
+              current.overlay,
+            );
 
-    if (event.key === "Escape") {
-      event.preventDefault();
-      closeModal(top.overlay);
-      return;
-    }
+      if (event.key === "Escape") {
+        event.preventDefault();
 
-    if (event.key !== "Tab") return;
+        closeModal(
+          current.overlay,
+        );
 
-    const focusable = getFocusable(
-      dialog || top.overlay,
-    );
+        return;
+      }
 
-    if (!focusable.length) {
-      event.preventDefault();
-      (dialog || top.overlay).focus();
-      return;
-    }
+      if (event.key !== "Tab") {
+        return;
+      }
 
-    const first = focusable[0];
-    const last =
-      focusable[focusable.length - 1];
+      const focusable =
+        getFocusable(
+          dialog ||
+            current.overlay,
+        );
 
-    if (
-      event.shiftKey &&
-      document.activeElement === first
-    ) {
-      event.preventDefault();
-      last.focus();
-    } else if (
-      !event.shiftKey &&
-      document.activeElement === last
-    ) {
-      event.preventDefault();
-      first.focus();
-    }
-  });
+      if (!focusable.length) {
+        event.preventDefault();
 
-  // ── Leadership details ─────────────────────────────────────────
+        (
+          dialog ||
+          current.overlay
+        ).focus();
+
+        return;
+      }
+
+      const first = focusable[0];
+
+      const last =
+        focusable[
+          focusable.length - 1
+        ];
+
+      if (
+        event.shiftKey &&
+        document.activeElement === first
+      ) {
+        event.preventDefault();
+        last.focus();
+      } else if (
+        !event.shiftKey &&
+        document.activeElement === last
+      ) {
+        event.preventDefault();
+        first.focus();
+      }
+    },
+  );
+
+  // =========================================================
+  // LEADERSHIP MODALS
+  // =========================================================
+
   const LEADER_INFO = {
     secretary: {
       name: "Mr. Sam Kavai",
       role: "Secretary",
-      photo: "images/secretary.jpg",
+      photo:
+        "images/secretary.jpg",
       bio: [
         "Coordinates church records, correspondence, and communication between leadership and the congregation, helping the ministry remain organised and keeping members informed.",
       ],
@@ -817,7 +575,8 @@
     deacon: {
       name: "Mr. Paul Mosira",
       role: "Deacon",
-      photo: "images/deacon.jpg",
+      photo:
+        "images/deacon.jpg",
       bio: [
         "Serves the church through practical support, care for members, and assistance with worship and church operations.",
       ],
@@ -829,9 +588,12 @@
     },
 
     motherDirector: {
-      name: "Lady Linet Lukiri",
-      role: "Mother Director",
-      photo: "images/women director.jpg",
+      name:
+        "Lady Linet Lukiri",
+      role:
+        "Mother Director",
+      photo:
+        "images/women director.jpg",
       bio: [
         "Leads and mentors the women’s fellowship, guiding prayer, discipleship, outreach, and mutual support among the church’s women.",
       ],
@@ -845,7 +607,8 @@
     treasurer: {
       name: "Mr. Paul Mwangi",
       role: "Treasurer",
-      photo: "images/Treasurer.jpg",
+      photo:
+        "images/Treasurer.jpg",
       bio: [
         "Supports faithful stewardship by overseeing church finances, giving records, and financial accountability.",
       ],
@@ -857,9 +620,11 @@
     },
 
     youthLeader: {
-      name: "Ms. Florence Atino",
+      name:
+        "Ms. Florence Atino",
       role: "Youth Leader",
-      photo: "images/youth leader.jpg",
+      photo:
+        "images/youth leader.jpg",
       bio: [
         "Guides and disciples the church’s young people through worship, mentorship, fellowship, and practical ministry opportunities.",
       ],
@@ -872,394 +637,281 @@
   };
 
   (() => {
-    const overlay = $("#leaderModalOverlay");
-    const close = $("#leaderModalClose");
-    const image = $("#leaderModalImg");
-    const role = $("#leaderModalRole");
-    const name = $("#leaderModalName");
-    const bio = $("#leaderModalBio");
-    const tags = $("#leaderModalTags");
+    const overlay =
+      $("#leaderModalOverlay");
+
+    const close =
+      $("#leaderModalClose");
+
+    const image =
+      $("#leaderModalImg");
+
+    const role =
+      $("#leaderModalRole");
+
+    const name =
+      $("#leaderModalName");
+
+    const bio =
+      $("#leaderModalBio");
+
+    const tags =
+      $("#leaderModalTags");
 
     if (!overlay) return;
 
-    $$(".leadership-more[data-leader]").forEach(
-      (button) => {
-        button.addEventListener("click", () => {
-          const info =
-            LEADER_INFO[button.dataset.leader];
+    $$(".leadership-more[data-leader]")
+      .forEach((button) => {
+        button.addEventListener(
+          "click",
+          () => {
+            const info =
+              LEADER_INFO[
+                button.dataset
+                  .leader
+              ];
 
-          if (!info) return;
+            if (!info) return;
 
-          if (image) {
-            image.src = info.photo;
-            image.alt = info.name;
-          }
+            if (image) {
+              image.src =
+                info.photo;
 
-          if (role) {
-            role.textContent = info.role;
-          }
+              image.alt =
+                info.name;
+            }
 
-          if (name) {
-            name.textContent = info.name;
-          }
+            if (role) {
+              role.textContent =
+                info.role;
+            }
 
-          if (bio) {
-            bio.replaceChildren(
-              ...info.bio.map((paragraph) => {
-                const p =
-                  document.createElement("p");
+            if (name) {
+              name.textContent =
+                info.name;
+            }
 
-                p.textContent = paragraph;
+            if (bio) {
+              bio.replaceChildren(
+                ...info.bio.map(
+                  (text) => {
+                    const p =
+                      document.createElement(
+                        "p",
+                      );
 
-                return p;
-              }),
+                    p.textContent =
+                      text;
+
+                    return p;
+                  },
+                ),
+              );
+            }
+
+            if (tags) {
+              tags.replaceChildren(
+                ...info.tags.map(
+                  (text) => {
+                    const tag =
+                      document.createElement(
+                        "span",
+                      );
+
+                    tag.className =
+                      "pastor-tag";
+
+                    tag.textContent =
+                      text;
+
+                    return tag;
+                  },
+                ),
+              );
+            }
+
+            openModal(
+              overlay,
+              button,
             );
-          }
+          },
+        );
+      });
 
-          if (tags) {
-            tags.replaceChildren(
-              ...info.tags.map((label) => {
-                const span =
-                  document.createElement("span");
+    close?.addEventListener(
+      "click",
+      () =>
+        closeModal(overlay),
+    );
 
-                span.className = "pastor-tag";
-                span.textContent = label;
-
-                return span;
-              }),
-            );
-          }
-
-          openModal(overlay, button);
-        });
+    overlay.addEventListener(
+      "click",
+      (event) => {
+        if (
+          event.target === overlay
+        ) {
+          closeModal(overlay);
+        }
       },
     );
-
-    close?.addEventListener("click", () =>
-      closeModal(overlay),
-    );
-
-    overlay.addEventListener("click", (event) => {
-      if (event.target === overlay) {
-        closeModal(overlay);
-      }
-    });
   })();
 
-  // ── QR code, loaded only on demand ─────────────────────────────
+  // =========================================================
+  // CLICK-TO-LOAD GOOGLE MAP
+  // =========================================================
+
   (() => {
-    const toggle = $("#qrToggleBtn");
-    const overlay = $("#qrModalOverlay");
-    const close = $("#qrModalClose");
-    const canvas = $("#qrCanvas");
-    const hint = $("#qrHint");
-    const expandButton = $("#qrExpandBtn");
-    const expandOverlay = $("#qrExpandOverlay");
-    const expandClose = $("#qrExpandClose");
-    const expandBox = $("#qrExpandBox");
-    const printButton = $("#qrPrintBtn");
+    const frame =
+      $("#mapFrame");
 
-    if (!toggle || !overlay || !canvas) return;
+    const button =
+      $("#loadMapBtn");
 
-    const qrLibraryUrl =
-      "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
-
-    let libraryPromise = null;
-
-    function registrationUrl() {
-      try {
-        const url = new URL(
-          window.location.href,
-        );
-
-        if (
-          url.protocol === "http:" ||
-          url.protocol === "https:"
-        ) {
-          url.hash = "register";
-          return url.href;
-        }
-      } catch (_) {
-        // Fall through to the public URL.
-      }
-
-      return "https://umojapagchurch.org/#register";
+    if (!frame || !button) {
+      return;
     }
 
-    function loadLibrary() {
-      if (window.QRCode) {
-        return Promise.resolve(window.QRCode);
-      }
+    const mapURL =
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d120.59!2d36.8938387!3d-1.2849086!2m3!1f0!2f0!3f0!2m3!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f138dc6b5156b%3A0x4a4bc064c62c9fb0!2sUmoja%20P.%20A.%20G%20School!5e0!3m2!1sen!2ske!4v1719500000000!5m2!1sen!2ske";
 
-      if (libraryPromise) {
-        return libraryPromise;
-      }
-
-      libraryPromise = new Promise(
-        (resolve, reject) => {
-          const script =
-            document.createElement("script");
-
-          script.src = qrLibraryUrl;
-          script.async = true;
-          script.crossOrigin = "anonymous";
-          script.referrerPolicy = "no-referrer";
-
-          script.addEventListener(
-            "load",
-            () => resolve(window.QRCode),
-            { once: true },
-          );
-
-          script.addEventListener(
-            "error",
-            () =>
-              reject(
-                new Error(
-                  "QR library failed to load.",
-                ),
-              ),
-            { once: true },
-          );
-
-          document.head.append(script);
-        },
-      );
-
-      return libraryPromise;
-    }
-
-    function fallbackLink(target) {
-      const link =
-        document.createElement("a");
-
-      link.href = registrationUrl();
-      link.textContent =
-        "Open the registration form";
-      link.className = "qr-fallback-link";
-
-      target.replaceChildren(link);
-    }
-
-    async function render(target, size) {
-      target.textContent = "Loading QR code…";
-
-      try {
-        const QRCode = await loadLibrary();
-
-        if (!QRCode) {
-          throw new Error(
-            "QR code support is unavailable.",
-          );
-        }
-
-        target.replaceChildren();
-
-        new QRCode(target, {
-          text: registrationUrl(),
-          width: size,
-          height: size,
-          colorDark: "#0059cf",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.H,
-        });
-
-        if (hint) {
-          hint.textContent =
-            "The code opens this site’s event registration section.";
-        }
-      } catch (error) {
-        console.error(error);
-
-        fallbackLink(target);
-
-        if (hint) {
-          hint.textContent =
-            "The QR code could not be generated, so use the direct registration link instead.";
-        }
-      }
-    }
-
-    toggle.addEventListener("click", () => {
-      openModal(overlay, toggle);
-      render(canvas, 180);
-    });
-
-    close?.addEventListener("click", () =>
-      closeModal(overlay),
-    );
-
-    overlay.addEventListener("click", (event) => {
-      if (event.target === overlay) {
-        closeModal(overlay);
-      }
-    });
-
-    function openExpanded() {
-      if (!expandOverlay || !expandBox) return;
-
-      openModal(
-        expandOverlay,
-        expandButton,
-      );
-
-      render(expandBox, 320);
-    }
-
-    expandButton?.addEventListener(
-      "click",
-      openExpanded,
-    );
-
-    expandButton?.addEventListener(
-      "keydown",
-      (event) => {
-        if (
-          event.key === "Enter" ||
-          event.key === " "
-        ) {
-          event.preventDefault();
-          openExpanded();
-        }
-      },
-    );
-
-    expandClose?.addEventListener(
-      "click",
-      () => closeModal(expandOverlay),
-    );
-
-    expandOverlay?.addEventListener(
-      "click",
-      (event) => {
-        if (
-          event.target === expandOverlay
-        ) {
-          closeModal(expandOverlay);
-        }
-      },
-    );
-
-    printButton?.addEventListener(
+    button.addEventListener(
       "click",
       () => {
-        const renderedCanvas = $(
-          "canvas",
-          canvas,
+        setBusy(
+          button,
+          true,
+          "Loading map...",
         );
 
-        const renderedImage = $("img", canvas);
-
-        const src =
-          renderedCanvas?.toDataURL("image/png") ||
-          renderedImage?.src;
-
-        if (!src) {
-          window.alert(
-            "The QR code is not ready yet. Please try again in a moment.",
+        const iframe =
+          document.createElement(
+            "iframe",
           );
 
-          return;
-        }
+        iframe.src = mapURL;
 
-        const printFrame =
-          document.createElement("iframe");
+        iframe.title =
+          "Map to Umoja P.A.G Church";
 
-        printFrame.className = "print-frame";
-        printFrame.title =
-          "Print registration QR code";
+        iframe.loading =
+          "lazy";
 
-        document.body.append(printFrame);
+        iframe.referrerPolicy =
+          "no-referrer-when-downgrade";
 
-        const doc =
-          printFrame.contentDocument;
+        iframe.allowFullscreen =
+          true;
 
-        if (!doc) return;
-
-        doc.open();
-
-        doc.write(
-          `<!doctype html><html><head><title>Umoja P.A.G Church — Scan to Register</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:48px}h1{color:#003d8f;margin-bottom:4px}p{color:#6b7280}img{width:280px;height:280px;margin-top:20px}</style></head><body><h1>Umoja P.A.G Church</h1><p>Scan to register for an event</p><img src="${src}" alt="Registration QR code"></body></html>`,
+        iframe.addEventListener(
+          "load",
+          () => {
+            frame.classList.add(
+              "map-loaded",
+            );
+          },
+          { once: true },
         );
 
-        doc.close();
-
-        window.setTimeout(() => {
-          printFrame.contentWindow?.focus();
-          printFrame.contentWindow?.print();
-
-          window.setTimeout(
-            () => printFrame.remove(),
-            1000,
-          );
-        }, 180);
+        frame.replaceChildren(
+          iframe,
+        );
       },
     );
   })();
 
-  // ── API forms ──────────────────────────────────────────────────
+  // =========================================================
+  // FORM API
+  // =========================================================
+
   class SubmissionError extends Error {
     constructor(message) {
       super(message);
-      this.name = "SubmissionError";
+      this.name =
+        "SubmissionError";
     }
   }
 
-  async function postJson(endpoint, payload) {
+  async function postJson(
+    endpoint,
+    payload,
+  ) {
     if (
-      window.location.protocol === "file:"
+      window.location.protocol ===
+      "file:"
     ) {
       throw new SubmissionError(
-        "This local preview cannot send forms. Deploy the site with its API endpoints, or contact the church directly.",
+        "Forms cannot be submitted from a file preview. Open the website through Laragon or the live website.",
       );
     }
 
     const controller =
       new AbortController();
 
-    const timeout = window.setTimeout(
-      () => controller.abort(),
-      15000,
-    );
+    const timeout =
+      window.setTimeout(
+        () =>
+          controller.abort(),
+        15000,
+      );
 
     let response;
 
     try {
-      response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json",
-          Accept: "application/json",
+      response = await fetch(
+        endpoint,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            Accept:
+              "application/json",
+          },
+
+          body: JSON.stringify(
+            payload,
+          ),
+
+          signal:
+            controller.signal,
+
+          credentials:
+            "same-origin",
         },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-        credentials: "same-origin",
-      });
+      );
     } catch (error) {
-      if (error?.name === "AbortError") {
+      if (
+        error?.name ===
+        "AbortError"
+      ) {
         throw new SubmissionError(
-          "The request timed out before it was sent. Please try again or contact the church directly.",
+          "The request timed out. Please try again.",
         );
       }
 
       throw new SubmissionError(
-        "The request could not be sent. Check your connection and try again, or contact the church directly.",
+        "The request could not be sent. Please check your internet connection and try again.",
       );
     } finally {
-      window.clearTimeout(timeout);
+      window.clearTimeout(
+        timeout,
+      );
     }
 
-    const raw = await response.text();
+    const raw =
+      await response.text();
 
     let data = {};
 
     if (raw) {
       try {
-        data = JSON.parse(raw);
+        data =
+          JSON.parse(raw);
       } catch (_) {
         throw new SubmissionError(
-          "The server returned an unexpected response. Your request has not been confirmed.",
+          "The server returned an unexpected response.",
         );
       }
     }
@@ -1271,7 +923,7 @@
       throw new SubmissionError(
         safeMessage(
           data.message,
-          "The server did not confirm the submission. Please try again or contact the church directly.",
+          "The server did not confirm the submission. Please try again.",
         ),
       );
     }
@@ -1279,27 +931,88 @@
     return data;
   }
 
-  function normalizeKenyanPhone(value) {
-    const cleaned = value.replace(
-      /[\s().-]+/g,
-      "",
-    );
+  function normalizeKenyanPhone(
+    value,
+  ) {
+    const cleaned =
+      value.replace(
+        /[\s().-]+/g,
+        "",
+      );
 
-    if (/^0(7|1)\d{8}$/.test(cleaned)) {
-      return `+254${cleaned.slice(1)}`;
+    if (
+      /^0(7|1)\d{8}$/.test(
+        cleaned,
+      )
+    ) {
+      return (
+        "+254" +
+        cleaned.slice(1)
+      );
     }
 
-    if (/^254(7|1)\d{8}$/.test(cleaned)) {
+    if (
+      /^254(7|1)\d{8}$/.test(
+        cleaned,
+      )
+    ) {
       return `+${cleaned}`;
     }
 
     return cleaned;
   }
 
-  function isValidKenyanPhone(value) {
+  function isValidKenyanPhone(
+    value,
+  ) {
     return /^\+254(7|1)\d{8}$/.test(
-      normalizeKenyanPhone(value),
+      normalizeKenyanPhone(
+        value,
+      ),
     );
+  }
+
+  function formObject(form) {
+    const result = {};
+
+    new FormData(form).forEach(
+      (value, key) => {
+        result[key] =
+          typeof value ===
+          "string"
+            ? value.trim()
+            : value;
+      },
+    );
+
+    return result;
+  }
+
+  function clearFormError(
+    form,
+    errorBox,
+  ) {
+    errorBox?.classList.remove(
+      "is-visible",
+    );
+
+    if (errorBox) {
+      errorBox.textContent =
+        "";
+    }
+
+    form?.removeAttribute(
+      "aria-invalid",
+    );
+
+    $$(
+      '[aria-invalid="true"]',
+      form || document,
+    ).forEach((element) => {
+      element.removeAttribute(
+        "aria-invalid",
+      );
+    });
   }
 
   function showFormError(
@@ -1310,8 +1023,17 @@
   ) {
     if (!errorBox) return;
 
-    errorBox.textContent = message;
-    errorBox.classList.add("is-visible");
+    errorBox.textContent =
+      message;
+
+    errorBox.classList.add(
+      "is-visible",
+    );
+
+    form?.setAttribute(
+      "aria-invalid",
+      "true",
+    );
 
     if (field) {
       field.setAttribute(
@@ -1323,45 +1045,6 @@
     } else {
       errorBox.focus();
     }
-
-    form?.setAttribute(
-      "aria-invalid",
-      "true",
-    );
-  }
-
-  function clearFormError(form, errorBox) {
-    errorBox?.classList.remove(
-      "is-visible",
-    );
-
-    if (errorBox) {
-      errorBox.textContent = "";
-    }
-
-    form?.removeAttribute("aria-invalid");
-
-    $$(
-      '[aria-invalid="true"]',
-      form || document,
-    ).forEach((field) =>
-      field.removeAttribute("aria-invalid"),
-    );
-  }
-
-  function formObject(form) {
-    const object = {};
-
-    new FormData(form).forEach(
-      (value, key) => {
-        object[key] =
-          typeof value === "string"
-            ? value.trim()
-            : value;
-      },
-    );
-
-    return object;
   }
 
   function bindApiForm({
@@ -1376,33 +1059,51 @@
     validate,
     successTextId,
   }) {
-    const form = $(`#${formId}`);
-    const button = $(`#${buttonId}`);
-    const errorBox = $(`#${errorId}`);
-    const successBox = $(`#${successId}`);
-    const resetButton = $(`#${resetId}`);
+    const form =
+      $(`#${formId}`);
 
-    if (!form || !button || !successBox) {
+    const button =
+      $(`#${buttonId}`);
+
+    const errorBox =
+      $(`#${errorId}`);
+
+    const successBox =
+      $(`#${successId}`);
+
+    const resetButton =
+      $(`#${resetId}`);
+
+    if (
+      !form ||
+      !button ||
+      !successBox
+    ) {
       return;
     }
 
     form.addEventListener(
       "input",
       (event) => {
-        clearFormError(form, errorBox);
+        clearFormError(
+          form,
+          errorBox,
+        );
 
-        if (
-          event.target instanceof HTMLElement
-        ) {
-          event.target.removeAttribute(
+        event.target
+          ?.removeAttribute?.(
             "aria-invalid",
           );
-        }
       },
     );
 
-    form.addEventListener("change", () =>
-      clearFormError(form, errorBox),
+    form.addEventListener(
+      "change",
+      () =>
+        clearFormError(
+          form,
+          errorBox,
+        ),
     );
 
     form.addEventListener(
@@ -1410,77 +1111,52 @@
       async (event) => {
         event.preventDefault();
 
-        clearFormError(form, errorBox);
+        clearFormError(
+          form,
+          errorBox,
+        );
 
-        if (!form.checkValidity()) {
-          const invalid = $(
-            ":invalid",
-            form,
+        if (
+          !form.checkValidity()
+        ) {
+          const invalid =
+            $(":invalid", form);
+
+          invalid?.setAttribute(
+            "aria-invalid",
+            "true",
           );
 
-          if (invalid) {
-            invalid.setAttribute(
-              "aria-invalid",
-              "true",
-            );
-          }
-
           form.reportValidity();
-          invalid?.focus();
 
-          if (
-            formId ===
-            "registrationForm"
-          ) {
-            window.dispatchEvent(
-              new CustomEvent(
-                "umoja:registration-invalid",
-                {
-                  detail: {
-                    message:
-                      "Please complete the required fields.",
-                  },
-                },
-              ),
-            );
-          }
+          invalid?.focus();
 
           return;
         }
 
-        const values = formObject(form);
+        const values =
+          formObject(form);
 
         const validationError =
-          validate?.(values, form);
+          validate?.(
+            values,
+            form,
+          );
 
-        if (validationError) {
+        if (
+          validationError
+        ) {
           showFormError(
             form,
             errorBox,
             validationError.message,
-            validationError.field || null,
+            validationError.field,
           );
-
-          if (
-            formId ===
-            "registrationForm"
-          ) {
-            window.dispatchEvent(
-              new CustomEvent(
-                "umoja:registration-invalid",
-                {
-                  detail: {
-                    message:
-                      validationError.message,
-                  },
-                },
-              ),
-            );
-          }
 
           return;
         }
 
+        // Honeypot spam field.
         if (
           values.company ||
           values.companyWebsite
@@ -1503,25 +1179,28 @@
           const payload =
             makePayload(values);
 
-          const data = await postJson(
-            endpoint,
-            payload,
-          );
-
-          const successText =
-            successTextId
-              ? $(`#${successTextId}`)
-              : null;
+          const data =
+            await postJson(
+              endpoint,
+              payload,
+            );
 
           if (
-            successText &&
+            successTextId &&
             data.message
           ) {
-            successText.textContent =
-              safeMessage(
-                data.message,
-                successText.textContent,
+            const text =
+              $(
+                `#${successTextId}`,
               );
+
+            if (text) {
+              text.textContent =
+                safeMessage(
+                  data.message,
+                  text.textContent,
+                );
+            }
           }
 
           form.hidden = true;
@@ -1540,12 +1219,15 @@
           showFormError(
             form,
             errorBox,
-            error instanceof SubmissionError
+            error instanceof
+              SubmissionError
               ? error.message
-              : "The request was not sent. Please try again or contact the church directly.",
+              : "The request was not sent. Please try again.",
           );
         } finally {
-          form.removeAttribute("aria-busy");
+          form.removeAttribute(
+            "aria-busy",
+          );
 
           setBusy(
             button,
@@ -1561,7 +1243,10 @@
       () => {
         form.reset();
 
-        clearFormError(form, errorBox);
+        clearFormError(
+          form,
+          errorBox,
+        );
 
         successBox.classList.remove(
           "is-visible",
@@ -1569,29 +1254,49 @@
 
         form.hidden = false;
 
-        const first = $(
+        $(
           "input:not([type=hidden]), select, textarea",
           form,
-        );
-
-        first?.focus();
+        )?.focus();
       },
     );
   }
 
+  // =========================================================
+  // EVENT REGISTRATION
+  // =========================================================
+
   bindApiForm({
-    formId: "registrationForm",
-    buttonId: "submitBtn",
-    errorId: "formError",
-    successId: "formSuccess",
-    resetId: "registrationResetBtn",
-    endpoint: "/api/register",
-    busyLabel: "Sending registration…",
-    successTextId: "formSuccessText",
+    formId:
+      "registrationForm",
+
+    buttonId:
+      "submitBtn",
+
+    errorId:
+      "formError",
+
+    successId:
+      "formSuccess",
+
+    resetId:
+      "registrationResetBtn",
+
+    endpoint:
+      "/api/register",
+
+    busyLabel:
+      "Sending registration…",
+
+    successTextId:
+      "formSuccessText",
 
     validate(values) {
-      const phone = $("#phone");
-      const email = $("#email");
+      const phone =
+        $("#phone");
+
+      const email =
+        $("#email");
 
       if (
         !isValidKenyanPhone(
@@ -1601,6 +1306,7 @@
         return {
           message:
             "Enter a valid Kenyan phone number, such as 0712345678 or +254712345678.",
+
           field: phone,
         };
       }
@@ -1613,6 +1319,7 @@
         return {
           message:
             "Enter a valid email address or leave the email field blank.",
+
           field: email,
         };
       }
@@ -1622,89 +1329,182 @@
 
     makePayload(values) {
       return {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        phone: normalizeKenyanPhone(
-          values.phone,
-        ),
-        email: values.email || "",
-        ageGroup: values.ageGroup || "",
-        area: values.area || "",
-        regFor: values.regFor,
-        notes: values.notes || "",
+        firstName:
+          values.firstName,
+
+        lastName:
+          values.lastName,
+
+        phone:
+          normalizeKenyanPhone(
+            values.phone,
+          ),
+
+        email:
+          values.email || "",
+
+        ageGroup:
+          values.ageGroup || "",
+
+        area:
+          values.area || "",
+
+        regFor:
+          values.regFor,
+
+        notes:
+          values.notes || "",
+
         consent: true,
+
         guardianConsent: true,
+
         honeypot:
-          values.companyWebsite || "",
+          values.companyWebsite ||
+          "",
       };
     },
   });
 
+  // =========================================================
+  // CONTACT MESSAGE
+  // =========================================================
+
   bindApiForm({
-    formId: "messageForm",
-    buttonId: "messageSubmitBtn",
-    errorId: "messageFormError",
-    successId: "messageFormSuccess",
-    resetId: "messageResetBtn",
-    endpoint: "/api/contact-message",
-    busyLabel: "Sending message…",
+    formId:
+      "messageForm",
+
+    buttonId:
+      "messageSubmitBtn",
+
+    errorId:
+      "messageFormError",
+
+    successId:
+      "messageFormSuccess",
+
+    resetId:
+      "messageResetBtn",
+
+    endpoint:
+      "/api/contact-message",
+
+    busyLabel:
+      "Sending message…",
 
     makePayload(values) {
       return {
-        name: values.name,
-        email: values.email,
-        subject: values.subject,
-        message: values.message,
+        name:
+          values.name,
+
+        email:
+          values.email,
+
+        subject:
+          values.subject,
+
+        message:
+          values.message,
+
         consent: true,
+
         honeypot:
           values.company || "",
       };
     },
   });
 
+  // =========================================================
+  // PRAYER REQUEST
+  // =========================================================
+
   bindApiForm({
-    formId: "prayerForm",
-    buttonId: "prayerSubmitBtn",
-    errorId: "prayerFormError",
-    successId: "prayerFormSuccess",
-    resetId: "prayerResetBtn",
-    endpoint: "/api/prayer-request",
+    formId:
+      "prayerForm",
+
+    buttonId:
+      "prayerSubmitBtn",
+
+    errorId:
+      "prayerFormError",
+
+    successId:
+      "prayerFormSuccess",
+
+    resetId:
+      "prayerResetBtn",
+
+    endpoint:
+      "/api/prayer-request",
+
     busyLabel:
       "Sending prayer request…",
 
     makePayload(values) {
       return {
-        name: values.name,
-        request: values.request,
+        name:
+          values.name,
+
+        request:
+          values.request,
+
         consent: true,
+
         honeypot:
           values.company || "",
       };
     },
   });
 
+  // =========================================================
+  // PASTORAL CARE
+  // =========================================================
+
   bindApiForm({
-    formId: "pastoralCareForm",
-    buttonId: "careSubmitBtn",
-    errorId: "careFormError",
-    successId: "careFormSuccess",
-    resetId: "careResetBtn",
-    endpoint: "/api/pastoral-care",
-    busyLabel: "Sending request…",
+    formId:
+      "pastoralCareForm",
+
+    buttonId:
+      "careSubmitBtn",
+
+    errorId:
+      "careFormError",
+
+    successId:
+      "careFormSuccess",
+
+    resetId:
+      "careResetBtn",
+
+    endpoint:
+      "/api/pastoral-care",
+
+    busyLabel:
+      "Sending request…",
 
     makePayload(values) {
       return {
-        name: values.name,
-        email: values.email,
-        request: values.request,
+        name:
+          values.name,
+
+        email:
+          values.email,
+
+        request:
+          values.request,
+
         consent: true,
+
         honeypot:
           values.company || "",
       };
     },
   });
 
-  // ── Events and updates ─────────────────────────────────────────
+  // =========================================================
+  // EVENTS
+  // =========================================================
+
   (() => {
     const filterWrap =
       $("#eventsFilterPills");
@@ -1730,67 +1530,120 @@
 
     const items = [
       {
-        date: "2026-06-20",
-        title: "Kesha Night",
-        category: "Prayer & Worship",
-        time: "7:00 PM",
+        date:
+          "2026-06-20",
+
+        title:
+          "Kesha Night",
+
+        category:
+          "Prayer & Worship",
+
+        time:
+          "7:00 PM",
+
         location:
           "Umoja P.A.G Church",
+
         description:
           "A night of prayer, worship, intercession, and teaching for the whole congregation. No registration is required.",
-        link: "#contact",
-        linkText: "Ask a question",
+
+        link:
+          "connect.html#contact",
+
+        linkText:
+          "Ask a question",
       },
+
       {
-        date: "2026-05-11",
+        date:
+          "2026-05-11",
+
         title:
           "Women’s Fellowship Week",
+
         category:
           "Women’s Fellowship",
-        time: "5:00 PM daily",
+
+        time:
+          "5:00 PM daily",
+
         location:
           "Umoja P.A.G Church",
+
         description:
           "A week of fellowship, teaching, testimony, and prayer for the women of the church.",
       },
+
       {
-        date: "2026-04-13",
+        date:
+          "2026-04-13",
+
         title:
           "Men’s Fellowship Week",
+
         category:
           "Men’s Fellowship",
-        time: "6:00 PM daily",
+
+        time:
+          "6:00 PM daily",
+
         location:
           "Umoja P.A.G Church",
+
         description:
           "A week of teaching and fellowship focused on discipleship, accountability, family, and community leadership.",
       },
+
       {
-        date: "2026-03-09",
-        title: "Evangelism Week",
+        date:
+          "2026-03-09",
+
+        title:
+          "Evangelism Week",
+
         category:
           "Evangelism & Outreach",
-        time: "All day",
+
+        time:
+          "All day",
+
         location:
           "Umoja and surrounding estates",
+
         description:
           "A week of outreach and community service across Umoja and neighbouring estates.",
       },
+
       {
         date: null,
-        sortDate: "2026-08-31",
+
+        sortDate:
+          "2026-08-31",
+
         dateLabel:
           "August 2026 — exact date to be confirmed",
+
         dateTbd: true,
+
         title:
           "Youth Camp & Family Fun Day",
-        category: "Youth",
-        time: "All day",
+
+        category:
+          "Youth",
+
+        time:
+          "All day",
+
         location:
           "Umoja P.A.G Church",
+
         description:
           "Youth camp activities followed by a family fun day with games, music, team challenges, and a shared meal. Registration is open while the final date is confirmed.",
-        link: "#register",
+
+        link:
+          "#register",
+
         linkText:
           "Register interest",
       },
@@ -1812,74 +1665,218 @@
     ];
 
     const pad = (value) =>
-      String(value).padStart(2, "0");
+      String(value).padStart(
+        2,
+        "0",
+      );
 
-    const today = new Date();
+    const today =
+      new Date();
 
     const todayString =
-      `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+      `${today.getFullYear()}-${pad(
+        today.getMonth() + 1,
+      )}-${pad(
+        today.getDate(),
+      )}`;
 
-    const escapeHtml = (value) =>
-      String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function escapeHtml(
+      value,
+    ) {
+      return String(
+        value ?? "",
+      )
+        .replaceAll(
+          "&",
+          "&amp;",
+        )
+        .replaceAll(
+          "<",
+          "&lt;",
+        )
+        .replaceAll(
+          ">",
+          "&gt;",
+        )
+        .replaceAll(
+          '"',
+          "&quot;",
+        )
+        .replaceAll(
+          "'",
+          "&#039;",
+        );
+    }
 
     const iconCalendar =
-      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+      `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>`;
 
     const iconClock =
-      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+      `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>`;
 
     const iconPin =
-      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.8"/></svg>';
+      `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.8"/>
+        <circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.8"/>
+      </svg>`;
 
-    const itemSortDate = (item) =>
-      item.date || item.sortDate;
+    function itemSortDate(
+      item,
+    ) {
+      return (
+        item.date ||
+        item.sortDate
+      );
+    }
 
-    const isUpcoming = (item) =>
-      itemSortDate(item) >= todayString;
+    function isUpcoming(
+      item,
+    ) {
+      return (
+        itemSortDate(item) >=
+        todayString
+      );
+    }
 
-    const dateText = (item) => {
-      if (item.dateLabel) {
+    function dateText(
+      item,
+    ) {
+      if (
+        item.dateLabel
+      ) {
         return item.dateLabel;
       }
 
-      const [year, month, day] =
+      const [
+        year,
+        month,
+        day,
+      ] =
         item.date
           .split("-")
           .map(Number);
 
-      return `${monthNames[month - 1]} ${day}, ${year}`;
-    };
+      return (
+        monthNames[
+          month - 1
+        ] +
+        " " +
+        day +
+        ", " +
+        year
+      );
+    }
 
-    function card(item) {
-      const media = item.image
-        ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" loading="lazy" decoding="async">`
-        : iconCalendar.replace(
-            'width="13" height="13"',
-            'width="40" height="40"',
-          );
+    function eventCard(
+      item,
+    ) {
+      return `
+        <article class="event-card">
+          <div class="event-card-media">
 
-      return `<article class="event-card">
-        <div class="event-card-media">
-          <span class="event-card-badge">${escapeHtml(item.category)}</span>
-          ${item.dateTbd ? '<span class="event-card-date-status">Date TBC</span>' : ""}
-          ${media}
-        </div>
-        <div class="event-card-body">
-          <h4>${escapeHtml(item.title)}</h4>
-          <div class="event-card-meta">
-            <span class="event-card-meta-item">${iconCalendar}${escapeHtml(dateText(item))}</span>
-            ${item.time ? `<span class="event-card-meta-item">${iconClock}${escapeHtml(item.time)}</span>` : ""}
-            ${item.location ? `<span class="event-card-meta-item">${iconPin}${escapeHtml(item.location)}</span>` : ""}
+            <span class="event-card-badge">
+              ${escapeHtml(
+                item.category,
+              )}
+            </span>
+
+            ${
+              item.dateTbd
+                ? `<span class="event-card-date-status">Date TBC</span>`
+                : ""
+            }
+
+            ${iconCalendar.replace(
+              'width="13" height="13"',
+              'width="40" height="40"',
+            )}
+
           </div>
-          ${item.description ? `<p class="event-card-desc">${escapeHtml(item.description)}</p>` : ""}
-          ${item.link ? `<a href="${escapeHtml(item.link)}" class="event-card-link">${escapeHtml(item.linkText || "Learn more")}</a>` : ""}
-        </div>
-      </article>`;
+
+          <div class="event-card-body">
+
+            <h4>
+              ${escapeHtml(
+                item.title,
+              )}
+            </h4>
+
+            <div class="event-card-meta">
+
+              <span class="event-card-meta-item">
+                ${iconCalendar}
+                ${escapeHtml(
+                  dateText(item),
+                )}
+              </span>
+
+              ${
+                item.time
+                  ? `
+                    <span class="event-card-meta-item">
+                      ${iconClock}
+                      ${escapeHtml(
+                        item.time,
+                      )}
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                item.location
+                  ? `
+                    <span class="event-card-meta-item">
+                      ${iconPin}
+                      ${escapeHtml(
+                        item.location,
+                      )}
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
+
+            ${
+              item.description
+                ? `
+                  <p class="event-card-desc">
+                    ${escapeHtml(
+                      item.description,
+                    )}
+                  </p>
+                `
+                : ""
+            }
+
+            ${
+              item.link
+                ? `
+                  <a
+                    href="${escapeHtml(
+                      item.link,
+                    )}"
+                    class="event-card-link"
+                  >
+                    ${escapeHtml(
+                      item.linkText ||
+                        "Learn more",
+                    )}
+                  </a>
+                `
+                : ""
+            }
+
+          </div>
+        </article>
+      `;
     }
 
     function renderGroups(
@@ -1889,51 +1886,101 @@
     ) {
       if (!list.length) {
         container.innerHTML =
-          `<p class="events-empty-state">${escapeHtml(emptyMessage)}</p>`;
+          `<p class="events-empty-state">${escapeHtml(
+            emptyMessage,
+          )}</p>`;
 
         return;
       }
 
-      const groups = new Map();
+      const groups =
+        new Map();
 
-      list.forEach((item) => {
-        const [year, month] =
-          itemSortDate(item)
-            .split("-")
-            .map(Number);
-
-        const key =
-          `${year}-${pad(month)}`;
-
-        if (!groups.has(key)) {
-          groups.set(key, {
+      list.forEach(
+        (item) => {
+          const [
             year,
             month,
-            events: [],
-          });
-        }
+          ] =
+            itemSortDate(
+              item,
+            )
+              .split("-")
+              .map(Number);
 
-        groups
-          .get(key)
-          .events.push(item);
-      });
+          const key =
+            `${year}-${pad(
+              month,
+            )}`;
+
+          if (
+            !groups.has(key)
+          ) {
+            groups.set(key, {
+              year,
+              month,
+              events: [],
+            });
+          }
+
+          groups
+            .get(key)
+            .events.push(
+              item,
+            );
+        },
+      );
 
       container.innerHTML =
-        Array.from(groups.values())
+        Array.from(
+          groups.values(),
+        )
           .map(
             ({
               year,
               month,
               events,
             }) => `
-        <section class="events-month-group" aria-labelledby="events-${year}-${month}">
-          <div class="events-month-group-header">
-            <h4 id="events-${year}-${month}">${monthNames[month - 1]} ${year}</h4>
-            <span class="events-month-rule" aria-hidden="true"></span>
-            <span class="events-month-count">${events.length} ${events.length === 1 ? "item" : "items"}</span>
-          </div>
-          <div class="events-grid">${events.map(card).join("")}</div>
-        </section>`,
+              <section
+                class="events-month-group"
+                aria-labelledby="events-${year}-${month}"
+              >
+
+                <div class="events-month-group-header">
+
+                  <h4 id="events-${year}-${month}">
+                    ${monthNames[
+                      month - 1
+                    ]} ${year}
+                  </h4>
+
+                  <span
+                    class="events-month-rule"
+                    aria-hidden="true"
+                  ></span>
+
+                  <span class="events-month-count">
+                    ${events.length}
+                    ${
+                      events.length ===
+                      1
+                        ? "item"
+                        : "items"
+                    }
+                  </span>
+
+                </div>
+
+                <div class="events-grid">
+                  ${events
+                    .map(
+                      eventCard,
+                    )
+                    .join("")}
+                </div>
+
+              </section>
+            `,
           )
           .join("");
     }
@@ -1942,23 +1989,44 @@
       "All",
       ...new Set(
         items.map(
-          (item) => item.category,
+          (item) =>
+            item.category,
         ),
       ),
     ];
 
-    let activeCategory = "All";
+    let activeCategory =
+      "All";
 
     function renderFilters() {
       filterWrap.innerHTML =
         categories
-          .map((category) => {
-            const active =
-              category ===
-              activeCategory;
+          .map(
+            (category) => {
+              const active =
+                category ===
+                activeCategory;
 
-            return `<button type="button" class="filter-pill${active ? " is-active" : ""}" data-category="${escapeHtml(category)}" aria-pressed="${active}">${escapeHtml(category.toUpperCase())}</button>`;
-          })
+              return `
+                <button
+                  type="button"
+                  class="filter-pill ${
+                    active
+                      ? "is-active"
+                      : ""
+                  }"
+                  data-category="${escapeHtml(
+                    category,
+                  )}"
+                  aria-pressed="${active}"
+                >
+                  ${escapeHtml(
+                    category.toUpperCase(),
+                  )}
+                </button>
+              `;
+            },
+          )
           .join("");
     }
 
@@ -1966,30 +2034,45 @@
       const selected =
         items.filter(
           (item) =>
-            activeCategory === "All" ||
+            activeCategory ===
+              "All" ||
             item.category ===
               activeCategory,
         );
 
       const upcoming =
         selected
-          .filter(isUpcoming)
-          .sort((a, b) =>
-            itemSortDate(a).localeCompare(
-              itemSortDate(b),
-            ),
+          .filter(
+            isUpcoming,
+          )
+          .sort(
+            (a, b) =>
+              itemSortDate(
+                a,
+              ).localeCompare(
+                itemSortDate(
+                  b,
+                ),
+              ),
           );
 
       const past =
         selected
           .filter(
             (item) =>
-              !isUpcoming(item),
+              !isUpcoming(
+                item,
+              ),
           )
-          .sort((a, b) =>
-            itemSortDate(b).localeCompare(
-              itemSortDate(a),
-            ),
+          .sort(
+            (a, b) =>
+              itemSortDate(
+                b,
+              ).localeCompare(
+                itemSortDate(
+                  a,
+                ),
+              ),
           );
 
       renderGroups(
@@ -2004,7 +2087,8 @@
         pastToggle
       ) {
         if (past.length) {
-          pastRow.hidden = false;
+          pastRow.hidden =
+            false;
 
           renderGroups(
             past,
@@ -2012,8 +2096,12 @@
             "No past events in this category.",
           );
         } else {
-          pastRow.hidden = true;
-          pastWrap.hidden = true;
+          pastRow.hidden =
+            true;
+
+          pastWrap.hidden =
+            true;
+
           pastWrap.replaceChildren();
 
           pastToggle.textContent =
@@ -2045,37 +2133,45 @@
       },
     );
 
-    pastToggle?.setAttribute(
-      "aria-controls",
-      "pastEventsByMonth",
-    );
+    if (pastToggle) {
+      pastToggle.setAttribute(
+        "aria-controls",
+        "pastEventsByMonth",
+      );
 
-    pastToggle?.setAttribute(
-      "aria-expanded",
-      "false",
-    );
+      pastToggle.setAttribute(
+        "aria-expanded",
+        "false",
+      );
 
-    pastToggle?.addEventListener(
-      "click",
-      () => {
-        const showing =
-          pastWrap.hidden;
+      pastToggle.addEventListener(
+        "click",
+        () => {
+          if (!pastWrap) {
+            return;
+          }
 
-        pastWrap.hidden = !showing;
+          const showing =
+            pastWrap.hidden;
 
-        pastToggle.textContent =
-          showing
-            ? "Hide Past Events"
-            : "View Past Events";
+          pastWrap.hidden =
+            !showing;
 
-        pastToggle.setAttribute(
-          "aria-expanded",
-          String(showing),
-        );
-      },
-    );
+          pastToggle.textContent =
+            showing
+              ? "Hide Past Events"
+              : "View Past Events";
 
-    const eventSelect = $("#regFor");
+          pastToggle.setAttribute(
+            "aria-expanded",
+            String(showing),
+          );
+        },
+      );
+    }
+
+    const eventSelect =
+      $("#regFor");
 
     if (eventSelect) {
       const placeholder =
@@ -2087,18 +2183,24 @@
 
       items
         .filter(isUpcoming)
-        .forEach((item) => {
-          const option =
-            document.createElement(
-              "option",
+        .forEach(
+          (item) => {
+            const option =
+              document.createElement(
+                "option",
+              );
+
+            option.value =
+              item.title;
+
+            option.textContent =
+              item.title;
+
+            eventSelect.append(
+              option,
             );
-
-          option.value = item.title;
-          option.textContent =
-            item.title;
-
-          eventSelect.append(option);
-        });
+          },
+        );
 
       const other =
         document.createElement(
@@ -2111,10 +2213,289 @@
       other.textContent =
         "Other Special Event";
 
-      eventSelect.append(other);
+      eventSelect.append(
+        other,
+      );
     }
 
     renderFilters();
     renderEvents();
   })();
+})();
+
+/* =========================================================
+   MULTIPAGE EDITORIAL IMAGE MOTION
+   Smooth image rise / pop when scrolling down or back up
+========================================================= */
+
+(() => {
+  "use strict";
+
+  const reducedMotion =
+    window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+
+  /*
+   * These selectors cover the major photographs used throughout
+   * the multipage website.
+   */
+  const selectors = [
+    ".editorial-hero .hero-photo",
+    ".home-ministry-visual figure",
+    ".page-hero-media figure",
+    ".min-card > img",
+    ".about-img-main",
+    ".pastor-media",
+    ".leadership-photo",
+    ".giving-media",
+    ".map-frame",
+  ].join(",");
+
+  const targets =
+    Array.from(
+      document.querySelectorAll(
+        selectors,
+      ),
+    );
+
+  if (!targets.length) {
+    return;
+  }
+
+  /*
+   * CSS is injected here so the motion works immediately even if
+   * you have not yet added the motion block to index.css.
+   */
+  const styleId =
+    "umoja-editorial-motion";
+
+  if (
+    !document.getElementById(
+      styleId,
+    )
+  ) {
+    const style =
+      document.createElement(
+        "style",
+      );
+
+    style.id = styleId;
+
+    style.textContent = `
+      html.motion-enabled .motion-rise {
+        opacity: 0;
+        filter: blur(5px);
+        transform:
+          translate3d(0, 60px, 0)
+          scale(0.96);
+
+        transform-origin:
+          center bottom;
+
+        transition:
+          opacity 720ms ease
+            var(--motion-delay, 0ms),
+          filter 820ms ease
+            var(--motion-delay, 0ms),
+          transform 950ms
+            cubic-bezier(
+              0.18,
+              1.15,
+              0.3,
+              1
+            )
+            var(--motion-delay, 0ms);
+
+        will-change:
+          opacity,
+          transform,
+          filter;
+
+        backface-visibility:
+          hidden;
+      }
+
+      html.motion-enabled
+      .motion-rise.motion-rise-visible {
+        opacity: 1;
+        filter: blur(0);
+
+        transform:
+          translate3d(0, 0, 0)
+          scale(1);
+      }
+
+      @media (max-width: 700px) {
+        html.motion-enabled
+        .motion-rise {
+          transform:
+            translate3d(
+              0,
+              40px,
+              0
+            )
+            scale(0.975);
+
+          transition:
+            opacity 620ms ease
+              var(--motion-delay, 0ms),
+            filter 700ms ease
+              var(--motion-delay, 0ms),
+            transform 800ms
+              cubic-bezier(
+                0.18,
+                1.12,
+                0.3,
+                1
+              )
+              var(--motion-delay, 0ms);
+        }
+
+        html.motion-enabled
+        .motion-rise.motion-rise-visible {
+          transform:
+            translate3d(0, 0, 0)
+            scale(1);
+        }
+      }
+
+      @media (
+        prefers-reduced-motion:
+        reduce
+      ) {
+        html.motion-enabled
+        .motion-rise,
+        html.motion-enabled
+        .motion-rise.motion-rise-visible {
+          opacity: 1 !important;
+          filter: none !important;
+          transform: none !important;
+          transition: none !important;
+        }
+      }
+    `;
+
+    document.head.append(
+      style,
+    );
+  }
+
+  document.documentElement
+    .classList.add(
+      "motion-enabled",
+    );
+
+  targets.forEach(
+    (target, index) => {
+      target.classList.add(
+        "motion-rise",
+      );
+
+      /*
+       * Small stagger prevents every photograph from entering
+       * at exactly the same millisecond.
+       */
+      target.style.setProperty(
+        "--motion-delay",
+        `${(index % 4) * 70}ms`,
+      );
+    },
+  );
+
+  if (
+    reducedMotion.matches ||
+    !(
+      "IntersectionObserver" in
+      window
+    )
+  ) {
+    targets.forEach(
+      (target) => {
+        target.classList.add(
+          "motion-rise-visible",
+        );
+      },
+    );
+
+    return;
+  }
+
+  const observer =
+    new IntersectionObserver(
+      (entries) => {
+        entries.forEach(
+          (entry) => {
+            if (
+              entry.isIntersecting
+            ) {
+              requestAnimationFrame(
+                () => {
+                  requestAnimationFrame(
+                    () => {
+                      entry.target.classList.add(
+                        "motion-rise-visible",
+                      );
+                    },
+                  );
+                },
+              );
+
+              return;
+            }
+
+            /*
+             * Reset only after the photograph has fully travelled
+             * outside the viewport. When the visitor scrolls back,
+             * the rise animation therefore plays again.
+             */
+            if (
+              entry.boundingClientRect
+                .bottom < -80 ||
+              entry.boundingClientRect
+                .top >
+                window.innerHeight +
+                  80
+            ) {
+              entry.target.classList.remove(
+                "motion-rise-visible",
+              );
+            }
+          },
+        );
+      },
+      {
+        threshold: 0.12,
+
+        rootMargin:
+          "0px 0px -7% 0px",
+      },
+    );
+
+  targets.forEach(
+    (target) => {
+      observer.observe(
+        target,
+      );
+    },
+  );
+
+  reducedMotion.addEventListener(
+    "change",
+    () => {
+      if (
+        reducedMotion.matches
+      ) {
+        targets.forEach(
+          (target) => {
+            target.classList.add(
+              "motion-rise-visible",
+            );
+          },
+        );
+
+        observer.disconnect();
+      }
+    },
+  );
 })();

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en-KE">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#072f6f" />
+  <title>Events & Registration | Umoja P.A.G Church</title>
+  <meta name="description" content="Browse upcoming church events and register online for Umoja P.A.G Church activities." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="Events & Registration | Umoja P.A.G Church" />
+  <meta property="og:description" content="Browse upcoming church events and register online for Umoja P.A.G Church activities." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://umojapagchurch.org/events.html" />
+  <meta property="og:image" content="https://umojapagchurch.org/images/Church.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="https://umojapagchurch.org/events.html" />
+  <link rel="icon" href="images/favicon-32x32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="images/LOGO.png" sizes="180x180" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="index.css" />
+  
+</head>
+<body class="site-page events-page">
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav id="navbar" aria-label="Primary navigation">
+  <a class="nav-logo" href="index.html">
+    <img src="images/LOGO.png" alt="Umoja P.A.G Church" width="60" height="60" decoding="async" />
+    <div><div class="nav-logo-name">Umoja <span>P.A.G</span> Church</div></div>
+  </a>
+  <ul class="nav-links" id="navLinks"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html">Ministries</a></li><li><a href="events.html" class="active" aria-current="page">Events</a></li><li><a href="giving.html">Giving</a></li><li><a href="connect.html">Connect</a></li></ul>
+  <div class="nav-right">
+    <a class="nav-social-link youtube" href="https://www.youtube.com/@umojapagchurch3626" target="_blank" rel="noopener noreferrer" aria-label="Umoja P.A.G Church on YouTube"><img src="images/Youtube.png" alt="" width="40" height="40" /></a>
+    <a class="nav-social-link facebook" href="https://web.facebook.com/umojapag.churchkenya/" target="_blank" rel="noopener noreferrer" aria-label="Umoja P.A.G Church on Facebook"><img src="images/facebook.jpg" alt="" width="40" height="40" /></a>
+    <a class="nav-cta" href="connect.html#join">Join Us</a>
+    <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+<main id="main-content" class="site-main">
+  <section class="page-hero page-hero--simple"><div class="page-hero-copy-wrap"><div class="page-hero-kicker">Church Calendar</div><h1 class="page-hero-title">Gather. Grow. <em>Go.</em></h1><p class="page-hero-copy">Explore upcoming services, fellowship weeks, outreach, prayer gatherings, and special events. Register on the same page when a booking is required.</p><div class="page-hero-actions"><a class="btn-primary" href="#register">Register for an Event →</a></div></div></section>
+  <section class="section updates page-content-section" id="updates">
+<div class="section-heading-row">
+<div class="section-eyebrow reveal">News &amp; Announcements</div>
+<h2 class="section-title reveal d1">Events <em>&amp; Updates</em></h2>
+<p class="section-body reveal d2">
+          Stay in the loop with what's happening around Umoja P.A.G Church —
+          upcoming events, services, and volunteer opportunities.
+        </p>
+</div>
+<div class="events-filter-row reveal">
+<span class="events-filter-label">Filter by Ministry:</span>
+<div class="events-filter-pills" id="eventsFilterPills"></div>
+</div>
+<div class="updates-calendar-heading reveal">
+<h3>Upcoming</h3>
+<p>Browse services, events, and announcements by ministry, grouped by month.</p>
+</div>
+<div class="events-by-month reveal" id="eventsByMonth"></div>
+<div class="updates-toggle-row" hidden="" id="pastEventsRow">
+<button class="btn-ghost" id="pastEventsToggle" type="button">
+          View Past Events
+        </button>
+</div>
+<div class="events-by-month events-by-month-past" hidden="" id="pastEventsByMonth"></div>
+<div class="updates-register-divider" id="register"></div>
+<div class="reg-inner">
+<div class="form-header-row">
+<div class="section-eyebrow reveal">Sign Up</div>
+<h2 class="section-title light reveal d1">
+            Register for an <em>Upcoming Event</em>
+</h2>
+<p class="section-body light reveal d2">
+            Seeing something above you'd like to join — Youth Camp, a
+            special event? Fill in the form right here to reserve your
+            spot, no need to go anywhere else.
+          </p>
+<button class="qr-toggle-btn reveal d2" id="qrToggleBtn" type="button">
+             Scan QR code to Register →
+          </button>
+</div>
+<div class="reg-form-wrap reveal">
+<div class="cloudwatch-panel">
+<div aria-hidden="true" class="cloudwatch-stage">
+<div class="cloudwatch-shadow"></div>
+<div class="cloudwatch-avatar" id="cloudwatchAvatar">
+<div class="cloudwatch-cap"></div>
+<div class="cloudwatch-face">
+<div class="cloudwatch-eye">
+<div class="cloudwatch-pupil"></div>
+</div>
+<div class="cloudwatch-eye">
+<div class="cloudwatch-pupil"></div>
+</div>
+<div class="cloudwatch-mouth"></div>
+</div>
+</div>
+</div>
+<div class="cloudwatch-copy" id="cloudwatchCopy">
+              Hello there <span>Brethren</span>
+</div>
+</div>
+<form aria-describedby="formError" id="registrationForm" novalidate="">
+<div class="form-row">
+<div class="form-group">
+<label for="firstName">First Name *</label><input autocomplete="given-name" id="firstName" maxlength="80" minlength="1" name="firstName" placeholder="e.g. John" required="" type="text"/>
+</div>
+<div class="form-group">
+<label for="lastName">Last Name *</label><input autocomplete="family-name" id="lastName" maxlength="80" minlength="1" name="lastName" placeholder="e.g. Kamau" required="" type="text"/>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="phone">Phone Number *</label><input autocomplete="tel" id="phone" inputmode="tel" maxlength="24" minlength="10" name="phone" pattern="^(\+?254|0)[\s-]?(7|1)([\s-]?\d){8}$" placeholder="+254 700 000 000" required="" title="Use a valid Kenyan number, for example 0700 000 000 or +254 700 000 000" type="tel"/>
+</div>
+<div class="form-group">
+<label for="email">Email Address</label><input autocomplete="email" id="email" maxlength="254" minlength="5" name="email" placeholder="your@email.com" type="email"/>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="ageGroup">Age Group (Optional)</label><select id="ageGroup" name="ageGroup">
+<option disabled="" selected="" value="">Select...</option>
+<option>Youth (13–17)</option>
+<option>Young Adult (18–35)</option>
+<option>Adult (36–59)</option>
+<option>Senior (60+)</option>
+</select>
+</div>
+<div class="form-group">
+<label for="area">Area / Estate</label><input autocomplete="address-level3" id="area" maxlength="120" name="area" placeholder="e.g. Umoja 2" type="text"/>
+</div>
+</div>
+<div class="form-group">
+<label for="regFor">Which Event? *</label><select id="regFor" name="regFor" required="">
+<option disabled="" selected="" value="">Select an event...</option>
+<option>Youth Camp &amp; Family Fun Day</option>
+<option>Other Special Event</option>
+</select>
+</div>
+<div class="form-group">
+<label for="notes">Anything else? (Optional)</label><textarea id="notes" maxlength="1500" name="notes" placeholder="Accessibility needs, event questions, or practical notes..."></textarea>
+</div>
+<div aria-hidden="true" class="hp-field">
+<label for="companyWebsite">Leave this field blank</label><input autocomplete="off" id="companyWebsite" name="companyWebsite" tabindex="-1" type="text"/>
+</div>
+<div class="form-consent-group"><label class="form-consent" for="registrationConsent"><input id="registrationConsent" name="consent" required="" type="checkbox"/><span>I have read the <a href="privacy-policy.html">Privacy Policy</a> and agree to the use of my details to process this event registration.</span></label><label class="form-consent" for="guardianConsent"><input id="guardianConsent" name="guardianConsent" required="" type="checkbox"/><span>I am 18 or older, or I have permission from a parent or guardian to submit this registration.</span></label></div><div aria-live="assertive" class="form-error" id="formError" role="alert" tabindex="-1"></div><button class="form-submit-btn" id="submitBtn" type="submit">
+              Submit Registration →
+            </button>
+</form>
+<div aria-label="Event registration confirmation" aria-live="polite" class="form-success" id="formSuccess" role="status" tabindex="-1">
+<h3>You're Registered!</h3>
+<p id="formSuccessText">
+              Thank you for signing up. Our team will be in touch with
+              details ahead of the event. God bless you!
+            </p>
+<br/>
+<button class="form-submit-btn center-small" id="registrationResetBtn" type="button">
+              Register for Another Event
+            </button>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="qr-modal-overlay" hidden="" id="qrModalOverlay">
+<div aria-labelledby="qrModalTitle" aria-modal="true" class="qr-card" role="dialog" tabindex="-1">
+<button aria-label="Close QR code" class="qr-modal-close" id="qrModalClose" type="button">
+<svg aria-hidden="true" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-width="2.5" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
+</button>
+<div class="qr-eyebrow">Umoja P.A.G Church</div>
+<div class="qr-title" id="qrModalTitle">Scan to Register</div>
+<div aria-label="Expand QR code to full screen" class="qr-frame" id="qrExpandBtn" role="button" tabindex="0">
+<div class="qr-box" id="qrCanvas"></div>
+</div>
+<p class="qr-tap-hint">Tap the code to enlarge</p>
+<div id="qrHint">The code opens this site’s event registration section.</div>
+<div class="qr-btns">
+<button class="qr-btn qr-print" id="qrPrintBtn" type="button">
+<svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="vertical-align:-2px;margin-right:6px" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M6 9V2h12v7"></path><path d="M6 18H4a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2"></path><rect height="8" width="12" x="6" y="14"></rect></svg>Print QR Code
+            </button>
+</div>
+</div>
+</div>
+<div aria-hidden="true" aria-label="Expanded registration QR code" aria-modal="true" class="qr-expand-overlay" hidden="" id="qrExpandOverlay" role="dialog" tabindex="-1">
+<button aria-label="Close expanded QR code" class="qr-modal-close qr-expand-close" id="qrExpandClose" type="button">
+<svg aria-hidden="true" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-width="2.5" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
+</button>
+<div class="qr-expand-frame">
+<div class="qr-expand-box" id="qrExpandBox"></div>
+</div>
+<p class="qr-expand-caption">Umoja P.A.G Church — Scan to Register</p>
+</div>
+</section>
+</main>
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-brand-name">Umoja <span>P.A.G</span> Church</div>
+      <div class="footer-tagline">“United in Faith, Rooted in Love” · Umoja, Nairobi, Kenya</div>
+    </div>
+    <div class="footer-col"><h4>Explore</h4><a href="about.html">About Us</a><a href="ministries.html">Ministries</a><a href="events.html">Events</a><a href="giving.html">Giving</a></div>
+    <div class="footer-col"><h4>Services</h4><a href="index.html#services">Sunday 8:15 AM</a><a href="index.html#services">Sunday 10:15 AM</a><a href="index.html#services">Youth 12:30 PM</a></div>
+    <div class="footer-col"><h4>Connect</h4><a href="connect.html">Contact & Directions</a><a href="connect.html#care">Prayer & Care</a><a href="tel:+254796752298">+254 796 752 298</a><a href="mailto:info@umojapagchurch.org">Email Us</a><a href="privacy-policy.html">Privacy Policy</a></div>
+  </div>
+</footer>
+<script defer src="index.js"></script>
+</body></html>

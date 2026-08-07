@@ -1,4 +1,3 @@
-ser-agent: *
+User-agent: *
 Allow: /
-
 Sitemap: https://umojapagchurch.org/sitemap.xml
