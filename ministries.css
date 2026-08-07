@@ -1,4 +1,3 @@
-
 /* =====================================================================
    MINISTRIES + POLICY PAGES — EDITORIAL, ALTERNATING, LIGHT-DOMINANT
 ===================================================================== */
@@ -26,7 +25,21 @@
   background: rgba(255, 255, 255, 0.93);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-  scrollbar-width: thin;
+}
+
+.ministry-jump-nav::-webkit-scrollbar {
+  height: 8px;
+}
+
+.ministry-jump-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ministry-jump-nav::-webkit-scrollbar-thumb {
+  background-color: rgba(11, 74, 159, 0.2);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 .ministry-jump-nav a {
@@ -469,5 +482,94 @@
   .policy-body {
     padding: 30px 22px;
     border-radius: 18px;
+  }
+}
+/* Larger ministry photography without white image frames. */
+.ministries-page .page-main {
+  width: min(1280px, calc(100% - 44px));
+}
+
+.ministry-jump-nav {
+  padding-inline: max(22px, calc((100vw - 1280px) / 2));
+}
+
+.min-card {
+  grid-template-columns: minmax(460px, 1.08fr) minmax(0, .92fr);
+  gap: clamp(42px, 5.5vw, 82px);
+  min-height: 680px;
+}
+
+.min-card > img,
+.min-card:nth-child(even) > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 28px 74px 28px 28px;
+  box-shadow: 0 28px 70px rgba(23,36,61,.14);
+  transition:
+    transform 1.4s cubic-bezier(.16, 1, .3, 1),
+    box-shadow 1s ease;
+}
+
+.min-card:nth-child(even) > img {
+  border-radius: 74px 28px 28px 28px;
+}
+
+.min-card:hover > img {
+  transform: translateY(-4px) scale(1.006);
+  box-shadow: 0 36px 82px rgba(23,36,61,.17);
+}
+
+@media (max-width: 1000px) {
+  .ministries-page .page-main {
+    width: min(100% - 36px, 820px);
+  }
+
+  .min-card,
+  .min-card:nth-child(even) {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    min-height: 0;
+  }
+
+  .min-card > img,
+  .min-card:nth-child(even) > img {
+    grid-column: 1;
+    grid-row: 1;
+    width: min(820px, 100%);
+    height: auto;
+    justify-self: center;
+    border-radius: 22px 58px 22px 22px;
+  }
+
+  .min-card > div,
+  .min-card:nth-child(even) > div {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .ministries-page .page-main {
+    width: calc(100% - 24px);
+  }
+
+  .min-card {
+    padding: 56px 0;
+  }
+
+  .min-card > img,
+  .min-card:nth-child(even) > img {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    border-radius: 18px 42px 18px 18px;
+    box-shadow: 0 20px 48px rgba(23,36,61,.13);
   }
 }
