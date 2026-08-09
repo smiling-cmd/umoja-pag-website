@@ -2650,9 +2650,12 @@ ${registrationUrl()}
     const pastToggle =
       $("#pastEventsToggle");
 
+    const homeContainer =
+      $("#homeUpcomingEvents");
+
     if (
-      !filterWrap ||
-      !upcomingWrap
+      !filterWrap &&
+      !homeContainer
     ) {
       return;
     }
@@ -2883,6 +2886,82 @@ ${registrationUrl()}
           );
 
       return `${monthNames[month - 1]} ${day}, ${year}`;
+    }
+
+    function renderHomeEvents(
+      container,
+    ) {
+      const upcoming =
+        items
+          .filter(
+            isUpcoming,
+          )
+          .sort(
+            (a, b) =>
+              itemSortDate(a).localeCompare(
+                itemSortDate(b),
+              ),
+          )
+          .slice(0, 2);
+
+      const specialRows =
+        upcoming
+          .map((item) => {
+            let actionHref =
+              item.link || "events.html";
+
+            if (actionHref.startsWith("#")) {
+              actionHref = `events.html${actionHref}`;
+            }
+
+            const actionText =
+              item.linkText || "Details";
+
+            return `
+              <article class="home-event-row" data-event-date="${escapeHtml(itemSortDate(item))}">
+                <div class="home-event-date">${escapeHtml(dateText(item))}</div>
+                <div>
+                  <h3>${escapeHtml(item.title)}</h3>
+                  <p>${escapeHtml(item.description)}</p>
+                </div>
+                <a href="${escapeHtml(actionHref)}">${escapeHtml(actionText)} →</a>
+              </article>
+            `;
+          })
+          .join("");
+
+      const sundayRow = `
+        <article class="home-event-row">
+          <div class="home-event-date">Every Sunday</div>
+          <div>
+            <h3>Sunday Worship</h3>
+            <p>First Service 8:00–10:00 AM · Second Service 10:00 AM–12:30 PM · Teens Church 10:00 AM–12:00 PM · Youth Service 12:30–1:45 PM</p>
+          </div>
+          <a href="connect.html">Plan Visit →</a>
+        </article>
+      `;
+
+      const hasPastEvents =
+        items.some(
+          (item) => !isUpcoming(item),
+        );
+
+      const pastEventsRow =
+        hasPastEvents
+          ? `
+            <article class="home-event-row home-event-past-link">
+              <div class="home-event-date">Past Events</div>
+              <div>
+                <h3>Previous Gatherings</h3>
+                <p>Revisit completed church events, including prayer, fellowship, outreach, and worship gatherings.</p>
+              </div>
+              <a href="events.html#past-events">View Past Events →</a>
+            </article>
+          `
+          : "";
+
+      container.innerHTML =
+        specialRows + sundayRow + pastEventsRow;
     }
 
     function card(
@@ -3208,26 +3287,28 @@ ${registrationUrl()}
       }
     }
 
-    filterWrap.addEventListener(
-      "click",
-      (event) => {
-        const button =
-          event.target.closest(
-            ".filter-pill",
-          );
+    if (filterWrap) {
+      filterWrap.addEventListener(
+        "click",
+        (event) => {
+          const button =
+            event.target.closest(
+              ".filter-pill",
+            );
 
-        if (!button) {
-          return;
-        }
+          if (!button) {
+            return;
+          }
 
-        activeCategory =
-          button.dataset.category;
+          activeCategory =
+            button.dataset.category;
 
-        renderFilters();
+          renderFilters();
 
-        renderEvents();
-      },
-    );
+          renderEvents();
+        },
+      );
+    }
 
     pastToggle?.setAttribute(
       "aria-controls",
@@ -3316,9 +3397,15 @@ ${registrationUrl()}
       );
     }
 
-    renderFilters();
+    if (filterWrap && upcomingWrap) {
+      renderFilters();
 
-    renderEvents();
+      renderEvents();
+    }
+
+    if (homeContainer) {
+      renderHomeEvents(homeContainer);
+    }
   })();
 
   $$(".reveal").forEach(
