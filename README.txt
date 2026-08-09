@@ -1,8 +1,4 @@
 UMOJA P.A.G CHURCH — MULTIPAGE EDITORIAL REDESIGN
-
-Replace the matching files in your website root with the files in this folder.
-Keep your existing images/ folder in the same location.
-
 Pages:
 - index.html: light homepage with a static three-image hero and a calm ministry directory
 - about.html: church story, pastor, leadership, vision, and values
