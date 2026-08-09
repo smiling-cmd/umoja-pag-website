@@ -3811,8 +3811,8 @@ ${registrationUrl()}
       src: "images/background.jpg",
       label: "Worship",
       kicker: "Welcome to Umoja Pentecostal Assembly of God",
-      title: "Transformed lives. <em>Ignited for God.</em>",
-      lead: "Step into a place of Spirit-filled worship, powerful prayer and a Word that awakens purpose, faith and revival.",
+      title: "Transformed by the Word. <em>Ignited by the Spirit.</em>",
+      lead: "This is where the Gospel becomes life: worship that stirs the soul, prayer that changes the heart and a sermon that meets you at the point of need.",
       themeLabel: "2026 Theme",
       themeTitle: "Mastering Your Time With God",
       themeVerse: "Genesis 32:24"
@@ -3821,8 +3821,8 @@ ${registrationUrl()}
       src: "images/background 2.jpg",
       label: "Family",
       kicker: "A church family built on prayer and grace",
-      title: "Come hungry. <em>Leave empowered.</em>",
-      lead: "Find strength in worship, encouragement in community and fresh fire in a church where lives are being changed by the power of God.",
+      title: "Come hungry. <em>Leave renewed.</em>",
+      lead: "Hear the message of hope, find strength in the Lord and discover a family that prays together, grows together and stands together in faith.",
       themeLabel: "2026 Theme",
       themeTitle: "Growing in Grace",
       themeVerse: "2 Corinthians 12:9"
@@ -3832,7 +3832,7 @@ ${registrationUrl()}
       label: "Purpose",
       kicker: "Encouraged, equipped and sent",
       title: "Step into your <em>calling.</em>",
-      lead: "Discover a place where faith grows, destinies are restored and believers are boldly shaped for Kingdom impact.",
+      lead: "The Word is for your future. The Spirit is for your strength. The church is for your growth. Come and be shaped for Kingdom impact.",
       themeLabel: "2026 Theme",
       themeTitle: "Walking in Divine Purpose",
       themeVerse: "Jeremiah 29:11"
@@ -3842,7 +3842,7 @@ ${registrationUrl()}
       label: "Presence",
       kicker: "Where worship stirs the heart",
       title: "Lift your voice. <em>Encounter His presence.</em>",
-      lead: "Experience worship that moves the soul, prayer that changes the heart and a message that brings revival to every generation.",
+      lead: "When God’s presence is in the room, hearts are healed, lives are restored and destinies are shifted. Come and meet Him in worship.",
       themeLabel: "2026 Theme",
       themeTitle: "The Presence of God Changes Everything",
       themeVerse: "Psalm 100:4"
@@ -3852,7 +3852,7 @@ ${registrationUrl()}
       label: "Belonging",
       kicker: "A place to belong, grow and serve",
       title: "Find your place. <em>Live for Christ.</em>",
-      lead: "Join a vibrant Pentecostal family committed to discipleship, evangelism, worship, prayer and kingdom living.",
+      lead: "This is more than a Sunday gathering. It is a movement of worship, discipleship, evangelism and revival for the glory of God.",
       themeLabel: "2026 Theme",
       themeTitle: "Living for the Kingdom",
       themeVerse: "Matthew 6:33"
