@@ -2634,6 +2634,191 @@ ${registrationUrl()}
     );
   })();
 
+  const churchEvents = [
+    {
+      date: "2026-06-20",
+      title: "Kesha Night",
+      category: "Prayer & Worship",
+      time: "7:00 PM",
+      location: "Umoja P.A.G Church",
+      description:
+        "A night of prayer, worship, intercession, and teaching for the whole congregation. No registration is required.",
+      link: "connect.html#contact",
+      linkText: "Ask a question",
+    },
+
+    {
+      date: "2026-05-11",
+      title: "Women\u2019s Fellowship Week",
+      category: "Women\u2019s Fellowship",
+      time: "5:00 PM daily",
+      location: "Umoja P.A.G Church",
+      description:
+        "A week of fellowship, teaching, testimony, and prayer for the women of the church.",
+    },
+
+    {
+      date: "2026-04-13",
+      title: "Men\u2019s Fellowship Week",
+      category: "Men\u2019s Fellowship",
+      time: "6:00 PM daily",
+      location: "Umoja P.A.G Church",
+      description:
+        "A week of teaching and fellowship focused on discipleship, accountability, family, and community leadership.",
+    },
+
+    {
+      date: "2026-03-09",
+      title: "Evangelism Week",
+      category: "Evangelism & Outreach",
+      time: "All day",
+      location: "Umoja and surrounding estates",
+      description:
+        "A week of outreach and community service across Umoja and neighbouring estates.",
+    },
+
+    {
+      date: null,
+      sortDate: "2026-08-31",
+      dateLabel: "August 2026 \u2014 exact date to be confirmed",
+      dateTbd: true,
+      title: "Youth Camp & Family Fun Day",
+      category: "Youth",
+      time: "All day",
+      location: "Umoja P.A.G Church",
+      description:
+        "Youth camp activities followed by a family fun day with games, music, team challenges, and a shared meal. Registration is open while the final date is confirmed.",
+      link: "#register",
+      linkText: "Register interest",
+    },
+  ];
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const pad = (value) => String(value).padStart(2, "0");
+
+  const today = new Date();
+
+  const todayString = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+
+  const itemSortDate = (item) => item.date || item.sortDate;
+
+  const isUpcoming = (item) => itemSortDate(item) >= todayString;
+
+  const escapeHtml = (value) =>
+    String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  const iconCalendar =
+    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+
+  const iconClock =
+    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+
+  const iconPin =
+    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.8"/></svg>';
+
+  function dateText(item) {
+    if (item.dateLabel) {
+      return item.dateLabel;
+    }
+
+    const [year, month, day] = item.date.split("-").map(Number);
+
+    return `${monthNames[month - 1]} ${day}, ${year}`;
+  }
+
+  /* =========================================================
+     HOMEPAGE — UPCOMING EVENTS PREVIEW
+     Reads the same churchEvents array as the full Events page,
+     so a dated event (e.g. Kesha Night) drops off the homepage
+     automatically once its date has passed, while still showing
+     under Past Events on events.html.
+     ========================================================= */
+  (() => {
+    const container = $("#homeUpcomingEvents");
+
+    if (!container) {
+      return;
+    }
+
+    const upcoming = churchEvents
+      .filter(isUpcoming)
+      .sort((a, b) => itemSortDate(a).localeCompare(itemSortDate(b)))
+      .slice(0, 2);
+
+    const specialRows = upcoming
+      .map((item) => {
+        let actionHref = item.link || "events.html";
+
+        if (actionHref.startsWith("#")) {
+          actionHref = `events.html${actionHref}`;
+        }
+
+        const actionText = item.linkText || "Details";
+
+        return `
+          <article class="home-event-row">
+            <div class="home-event-date">${escapeHtml(dateText(item))}</div>
+            <div>
+              <h3>${escapeHtml(item.title)}</h3>
+              <p>${escapeHtml(item.description)}</p>
+            </div>
+            <a href="${escapeHtml(actionHref)}">${escapeHtml(actionText)} \u2192</a>
+          </article>
+        `;
+      })
+      .join("");
+
+    const sundayRow = `
+      <article class="home-event-row">
+        <div class="home-event-date">Every Sunday</div>
+        <div>
+          <h3>Sunday Worship</h3>
+          <p>First Service is 8:00\u201310:00 AM, Second Service is 10:00 AM\u201312:30 PM, Teens Church is 10:00 AM\u201312:00 PM, and Youth Service is 12:30\u20131:45 PM.</p>
+        </div>
+        <a href="connect.html">Plan Visit \u2192</a>
+      </article>
+    `;
+
+    const hasPastEvents = churchEvents.some((item) => !isUpcoming(item));
+
+    const pastEventsRow = hasPastEvents
+      ? `
+        <article class="home-event-row home-event-past-link">
+          <div class="home-event-date">Past Events</div>
+          <div>
+            <h3>Previous Gatherings</h3>
+            <p>Revisit completed church events, including prayer, fellowship, outreach, and worship gatherings.</p>
+          </div>
+          <a href="events.html#past-events">View Past Events \u2192</a>
+        </article>
+      `
+      : "";
+
+    container.innerHTML = specialRows + sundayRow + pastEventsRow;
+  })();
+
+  /* =========================================================
+     FULL EVENTS PAGE
+     ========================================================= */
   (() => {
     const filterWrap =
       $("#eventsFilterPills");
@@ -2650,319 +2835,14 @@ ${registrationUrl()}
     const pastToggle =
       $("#pastEventsToggle");
 
-    const homeContainer =
-      $("#homeUpcomingEvents");
-
     if (
-      !filterWrap &&
-      !homeContainer
+      !filterWrap ||
+      !upcomingWrap
     ) {
       return;
     }
 
-    const items = [
-      {
-        date:
-          "2026-06-20",
-
-        title:
-          "Kesha Night",
-
-        category:
-          "Prayer & Worship",
-
-        time:
-          "7:00 PM",
-
-        location:
-          "Umoja P.A.G Church",
-
-        description:
-          "A night of prayer, worship, intercession, and teaching for the whole congregation. No registration is required.",
-
-        link:
-          "connect.html#contact",
-
-        linkText:
-          "Ask a question",
-      },
-
-      {
-        date:
-          "2026-05-11",
-
-        title:
-          "Women’s Fellowship Week",
-
-        category:
-          "Women’s Fellowship",
-
-        time:
-          "5:00 PM daily",
-
-        location:
-          "Umoja P.A.G Church",
-
-        description:
-          "A week of fellowship, teaching, testimony, and prayer for the women of the church.",
-      },
-
-      {
-        date:
-          "2026-04-13",
-
-        title:
-          "Men’s Fellowship Week",
-
-        category:
-          "Men’s Fellowship",
-
-        time:
-          "6:00 PM daily",
-
-        location:
-          "Umoja P.A.G Church",
-
-        description:
-          "A week of teaching and fellowship focused on discipleship, accountability, family, and community leadership.",
-      },
-
-      {
-        date:
-          "2026-03-09",
-
-        title:
-          "Evangelism Week",
-
-        category:
-          "Evangelism & Outreach",
-
-        time:
-          "All day",
-
-        location:
-          "Umoja and surrounding estates",
-
-        description:
-          "A week of outreach and community service across Umoja and neighbouring estates.",
-      },
-
-      {
-        date:
-          null,
-
-        sortDate:
-          "2026-08-31",
-
-        dateLabel:
-          "August 2026 — exact date to be confirmed",
-
-        dateTbd:
-          true,
-
-        title:
-          "Youth Camp & Family Fun Day",
-
-        category:
-          "Youth",
-
-        time:
-          "All day",
-
-        location:
-          "Umoja P.A.G Church",
-
-        description:
-          "Youth camp activities followed by a family fun day with games, music, team challenges, and a shared meal. Registration is open while the final date is confirmed.",
-
-        link:
-          "#register",
-
-        linkText:
-          "Register interest",
-      },
-    ];
-
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const pad =
-      (value) =>
-        String(
-          value,
-        ).padStart(
-          2,
-          "0",
-        );
-
-    const today =
-      new Date();
-
-    const todayString =
-      `${today.getFullYear()}-${pad(
-        today.getMonth() +
-          1,
-      )}-${pad(
-        today.getDate(),
-      )}`;
-
-    const itemSortDate =
-      (item) =>
-        item.date ||
-        item.sortDate;
-
-    const isUpcoming =
-      (item) =>
-        itemSortDate(
-          item,
-        ) >=
-        todayString;
-
-    const escapeHtml =
-      (value) =>
-        String(
-          value ?? "",
-        )
-          .replaceAll(
-            "&",
-            "&amp;",
-          )
-          .replaceAll(
-            "<",
-            "&lt;",
-          )
-          .replaceAll(
-            ">",
-            "&gt;",
-          )
-          .replaceAll(
-            '"',
-            "&quot;",
-          )
-          .replaceAll(
-            "'",
-            "&#039;",
-          );
-
-    const iconCalendar =
-      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
-
-    const iconClock =
-      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
-
-    const iconPin =
-      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.8"/></svg>';
-
-    function dateText(
-      item,
-    ) {
-      if (
-        item.dateLabel
-      ) {
-        return item.dateLabel;
-      }
-
-      const [
-        year,
-        month,
-        day,
-      ] =
-        item.date
-          .split("-")
-          .map(
-            Number,
-          );
-
-      return `${monthNames[month - 1]} ${day}, ${year}`;
-    }
-
-    function renderHomeEvents(
-      container,
-    ) {
-      const upcoming =
-        items
-          .filter(
-            isUpcoming,
-          )
-          .sort(
-            (a, b) =>
-              itemSortDate(a).localeCompare(
-                itemSortDate(b),
-              ),
-          )
-          .slice(0, 2);
-
-      const specialRows =
-        upcoming
-          .map((item) => {
-            let actionHref =
-              item.link || "events.html";
-
-            if (actionHref.startsWith("#")) {
-              actionHref = `events.html${actionHref}`;
-            }
-
-            const actionText =
-              item.linkText || "Details";
-
-            return `
-              <article class="home-event-row" data-event-date="${escapeHtml(itemSortDate(item))}">
-                <div class="home-event-date">${escapeHtml(dateText(item))}</div>
-                <div>
-                  <h3>${escapeHtml(item.title)}</h3>
-                  <p>${escapeHtml(item.description)}</p>
-                </div>
-                <a href="${escapeHtml(actionHref)}">${escapeHtml(actionText)} →</a>
-              </article>
-            `;
-          })
-          .join("");
-
-      const sundayRow = `
-        <article class="home-event-row">
-          <div class="home-event-date">Every Sunday</div>
-          <div>
-            <h3>Sunday Worship</h3>
-            <p>First Service 8:00–10:00 AM · Second Service 10:00 AM–12:30 PM · Teens Church 10:00 AM–12:00 PM · Youth Service 12:30–1:45 PM</p>
-          </div>
-          <a href="connect.html">Plan Visit →</a>
-        </article>
-      `;
-
-      const hasPastEvents =
-        items.some(
-          (item) => !isUpcoming(item),
-        );
-
-      const pastEventsRow =
-        hasPastEvents
-          ? `
-            <article class="home-event-row home-event-past-link">
-              <div class="home-event-date">Past Events</div>
-              <div>
-                <h3>Previous Gatherings</h3>
-                <p>Revisit completed church events, including prayer, fellowship, outreach, and worship gatherings.</p>
-              </div>
-              <a href="events.html#past-events">View Past Events →</a>
-            </article>
-          `
-          : "";
-
-      container.innerHTML =
-        specialRows + sundayRow + pastEventsRow;
-    }
+    const items = churchEvents;
 
     function card(
       item,
@@ -3287,28 +3167,26 @@ ${registrationUrl()}
       }
     }
 
-    if (filterWrap) {
-      filterWrap.addEventListener(
-        "click",
-        (event) => {
-          const button =
-            event.target.closest(
-              ".filter-pill",
-            );
+    filterWrap.addEventListener(
+      "click",
+      (event) => {
+        const button =
+          event.target.closest(
+            ".filter-pill",
+          );
 
-          if (!button) {
-            return;
-          }
+        if (!button) {
+          return;
+        }
 
-          activeCategory =
-            button.dataset.category;
+        activeCategory =
+          button.dataset.category;
 
-          renderFilters();
+        renderFilters();
 
-          renderEvents();
-        },
-      );
-    }
+        renderEvents();
+      },
+    );
 
     pastToggle?.setAttribute(
       "aria-controls",
@@ -3397,14 +3275,62 @@ ${registrationUrl()}
       );
     }
 
-    if (filterWrap && upcomingWrap) {
-      renderFilters();
+    renderFilters();
 
-      renderEvents();
-    }
+    renderEvents();
 
-    if (homeContainer) {
-      renderHomeEvents(homeContainer);
+    /*
+     * Deep link support for events.html#past-events (used by the
+     * homepage "Past Events" card). The Past Events list is built
+     * by this same script, so a plain browser anchor-scroll can
+     * fire before that content exists (or before the page finishes
+     * laying out), landing the visitor further down the page near
+     * Register instead. Expand the list and scroll to it ourselves
+     * once rendering has actually happened.
+     */
+    if (
+      window.location.hash ===
+      "#past-events"
+    ) {
+      if (
+        pastWrap &&
+        pastRow &&
+        pastToggle &&
+        !pastRow.hidden
+      ) {
+        pastWrap.hidden =
+          false;
+
+        pastToggle.textContent =
+          "Hide Past Events";
+
+        pastToggle.setAttribute(
+          "aria-expanded",
+          "true",
+        );
+      }
+
+      requestAnimationFrame(
+        () => {
+          requestAnimationFrame(
+            () => {
+              const target =
+                document.getElementById(
+                  "past-events",
+                );
+
+              if (target) {
+                target.scrollIntoView(
+                  {
+                    block:
+                      "start",
+                  },
+                );
+              }
+            },
+          );
+        },
+      );
     }
   })();
 
