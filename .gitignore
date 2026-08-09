@@ -1,0 +1,6 @@
+# Local PHP/email backend - never publish to GitHub
+domain-root/
+
+# Secrets
+.env
+.env.*
