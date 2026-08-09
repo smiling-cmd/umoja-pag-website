@@ -5162,10 +5162,12 @@ body.home-page .editorial-hero-visual {
   opacity: 0;
   background: center / cover no-repeat;
   transform: scale(1.055);
+  filter: saturate(1.08) contrast(1.06) brightness(.88);
   transition:
-    opacity 2.2s cubic-bezier(.22, 1, .36, 1),
-    transform 10s linear;
-  will-change: opacity, transform;
+    opacity 2.8s cubic-bezier(.22, 1, .36, 1),
+    transform 12s linear,
+    filter 2.8s ease;
+  will-change: opacity, transform, filter;
 }
 
 .hero-background-slide.is-active {
@@ -5181,11 +5183,11 @@ body.home-page .editorial-hero::before {
   pointer-events: none;
   background: linear-gradient(
     90deg,
-    rgba(255,255,255,.93) 0%,
-    rgba(255,255,255,.86) 32%,
-    rgba(255,255,255,.50) 52%,
-    rgba(8,26,53,.08) 72%,
-    rgba(8,26,53,.24) 100%
+    rgba(255,255,255,.95) 0%,
+    rgba(255,255,255,.88) 30%,
+    rgba(255,255,255,.68) 45%,
+    rgba(8,26,53,.12) 68%,
+    rgba(8,26,53,.28) 100%
   );
 }
 
@@ -5196,15 +5198,15 @@ body.home-page .editorial-hero::after {
 body.home-page .editorial-hero-copy {
   position: relative;
   z-index: 2;
-  width: min(650px, 100%);
-  max-width: 650px;
-  padding: clamp(22px, 2.6vw, 40px);
-  border: 1px solid rgba(255,255,255,.55);
-  border-radius: 28px;
-  background: rgba(255,255,255,.80);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 22px 60px rgba(13,31,61,.12);
+  width: min(700px, 100%);
+  max-width: 700px;
+  padding: clamp(24px, 2.8vw, 42px);
+  border: 1px solid rgba(255,255,255,.60);
+  border-radius: 30px;
+  background: rgba(255,255,255,.78);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 26px 70px rgba(7,17,34,.16);
 }
 
 .hero-background-controls {

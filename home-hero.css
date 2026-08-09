@@ -25,17 +25,20 @@ body.home-page .home-kicker {
 }
 
 body.home-page .editorial-hero h1 {
-  margin-bottom: 26px;
+  margin-bottom: 22px;
 
   font-size:
-    clamp(4rem, 6.2vw, 6.5rem);
+    clamp(4rem, 6.5vw, 7rem);
 
-  line-height: 0.9;
+  line-height: 0.82;
+  letter-spacing: -0.06em;
 }
 
 body.home-page .editorial-hero-lead {
   margin-bottom: 30px;
-  line-height: 1.7;
+  line-height: 1.6;
+  font-size: clamp(1.02rem, 1.35vw, 1.28rem);
+  max-width: 560px;
 }
 
 body.home-page .editorial-hero-actions {
