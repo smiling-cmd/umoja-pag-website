@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#072f6f" />
+  <meta name="color-scheme" content="light" />
   <title>About Umoja P.A.G Church | Our Story, Leadership & Values</title>
   <meta name="description" content="Learn the story, vision, core values, pastor, and leadership of Umoja P.A.G Church in Nairobi." />
   <meta name="robots" content="index, follow" />
@@ -20,7 +20,33 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="index.css" />
-  
+  <style>
+    .leadership-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 20%;
+    }
+
+    .leader-photo-sam img { object-position: 50% 20%; }
+    .leader-photo-paul-mosira img { object-position: 50% 20%; }
+    .leader-photo-linet img { object-position: 50% 20%; }
+    .leader-photo-paul-mwangi img { object-position: 50% 20%; }
+    .leader-photo-florence img { object-position: 50% 20%; }
+
+    .leader-modal-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: var(--photo-pos, 50% 15%);
+    }
+
+    .leader-modal-photo-default {
+      --photo-pos: 50% 15%;
+    }
+  </style>
 </head>
 <body class="site-page about-page">
 
@@ -48,11 +74,11 @@
 <div class="about-inner">
 <div class="about-visual reveal">
 <div class="about-img-main">
-<img alt="Umoja P.A.G Church building" decoding="async" fetchpriority="high" height="1000" loading="eager" src="images/Church.jpg" width="800"/>
+<img alt="Umoja P.A.G Church building" decoding="async" height="1000" loading="eager" src="images/Church.jpg" width="800"/>
 </div>
 <div class="about-stat-card">
-<div class="about-stat-num">1989</div>
-<div class="about-stat-label">Dedicated<br/>26 March</div>
+<div class="about-stat-num">10+</div>
+<div class="about-stat-label">Years of<br/>Ministry</div>
 </div>
 </div>
 <div class="about-text">
@@ -60,28 +86,34 @@
 <h2 class="section-title reveal d1">
             About Umoja<br/><em>P.A.G Church</em>
 </h2>
-<p class="about-desc reveal d2">Umoja P.A.G Church was officially inaugurated and dedicated on 26 March 1989, after nine founding members had consistently held prayers and worship at the site for a few years.</p>
-<p class="about-desc reveal d2">Our mission is to worship God in truth and Spirit, proclaim the Word of God, and advance the Kingdom of God through evangelism, discipleship, social and economic programmes and capacity building through the power of the Holy Spirit in Kenya and beyond.</p>
-<p class="about-desc reveal d2">After its dedication, the church was commissioned to become salt and light to the community. Through God’s grace, the power of the Holy Spirit, prayer and the commitment of members, the church has grown into the congregation it is today.</p><div class="about-values reveal d3">
+<p class="about-desc reveal d2">
+            We are a vibrant church in Umoja, Nairobi, dedicated to sharing the
+            love of Christ and building a strong community of faith.
+          </p>
+<p class="about-desc reveal d2">
+            Through worship, prayer, and the Word of God, we create a welcoming
+            space where everyone can grow, connect, and find purpose.
+          </p>
+<div class="about-values reveal d3">
 <div class="value-pill">
 <div class="value-pill-dot"></div>
-              Ministry
+              Prayer First
             </div>
 <div class="value-pill">
 <div class="value-pill-dot"></div>
-              Integrity
+              Spirit-Led
             </div>
 <div class="value-pill">
 <div class="value-pill-dot"></div>
-              Accountability
+              Family in Christ
             </div>
 <div class="value-pill">
 <div class="value-pill-dot"></div>
-              Community
+              Biblical Truth
             </div>
 <div class="value-pill">
 <div class="value-pill-dot"></div>
-              Excellence
+              Love in Action
             </div>
 </div>
 <a class="btn-primary btn-inline reveal d4" href="connect.html#join">Get Connected →</a>
@@ -107,27 +139,27 @@
 </div>
 </div>
 <div class="leadership-grid reveal d3"><article class="leadership-card">
-<div class="leadership-photo"><img alt="Mr. Sam Kavai" decoding="async" height="400" loading="lazy" src="images/secretary.jpg" style="--photo-pos: 50% 20%" width="400"/></div>
+<div class="leadership-photo"><img alt="Mr. Sam Kavai" class="leader-photo-sam" decoding="async" height="400" loading="lazy" src="images/secretary.jpg" width="400"/></div>
 <h3 class="leadership-name">Mr. Sam Kavai</h3>
 <p class="leadership-role">Secretary</p>
 <button aria-haspopup="dialog" class="leadership-more" data-leader="secretary" type="button">Learn more<span class="sr-only"> about Mr. Sam Kavai</span> →</button>
 </article><article class="leadership-card">
-<div class="leadership-photo"><img alt="Mr. Paul Mosira" decoding="async" height="400" loading="lazy" src="images/deacon.jpg" style="--photo-pos: 50% 20%" width="400"/></div>
+<div class="leadership-photo"><img alt="Mr. Paul Mosira" class="leader-photo-paul-mosira" decoding="async" height="400" loading="lazy" src="images/deacon.jpg" width="400"/></div>
 <h3 class="leadership-name">Mr. Paul Mosira</h3>
 <p class="leadership-role">Deacon</p>
 <button aria-haspopup="dialog" class="leadership-more" data-leader="deacon" type="button">Learn more<span class="sr-only"> about Mr. Paul Mosira</span> →</button>
 </article><article class="leadership-card">
-<div class="leadership-photo"><img alt="Lady Linet Lukiri" decoding="async" height="400" loading="lazy" src="images/women director.jpg" style="--photo-pos: 50% 20%" width="400"/></div>
+<div class="leadership-photo"><img alt="Lady Linet Lukiri" class="leader-photo-linet" decoding="async" height="400" loading="lazy" src="images/women director.jpg" width="400"/></div>
 <h3 class="leadership-name">Lady Linet Lukiri</h3>
 <p class="leadership-role">Mother Director</p>
 <button aria-haspopup="dialog" class="leadership-more" data-leader="motherDirector" type="button">Learn more<span class="sr-only"> about Lady Linet Lukiri</span> →</button>
 </article><article class="leadership-card">
-<div class="leadership-photo"><img alt="Mr. Paul Mwangi" decoding="async" height="400" loading="lazy" src="images/Treasurer.jpg" style="--photo-pos: 50% 20%" width="400"/></div>
+<div class="leadership-photo"><img alt="Mr. Paul Mwangi" class="leader-photo-paul-mwangi" decoding="async" height="400" loading="lazy" src="images/Treasurer.jpg" width="400"/></div>
 <h3 class="leadership-name">Mr. Paul Mwangi</h3>
 <p class="leadership-role">Treasurer</p>
 <button aria-haspopup="dialog" class="leadership-more" data-leader="treasurer" type="button">Learn more<span class="sr-only"> about Mr. Paul Mwangi</span> →</button>
 </article><article class="leadership-card">
-<div class="leadership-photo"><img alt="Ms. Florence Atino" decoding="async" height="400" loading="lazy" src="images/youth leader.jpg" style="--photo-pos: 50% 20%" width="400"/></div>
+<div class="leadership-photo"><img alt="Ms. Florence Atino" class="leader-photo-florence" decoding="async" height="400" loading="lazy" src="images/youth leader.jpg" width="400"/></div>
 <h3 class="leadership-name">Ms. Florence Atino</h3>
 <p class="leadership-role">Youth Leader</p>
 <button aria-haspopup="dialog" class="leadership-more" data-leader="youthLeader" type="button">Learn more<span class="sr-only"> about Ms. Florence Atino</span> →</button>
@@ -139,7 +171,7 @@
 <svg aria-hidden="true" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-width="2.5" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
 </button>
 <div class="leader-modal-photo">
-<img alt="" decoding="async" height="280" id="leaderModalImg" loading="lazy" src="" style="--photo-pos: 50% 15%" width="280"/>
+<img alt="" class="leader-modal-photo-default" decoding="async" height="280" id="leaderModalImg" loading="lazy" src="" width="280"/>
 </div>
 <div class="leader-modal-role" id="leaderModalRole"></div>
 <h3 class="leader-modal-name" id="leaderModalName"></h3>
@@ -163,27 +195,22 @@
 <div class="value-card reveal d1">
 <div class="value-card-num">01</div>
 <h3>Ministry</h3>
-<p class="value-card-copy">Committed to teaching the Word, enriching fellowship, fervent prayer, and Bible-based praise and worship, with the goal of producing the Fruit of the Holy Spirit in believers.</p>
 </div>
 <div class="value-card reveal d2">
 <div class="value-card-num">02</div>
 <h3>Integrity</h3>
-<p class="value-card-copy">Committed to honesty, openness, moral integrity and financial integrity, living in holiness and honouring God in a manner worthy of our calling.</p>
 </div>
 <div class="value-card reveal d3">
 <div class="value-card-num">03</div>
 <h3>Accountability</h3>
-<p class="value-card-copy">Accountable to God, His Word and one another, with a culture of transparency and trust.</p>
 </div>
 <div class="value-card reveal d4">
 <div class="value-card-num">04</div>
 <h3>Community</h3>
-<p class="value-card-copy">A family that supports one another, embraces unity, encourages fellowship and prayer, and reaches outward as light and salt to the world.</p>
 </div>
 <div class="value-card reveal d4">
 <div class="value-card-num">05</div>
 <h3>Excellence</h3>
-<p class="value-card-copy">Endeavouring to do ministry in God’s way and to the best standard possible, according to the revelation and grace God gives us.</p>
 </div>
 </div>
 </section>
@@ -192,10 +219,10 @@
   <div class="footer-grid">
     <div class="footer-brand">
       <div class="footer-brand-name">Umoja <span>P.A.G</span> Church</div>
-      <div class="footer-tagline">“Transformed lives. Transforming lives.” · Umoja, Nairobi, Kenya</div>
+      <div class="footer-tagline">“United in Faith, Rooted in Love” · Umoja, Nairobi, Kenya</div>
     </div>
     <div class="footer-col"><h4>Explore</h4><a href="about.html">About Us</a><a href="ministries.html">Ministries</a><a href="events.html">Events</a><a href="giving.html">Giving</a></div>
-    <div class="footer-col"><h4>Services</h4><a href="index.html#services">First Service 8:00–10:00 AM</a><a href="index.html#services">Second Service 10:00 AM–12:30 PM</a><a href="index.html#services">Teens Church 10:00 AM–12:00 PM</a><a href="index.html#services">Youth Service 12:30–1:45 PM</a></div>
+    <div class="footer-col"><h4>Services</h4><a href="index.html#services">Sunday 8:15 AM</a><a href="index.html#services">Sunday 10:15 AM</a><a href="index.html#services">Youth 12:30 PM</a></div>
     <div class="footer-col"><h4>Connect</h4><a href="connect.html">Contact & Directions</a><a href="connect.html#care">Prayer & Care</a><a href="tel:+254796752298">+254 796 752 298</a><a href="mailto:umojapag@umojapagchurch.org">Email Us</a><a href="privacy-policy.html">Privacy Policy</a></div>
   </div>
 </footer>

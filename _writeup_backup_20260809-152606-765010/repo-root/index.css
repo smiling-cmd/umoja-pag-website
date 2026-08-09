@@ -895,7 +895,7 @@ nav.scrolled .nav-toggle.open span {
   z-index: 1;
 }
 .values-grid-5 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, 1fr);
 }
 .value-card {
   position: relative;
@@ -3993,7 +3993,7 @@ body nav#navbar.scrolled .nav-toggle span {
 
 .editorial-service-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 1px solid var(--site-border);
   border-bottom: 1px solid var(--site-border);
 }
@@ -6252,12 +6252,4 @@ and
       13px !important;
   }
 
-}
-
-/* Official children-service note from church write-up */
-.editorial-service-note {
-  margin: 12px 0 0;
-  color: var(--site-text-soft, #5f6b7a);
-  font-size: 0.9rem;
-  line-height: 1.6;
 }
