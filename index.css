@@ -2923,7 +2923,6 @@ footer::before {
 @media (max-width: 900px) {
   .hero {
     align-items: flex-start;
-    min-height: auto;
   }
   .hero-content {
     grid-template-columns: 1fr;
@@ -3035,7 +3034,7 @@ footer::before {
     align-items: start;
   }
   .hero {
-    min-height: auto;
+    min-height: 0;
     align-items: flex-start;
   }
   .hero-eyebrow {
@@ -3285,9 +3284,6 @@ a {
 .hero-left-slide .hero-btns,
 .hero-left-slide .hero-eyebrow {
   animation: none;
-}
-
-.hero-title {
 }
 
 .hero-desc {
@@ -4873,7 +4869,7 @@ footer::before {
 
 @media (max-width: 980px) {
   .editorial-hero {
-    min-height: auto;
+    min-height: 0;
     grid-template-columns: 1fr;
     background: linear-gradient(180deg, var(--site-white) 0 52%, var(--site-blue-soft) 52% 100%);
   }
@@ -5019,7 +5015,7 @@ footer::before {
 
   .page-hero {
     margin-top: 70px;
-    min-height: auto;
+    min-height: 0;
     padding-top: 72px;
   }
 
@@ -5442,7 +5438,6 @@ html.umoja-motion-enabled .umoja-scroll-pop.umoja-pop-visible {
 @media (max-width: 1000px) {
   .about-page .page-hero {
     grid-template-columns: 1fr;
-    min-height: auto;
   }
 
   .about-page .page-hero-media {
@@ -6260,4 +6255,394 @@ and
   color: var(--site-text-soft, #5f6b7a);
   font-size: 0.9rem;
   line-height: 1.6;
+}
+/* =========================================================
+   LEADERSHIP CARDS — PREMIUM REDESIGN
+   ========================================================= */
+
+.leadership-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 22px;
+  width: min(1500px, calc(100% - 48px));
+  margin: 42px auto 0;
+  align-items: stretch;
+}
+
+/* Card */
+.leadership-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(255, 253, 247, 0.98) 100%
+    );
+
+  border: 1px solid rgba(7, 47, 111, 0.13);
+  border-radius: 28px;
+  padding: 18px 18px 22px;
+
+  box-shadow:
+    0 20px 50px rgba(10, 34, 72, 0.08),
+    0 5px 14px rgba(10, 34, 72, 0.04);
+
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.leadership-card:hover {
+  transform: translateY(-8px);
+
+  border-color: rgba(209, 163, 38, 0.45);
+
+  box-shadow:
+    0 28px 65px rgba(7, 47, 111, 0.14),
+    0 8px 20px rgba(7, 47, 111, 0.06);
+}
+
+/* Gold highlight at top */
+.leadership-card::before {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 3px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #d1a326,
+    #e8c75a,
+    #d1a326,
+    transparent
+  );
+
+  border-radius: 999px;
+}
+
+/* Portrait */
+.leadership-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 0.92;
+  overflow: visible;
+  margin-bottom: 42px;
+}
+
+.leadership-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  object-position: var(--photo-pos, 50% 20%);
+
+  border-radius: 22px;
+
+  border: 1.5px solid rgba(209, 163, 38, 0.8);
+
+  box-shadow:
+    0 14px 30px rgba(5, 25, 58, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+
+  transition:
+    transform 0.45s ease,
+    filter 0.45s ease;
+}
+
+.leadership-card:hover .leadership-photo img {
+  transform: scale(1.025);
+  filter: saturate(1.03) contrast(1.02);
+}
+
+/* Curved light overlay at bottom of photo */
+.leadership-photo::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: -2px;
+  right: -2px;
+  bottom: -1px;
+  height: 48px;
+
+  background: #fffdf8;
+
+  clip-path: polygon(
+    0 38%,
+    14% 58%,
+    32% 73%,
+    50% 80%,
+    68% 73%,
+    86% 58%,
+    100% 38%,
+    100% 100%,
+    0 100%
+  );
+}
+
+/* Circular church badge */
+.leadership-photo::after {
+  content: "✝";
+  position: absolute;
+  z-index: 5;
+
+  left: 50%;
+  bottom: -31px;
+  transform: translateX(-50%);
+
+  width: 60px;
+  height: 60px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  color: #e5bd45;
+  background: #072f6f;
+
+  border: 3px solid #f4d477;
+
+  box-shadow:
+    0 7px 18px rgba(7, 47, 111, 0.22),
+    0 0 0 5px rgba(255, 253, 247, 0.9);
+
+  font-family: Georgia, serif;
+  font-size: 29px;
+  line-height: 1;
+}
+
+/* Name */
+.leadership-name {
+  margin: 5px 8px 0;
+
+  color: #072f6f;
+
+  font-family:
+    "Cormorant Garamond",
+    Georgia,
+    serif;
+
+  font-size: clamp(1.5rem, 1.6vw, 2rem);
+  line-height: 1.08;
+  font-weight: 700;
+  text-align: center;
+
+  letter-spacing: -0.015em;
+}
+
+/* Role */
+.leadership-role {
+  margin: 16px 0 0;
+
+  color: #9b6700;
+
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Small ornamental divider */
+.leadership-role::after {
+  content: "";
+  display: block;
+
+  width: 66px;
+  height: 1px;
+
+  margin: 18px auto 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0,
+      #c79720 25%,
+      #c79720 75%,
+      transparent 100%
+    );
+}
+
+/* Learn more button */
+.leadership-more {
+  align-self: center;
+  margin-top: 25px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+
+  min-height: 46px;
+
+  padding: 0 22px;
+
+  border: 1px solid rgba(174, 119, 0, 0.7);
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff,
+      #fffaf0
+    );
+
+  color: #976500;
+
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.leadership-more:hover {
+  color: #fff;
+  background: #072f6f;
+
+  border-color: #072f6f;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 9px 20px rgba(7, 47, 111, 0.16);
+}
+
+.leadership-more span:last-child {
+  transition: transform 0.25s ease;
+}
+
+.leadership-more:hover span:last-child {
+  transform: translateX(4px);
+}
+
+/* Make all cards naturally end at the same place
+   without the huge empty area from the old version */
+.leadership-card .leadership-more {
+  margin-top: auto;
+  margin-bottom: 2px;
+}
+
+/* Add breathing room between role and button */
+.leadership-card .leadership-role {
+  margin-bottom: 26px;
+}
+
+
+/* =========================================================
+   LEADERSHIP SECTION DECORATION
+   ========================================================= */
+
+.leadership {
+  position: relative;
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 10%,
+      rgba(222, 190, 105, 0.08),
+      transparent 38%
+    ),
+    #fff;
+}
+
+.leadership::before {
+  content: "✝";
+  display: block;
+
+  width: min(620px, 60vw);
+  margin: 0 auto 12px;
+
+  color: rgba(177, 126, 16, 0.8);
+
+  text-align: center;
+  font-family: Georgia, serif;
+  font-size: 28px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(196, 148, 41, 0.34) 20%,
+      transparent 43%,
+      transparent 57%,
+      rgba(196, 148, 41, 0.34) 80%,
+      transparent 100%
+    );
+
+  background-position: center;
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1250px) {
+  .leadership-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 1050px;
+  }
+}
+
+@media (max-width: 820px) {
+  .leadership-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(680px, calc(100% - 32px));
+    gap: 18px;
+  }
+
+  .leadership-card {
+    border-radius: 24px;
+  }
+}
+
+@media (max-width: 540px) {
+  .leadership-grid {
+    grid-template-columns: 1fr;
+    width: min(400px, calc(100% - 28px));
+  }
+
+  .leadership-photo {
+    aspect-ratio: 1 / 0.9;
+  }
+
+  .leadership-name {
+    font-size: 1.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leadership-card,
+  .leadership-photo img,
+  .leadership-more {
+    transition: none;
+  }
+
+  .leadership-card:hover,
+  .leadership-card:hover .leadership-photo img {
+    transform: none;
+  }
 }
