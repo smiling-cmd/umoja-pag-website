@@ -3811,51 +3811,36 @@ ${registrationUrl()}
       src: "images/background.jpg",
       label: "Worship",
       kicker: "Welcome to Umoja Pentecostal Assembly of God",
-      title: "Transformed by the Word. <em>Ignited by the Spirit.</em>",
-      lead: "This is where the Gospel becomes life: worship that stirs the soul, prayer that changes the heart and a sermon that meets you at the point of need.",
-      themeLabel: "2026 Theme",
-      themeTitle: "Mastering Your Time With God",
-      themeVerse: "Genesis 32:24"
+      title: "Transformed lives. <em>Transforming lives.</em>",
+      lead: "A place where worship awakens faith, prayer changes hearts and the Word of God transforms every generation."
     },
     {
       src: "images/background 2.jpg",
       label: "Family",
-      kicker: "A church family built on prayer and grace",
-      title: "Come hungry. <em>Leave renewed.</em>",
-      lead: "Hear the message of hope, find strength in the Lord and discover a family that prays together, grows together and stands together in faith.",
-      themeLabel: "2026 Theme",
-      themeTitle: "Growing in Grace",
-      themeVerse: "2 Corinthians 12:9"
+      kicker: "A church family in Umoja, Nairobi",
+      title: "Come as you are. <em>Leave strengthened.</em>",
+      lead: "Find prayer, hope, discipleship and a Spirit-filled community where you can grow in grace and walk in purpose."
     },
     {
       src: "images/background3.png",
       label: "Purpose",
-      kicker: "Encouraged, equipped and sent",
+      kicker: "Grow in faith and purpose",
       title: "Step into your <em>calling.</em>",
-      lead: "The Word is for your future. The Spirit is for your strength. The church is for your growth. Come and be shaped for Kingdom impact.",
-      themeLabel: "2026 Theme",
-      themeTitle: "Walking in Divine Purpose",
-      themeVerse: "Jeremiah 29:11"
+      lead: "Be empowered to serve, to lead, to pray and to live with bold faith in every season God has prepared for you."
     },
     {
-      src: "images/theme of the year.jpeg",
-      label: "Presence",
-      kicker: "Where worship stirs the heart",
-      title: "Lift your voice. <em>Encounter His presence.</em>",
-      lead: "When God’s presence is in the room, hearts are healed, lives are restored and destinies are shifted. Come and meet Him in worship.",
-      themeLabel: "2026 Theme",
-      themeTitle: "The Presence of God Changes Everything",
-      themeVerse: "Psalm 100:4"
+      src: "images/background 4.jpg",
+      label: "Ministries",
+      kicker: "Find your place to serve",
+      title: "Join a ministry. <em>Be part of the mission.</em>",
+      lead: "From worship and cell groups to media, youth and outreach, there is a place for your gifts to shine for Christ."
     },
     {
-      src: "images/worship.jpg",
-      label: "Belonging",
-      kicker: "A place to belong, grow and serve",
-      title: "Find your place. <em>Live for Christ.</em>",
-      lead: "This is more than a Sunday gathering. It is a movement of worship, discipleship, evangelism and revival for the glory of God.",
-      themeLabel: "2026 Theme",
-      themeTitle: "Living for the Kingdom",
-      themeVerse: "Matthew 6:33"
+      src: "images/background5.jpg",
+      label: "Cell Groups",
+      kicker: "Grow deeper in community",
+      title: "Meet in prayer. <em>Grow in truth.</em>",
+      lead: "Join a cell group, build lasting relationships and experience fellowship, accountability and spiritual growth in everyday life."
     }
   ];
 
@@ -4060,10 +4045,6 @@ ${registrationUrl()}
       hero.querySelector(
         ".editorial-hero-lead"
       );
-    const theme =
-      hero.querySelector(
-        ".editorial-theme"
-      );
 
     if (kicker) {
       kicker.textContent =
@@ -4078,22 +4059,6 @@ ${registrationUrl()}
     if (lead) {
       lead.innerHTML =
         activeSlide.lead;
-    }
-
-    if (theme) {
-      const themeParts =
-        theme.querySelectorAll(
-          "strong, span"
-        );
-
-      if (themeParts.length >= 3) {
-        themeParts[0].textContent =
-          activeSlide.themeLabel;
-        themeParts[1].textContent =
-          activeSlide.themeTitle;
-        themeParts[2].textContent =
-          activeSlide.themeVerse;
-      }
     }
 
     hero.dataset.heroSlide =
