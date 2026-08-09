@@ -229,6 +229,23 @@ domain-root\vendor\autoload.php
 
 The backend currently uses PHPMailer through the shared API bootstrap.
 
+SMTP credentials
+
+The backend supports hosting environment variables. These override the matching
+values in domain-root\private\mail-config.php:
+
+UMOJA_SMTP_HOST
+UMOJA_SMTP_PORT
+UMOJA_SMTP_ENCRYPTION
+UMOJA_SMTP_USERNAME
+UMOJA_SMTP_PASSWORD
+UMOJA_MAIL_FROM_EMAIL
+UMOJA_MAIL_FROM_NAME
+
+For production, set UMOJA_SMTP_PASSWORD in DirectAdmin or the host's secret
+configuration and remove the password value from mail-config.php. A safe
+starting template is available at config\mail-config.example.php.
+
 8. Email Architecture
 
 Main SMTP account
@@ -297,6 +314,8 @@ request parsing
 
 same-origin checks
 
+per-form rate limiting (8 submissions per IP address per 15 minutes)
+
 server-side validation
 
 Kenyan phone normalization
@@ -349,6 +368,10 @@ domain-root\private\registration-guard.sqlite
 The system stores a SHA-256 registration fingerprint rather than storing the phone/email combination directly in the duplicate table.
 
 11. Backend Verification
+
+Run the full local verification from the repository root:
+
+powershell -ExecutionPolicy Bypass -File scripts\verify-project.ps1
 
 Check PHP syntax:
 
